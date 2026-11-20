@@ -542,7 +542,7 @@ const terrain=new THREE.Mesh(tGeo,new THREE.MeshLambertMaterial({vertexColors:tr
 
 /* mata da Área Verde (ilustrativa, como na imagem de satélite) */
 const TREES=[];{let sd=11;const rnd=()=>{sd=(sd*16807)%2147483647;return(sd-1)/2147483646};
-  const clear=[[-2.2,2.2],[-1.5,8.2],[13,16.8],[11.5,18.5]];
+  const clear=[[-1.5,8.2],[13,16.8],[11.5,18.5],[6.6,12.4],[8.5,11.5]];
   for(let k=0;TREES.length<230&&k<20000;k++){const x=-10+rnd()*42,y=-.5+rnd()*28.5,d=dC(x,y);
     const ok=(d<-2.6&&y>2.5)||(x<-3.5&&y>4.5);if(!ok)continue;
     if(clear.some(([cx,cy])=>Math.hypot(x-cx,y-cy)<5.5))continue;
@@ -845,37 +845,43 @@ function arcLine(s,hFn,dashed){const pts=[];for(let i=0;i<=120;i++){const t=aA+(
   const l=new THREE.Line(g,m);if(dashed)l.computeLineDistances();dyn.add(l)}
 function buildDyn(){
   scene.remove(dyn);dyn.traverse(o=>{if(o.geometry)o.geometry.dispose()});dyn=new THREE.Group();scene.add(dyn);
-  const Larc=R*(aB-aA),N=Math.ceil(Larc/.5),dt=(aB-aA)/N,segLen=Larc/N+.02;
-  const base=S.aterro?.12:-S.H,sF=.12;
-  if(S.aterro)for(let i=0;i<N;i++)seg(aA+i*dt,aA+(i+1)*dt,.11,segLen,S.H+.42,.22,(-S.H-.3+.12)/2,matConc);
-  if(S.fence==='muro')for(let i=0;i<N;i++){seg(aA+i*dt,aA+(i+1)*dt,sF,segLen,1.8,.15,base+.9,matMuro);seg(aA+i*dt,aA+(i+1)*dt,sF,segLen,.05,.2,base+1.82,matCap)}
+  // arrimo (só com aterro) fica na divisa
+  {const La=R*(aB-aA),Na=Math.ceil(La/.5),da=(aB-aA)/Na;
+   if(S.aterro)for(let i=0;i<Na;i++)seg(aA+i*da,aA+(i+1)*da,.11,La/Na+.02,S.H+.42,.22,(-S.H-.3+.12)/2,matConc);}
+  // grade/muro: com aterro, em cima do arrimo; sem aterro, no alto do barranco (início do plano + 50 cm)
+  const sF=S.aterro?.12:S.W+.5,base=S.aterro?.12:0;
+  const fA=S.aterro?aA:-Math.acos(18.05/(R+sF)),fB=S.aterro?aB:-Math.acos(37.36/(R+sF));
+  const Larc=(R+sF)*(fB-fA),N=Math.ceil(Larc/.5),dt=(fB-fA)/N,segLen=Larc/N+.02;
+  const edOn=E.edic&&E.pool!=='fundos'&&E.pool!=='fundos2';
+  const hid=t=>{if(!edOn)return false;const[x,y]=arcPt(t,sF);return x>16.5&&x<19.45&&y>11.35&&y<14.05};
+  if(S.fence==='muro')for(let i=0;i<N;i++){if(hid(fA+(i+.5)*dt))continue;seg(fA+i*dt,fA+(i+1)*dt,sF,segLen,1.8,.15,base+.9,matMuro);seg(fA+i*dt,fA+(i+1)*dt,sF,segLen,.05,.2,base+1.82,matCap)}
   if(S.fence==='grade'){
-    for(let i=0;i<N;i++){seg(aA+i*dt,aA+(i+1)*dt,sF,segLen,.04,.03,base+.12,matIron);seg(aA+i*dt,aA+(i+1)*dt,sF,segLen,.04,.03,base+1.48,matIron)}
-    const np=Math.ceil(Larc/2);for(let i=0;i<=np;i++){const t=aA+(aB-aA)*i/np,[x,y]=arcPt(t,sF);const m=new THREE.Mesh(new THREE.BoxGeometry(.06,1.62,.06),matIron);m.position.copy(W3(x,base+.81,y));m.castShadow=true;dyn.add(m)}
+    for(let i=0;i<N;i++){if(hid(fA+(i+.5)*dt))continue;seg(fA+i*dt,fA+(i+1)*dt,sF,segLen,.04,.03,base+.12,matIron);seg(fA+i*dt,fA+(i+1)*dt,sF,segLen,.04,.03,base+1.48,matIron)}
+    const np=Math.ceil(Larc/2);for(let i=0;i<=np;i++){const t=fA+(fB-fA)*i/np;if(hid(t))continue;const[x,y]=arcPt(t,sF);const m=new THREE.Mesh(new THREE.BoxGeometry(.06,1.62,.06),matIron);m.position.copy(W3(x,base+.81,y));m.castShadow=true;dyn.add(m)}
     const nb=Math.floor(Larc/.1),im=new THREE.InstancedMesh(new THREE.BoxGeometry(.016,1.4,.016),matIron,nb),M=new THREE.Matrix4();
-    for(let i=0;i<nb;i++){const t=aA+(aB-aA)*(i+.5)/nb,[x,y]=arcPt(t,sF);M.makeTranslation(x,base+.8,-y);im.setMatrixAt(i,M)}
+    for(let i=0;i<nb;i++){const t=fA+(fB-fA)*(i+.5)/nb,[x,y]=arcPt(t,sF);if(hid(t))M.makeScale(0,0,0);else M.makeTranslation(x,base+.8,-y);im.setMatrixAt(i,M)}
     im.castShadow=true;dyn.add(im)}
   if(S.cat&&S.fence!=='none'){
-    const top=S.fence==='muro'?base+1.85:base+1.5,r=.5,NA=10,np=Math.ceil(Larc/2);
+    const top=S.fence==='muro'?base+1.85:base+1.5,NA=10,np=Math.ceil(Larc/2);
     const LA=.6,c45=Math.SQRT1_2;
     const arm=t=>{const a=[];for(let k=0;k<=NA;k++){const q=k/NA*LA,[x,y]=arcPt(t,sF+q*c45);a.push(W3(x,top+q*c45,y))}return a};
-    for(let i=0;i<=np;i++){const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(arm(aA+(aB-aA)*i/np)),12,.02,6,false),matIron);m.castShadow=true;dyn.add(m)}
+    for(let i=0;i<=np;i++){const t=fA+(fB-fA)*i/np;if(hid(t))continue;const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(arm(t)),12,.02,6,false),matIron);m.castShadow=true;dyn.add(m)}
     const NT=Math.ceil(Larc/.5),v=[],ix=[];
-    for(let i=0;i<=NT;i++)arm(aA+(aB-aA)*i/NT).forEach(p=>v.push(p.x,p.y,p.z));
-    for(let i=0;i<NT;i++)for(let k=0;k<NA;k++){const a=i*(NA+1)+k,b=a+1,c=a+NA+1,d=c+1;ix.push(a,b,c,b,d,c)}
-    if(S.fence==='grade'){const o=v.length/3;for(let i=0;i<=NT;i++){const[x,y]=arcPt(aA+(aB-aA)*i/NT,sF+.02);v.push(x,base+.05,-y,x,top,-y)}
-      for(let i=0;i<NT;i++){const a=o+i*2;ix.push(a,a+1,a+2,a+1,a+3,a+2)}}
+    for(let i=0;i<=NT;i++)arm(fA+(fB-fA)*i/NT).forEach(p=>v.push(p.x,p.y,p.z));
+    for(let i=0;i<NT;i++){if(hid(fA+(fB-fA)*(i+.5)/NT))continue;for(let k=0;k<NA;k++){const a=i*(NA+1)+k,b=a+1,c=a+NA+1,d=c+1;ix.push(a,b,c,b,d,c)}}
+    if(S.fence==='grade'){const o=v.length/3;for(let i=0;i<=NT;i++){const[x,y]=arcPt(fA+(fB-fA)*i/NT,sF+.02);v.push(x,base+.05,-y,x,top,-y)}
+      for(let i=0;i<NT;i++){if(hid(fA+(fB-fA)*(i+.5)/NT))continue;const a=o+i*2;ix.push(a,a+1,a+2,a+1,a+3,a+2)}}
     const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(v,3));g.setIndex(ix);g.computeVertexNormals();
     dyn.add(new THREE.Mesh(g,matNet));
-    const tip=[];for(let i=0;i<=120;i++){const[x,y]=arcPt(aA+(aB-aA)*i/120,sF+LA*c45);tip.push(W3(x,top+LA*c45,y))}
-    dyn.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(tip),120,.012,5,false),matIron));
+    let run=[];const flush=()=>{if(run.length>1)dyn.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(run),run.length*2,.012,5,false),matIron));run=[]};
+    for(let i=0;i<=120;i++){const t=fA+(fB-fA)*i/120;if(hid(t)){flush();continue}const[x,y]=arcPt(t,sF+LA*c45);run.push(W3(x,top+LA*c45,y))}flush();
   }
   arcLine(-.02,(x,y)=>S.aterro?.12:-S.H,false);
   arcLine(S.W,(x,y)=>0,true);
 }
 
 /* câmera */
-const VIEWS={aerea:{p:[10,50,-6],t:[10,0,-10.5]},'3d':{p:[-1,23,9],t:[10,0,-9]},quintal:{p:[15.6,1.65,-12.4],t:[4,.6,-8.4]},detalhe:{p:[-2.2,2.3,-2.2],t:[8,1.1,-9.2]},frente:{p:[16,8,10],t:[7,2,-3]},foto:{p:[19.5,1.6,5.5],t:[9.0,2.3,-3.2]},churrasco:{p:[14.6,1.9,-12.3],t:[19.2,1.1,-13.0]},piscinaF:{p:[13.5,7.5,7.5],t:[17,0,-2]},escritorio:{p:[13.0,4.2,-16.8],t:[18,1.2,-12.4]},piscinaL:{p:[-1.5,4.8,-8.2],t:[4.2,.4,-1.6]},piscina:{p:[11.5,5.5,-18.5],t:[17,0,-12.6]}};
+const VIEWS={aerea:{p:[10,50,-6],t:[10,0,-10.5]},'3d':{p:[-1,23,9],t:[10,0,-9]},quintal:{p:[16.2,1.65,-10.9],t:[4,.4,-8.0]},detalhe:{p:[6.6,2.4,-12.4],t:[13.5,.4,-9.4]},frente:{p:[16,8,10],t:[7,2,-3]},foto:{p:[19.5,1.6,5.5],t:[9.0,2.3,-3.2]},churrasco:{p:[14.6,1.9,-12.3],t:[19.2,1.1,-13.0]},piscinaF:{p:[13.5,7.5,7.5],t:[17,0,-2]},escritorio:{p:[13.0,4.2,-16.8],t:[18,1.2,-12.4]},piscinaL:{p:[-1.5,4.8,-8.2],t:[4.2,.4,-1.6]},piscina:{p:[11.5,5.5,-18.5],t:[17,0,-12.6]}};
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;let tween=null;
 function setView(v,instant){S.view=v;document.querySelectorAll('.views button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===v));
   const V=VIEWS[v==='piscina'&&E.pool==='frente'?'piscinaF':v==='piscina'&&(E.pool==='lateral'||E.pool==='eco')?'piscinaL':v],p1=new THREE.Vector3(...V.p),t1=new THREE.Vector3(...V.t);
@@ -940,8 +946,8 @@ $('r-h').addEventListener('input',e=>{S.H=+e.target.value;refresh()});
 $('r-w').addEventListener('input',e=>{S.W=+e.target.value;refresh()});
 $('c-fill').addEventListener('change',e=>{S.fill=e.target.checked;refresh()});
 $('c-cat').addEventListener('change',e=>{S.cat=e.target.checked;refresh()});
-document.querySelectorAll('[data-pool]').forEach(b=>b.addEventListener('click',()=>{E.pool=b.dataset.pool;buildExt();renderUI()}));
-[['c-car2','car2'],['c-edic','edic'],['c-q','q'],['c-cp','cp'],['c-chur','chur'],['c-lav','lav'],['c-gar','gar'],['c-esc','esc'],['c-sotao','sotao']].forEach(([id,k])=>$(id).addEventListener('change',e=>{E[k]=e.target.checked;buildExt();renderUI()}));
+document.querySelectorAll('[data-pool]').forEach(b=>b.addEventListener('click',()=>{E.pool=b.dataset.pool;buildExt();buildDyn();renderUI()}));
+[['c-car2','car2'],['c-edic','edic'],['c-q','q'],['c-cp','cp'],['c-chur','chur'],['c-lav','lav'],['c-gar','gar'],['c-esc','esc'],['c-sotao','sotao']].forEach(([id,k])=>$(id).addEventListener('change',e=>{E[k]=e.target.checked;buildExt();buildDyn();renderUI()}));
 buildExt();
 const pick=tr=>{if(!tr||!tr.dataset.f)return;S.aterro=tr.dataset.a==='1';S.fence=tr.dataset.f;refresh()};
 $('t-cmp').addEventListener('click',e=>pick(e.target.closest('tr')));
