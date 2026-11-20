@@ -139,7 +139,9 @@ header a{color:var(--sel);font-weight:600}
 .orc-actions button,.orc .btnlike{font:inherit;font-size:13px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;display:inline-flex;align-items:center}
 .orc-actions .primary{background:var(--sel);color:var(--sel-fg);border-color:var(--sel);font-weight:600}
 .orc-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
-.orc label:not(.btnlike){display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.orc label:not(.btnlike):not(.pdfimg){display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.orc .pdfimg{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--fg);padding:0 6px;cursor:pointer}
+.orc .pdfimg input{width:auto}
 .orc input,.orc textarea{font:inherit;font-size:14px;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;min-width:0;box-sizing:border-box}
 .tablewrap{overflow-x:auto}
 #o-tab{min-width:1080px}
@@ -374,6 +376,7 @@ header a{color:var(--sel);font-weight:600}
         <button id="o-load" type="button">Puxar itens da maquete</button>
         <button id="o-add" type="button">+ Adicionar item</button>
         <button id="o-pdf" type="button" class="primary">Gerar PDF</button>
+        <label class="pdfimg" for="o-img"><input type="checkbox" id="o-img"> Com imagem da maquete</label>
         <button id="o-save" type="button">Salvar arquivo</button>
         <label class="btnlike" for="o-open">Abrir arquivo<input type="file" id="o-open" accept=".json,application/json" hidden></label>
         <button id="o-clear" type="button">Limpar</button>
@@ -920,12 +923,13 @@ function renderRows(){const tb=document.querySelector('#o-tab tbody');
     <td class="c-x"><button type="button" class="del" aria-label="Remover item" data-del="${i}">×</button></td></tr>`).join('')
     ||'<tr><td colspan="8">Nenhum item. Use "Puxar itens da maquete" ou "+ Adicionar item".</td></tr>';
   renderTotals()}
-function renderMeta(){$('o-obra').value=O.obra||'';$('o-resp').value=O.resp||'';$('o-data').value=O.data||'';$('o-val').value=O.val??'';$('o-bdi').value=O.bdi??0;$('o-desc').value=O.desc??0;$('o-obs').value=O.obs||''}
+function renderMeta(){$('o-obra').value=O.obra||'';$('o-resp').value=O.resp||'';$('o-data').value=O.data||'';$('o-val').value=O.val??'';$('o-bdi').value=O.bdi??0;$('o-desc').value=O.desc??0;$('o-obs').value=O.obs||'';$('o-img').checked=!!O.img}
 O=loadO();renderMeta();renderRows();
 document.querySelector('#o-tab tbody').addEventListener('input',e=>{const k=e.target.dataset.k,tr=e.target.closest('tr');if(!k||!tr)return;const r=O.rows[+tr.dataset.i];
   r[k]=(k==='q'||k==='p')?(e.target.value===''?'':+e.target.value):e.target.value;renderTotals();saveO()});
 document.querySelector('#o-tab tbody').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(!b)return;O.rows.splice(+b.dataset.del,1);renderRows();saveO()});
 [['o-obra','obra'],['o-resp','resp'],['o-data','data'],['o-val','val'],['o-bdi','bdi'],['o-desc','desc'],['o-obs','obs']].forEach(([id,k])=>$(id).addEventListener('input',e=>{O[k]=e.target.type==='number'?(+e.target.value||0):e.target.value;renderTotals();saveO()}));
+$('o-img').addEventListener('change',e=>{O.img=e.target.checked;saveO()});
 $('o-add').addEventListener('click',()=>{O.rows.push({et:'',tp:'Material',d:'',u:'un',q:1,p:0});renderRows();saveO();const ins=document.querySelectorAll('#o-tab tbody tr:last-child input[data-k="d"]');if(ins[0])ins[0].focus()});
 let armed=null;
 function confirmBtn(id,text,fn){const b=$(id),orig=b.textContent;if(armed===id){armed=null;b.textContent=orig.replace(/^Confirmar: /,'');fn();return}
@@ -937,7 +941,7 @@ $('o-save').addEventListener('click',()=>{try{const b=new Blob([JSON.stringify(O
   a.href=URL.createObjectURL(b);a.download='orcamento-casa01-'+(O.data||today())+'.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);msg('Arquivo do orçamento salvo.')}catch(e){msg('Não foi possível salvar aqui. Use a versão do GitHub Pages.')}});
 $('o-open').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();
   rd.onload=()=>{try{const o=JSON.parse(rd.result);if(!o||!Array.isArray(o.rows))throw 0;O={...blank(),...o};renderMeta();renderRows();saveO();msg('Orçamento aberto: '+f.name)}catch(err){msg('Esse arquivo não é um orçamento desta página.')}e.target.value=''};rd.readAsText(f)});
-function buildReport(){let img='';try{renderer.render(scene,camera);img=renderer.domElement.toDataURL('image/jpeg',.85)}catch(e){}
+function buildReport(){let img='';if(O.img)try{renderer.render(scene,camera);img=renderer.domElement.toDataURL('image/jpeg',.85)}catch(e){}
   const t=totals(),by={};O.rows.forEach(r=>{const k=r.et?('Etapa '+r.et).replace('Etapa Futuro','Futuro').replace('Etapa Opcional','Opcional'):'Sem etapa';by[k]=(by[k]||0)+(+r.q||0)*(+r.p||0)});
   const byT={};O.rows.forEach(r=>{const k=r.tp||'Outros';byT[k]=(byT[k]||0)+(+r.q||0)*(+r.p||0)});
   const dt=O.data?O.data.split('-').reverse().join('/'):'';
@@ -953,7 +957,7 @@ function buildReport(){let img='';try{renderer.render(scene,camera);img=renderer
      <tr><td>Desconto</td><td class="n">− ${money(t.desc)}</td></tr><tr class="total"><td>Total do orçamento</td><td class="n">${money(t.total)}</td></tr></tbody></table></div></div>
    ${O.obs?`<div class="obs"><b>Observações</b><br>${esc(O.obs)}</div>`:''}
    <div class="sign"><div>Responsável pelo orçamento</div><div>Proprietário</div></div>
-   <p class="note">Imagem da maquete 3D esquemática, sem escala de obra. Valores conforme preenchidos neste orçamento.</p>`}
+   <p class="note">${img?'Imagem da maquete 3D esquemática, sem escala de obra. ':''}Valores conforme preenchidos neste orçamento.</p>`}
 $('o-pdf').addEventListener('click',()=>{buildReport();try{window.print()}catch(e){}if(inFrame)msg('Se a janela de impressão não abriu, use a versão do GitHub Pages.')});
 window.addEventListener('beforeprint',buildReport);
 })();
