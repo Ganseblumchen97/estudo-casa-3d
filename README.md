@@ -1,4 +1,4 @@
-﻿# Casa 01 · Estudo de melhorias
+# Casa 01 · Estudo de melhorias
 
 Maquete 3D esquemática e orçamento editável das melhorias estudadas para a casa.
 
