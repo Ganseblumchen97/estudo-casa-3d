@@ -495,6 +495,26 @@ const tPos=new Float32Array(nx*ny*3),tCol=new Float32Array(nx*ny*3),idx=[];
 for(let j=0;j<ny-1;j++)for(let i=0;i<nx-1;i++){const a=j*nx+i,b=a+1,c=a+nx,d=c+1;idx.push(a,b,c,b,d,c)}
 const tGeo=new THREE.BufferGeometry();tGeo.setAttribute('position',new THREE.BufferAttribute(tPos,3));tGeo.setAttribute('color',new THREE.BufferAttribute(tCol,3));tGeo.setIndex(idx);
 const terrain=new THREE.Mesh(tGeo,new THREE.MeshLambertMaterial({vertexColors:true}));terrain.receiveShadow=true;scene.add(terrain);
+
+/* mata da Área Verde (ilustrativa, como na imagem de satélite) */
+const TREES=[];{let sd=11;const rnd=()=>{sd=(sd*16807)%2147483647;return(sd-1)/2147483646};
+  const clear=[[-2.2,2.2],[-1.5,8.2],[13,16.8],[11.5,18.5]];
+  for(let k=0;TREES.length<230&&k<20000;k++){const x=-10+rnd()*42,y=-.5+rnd()*28.5,d=dC(x,y);
+    const ok=(d<-2.6&&y>2.5)||(x<-3.5&&y>4.5);if(!ok)continue;
+    if(clear.some(([cx,cy])=>Math.hypot(x-cx,y-cy)<5.5))continue;
+    if(TREES.some(t=>Math.hypot(t.x-x,t.y-y)<1.6))continue;
+    TREES.push({x,y,h:4.5+rnd()*5,r:1.3+rnd()*1.4,c:rnd(),s:rnd()})}}
+const trunkIM=new THREE.InstancedMesh(new THREE.CylinderGeometry(.1,.17,1,6),new THREE.MeshLambertMaterial({color:0x5b4632}),TREES.length);
+const crownIM=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,1),new THREE.MeshLambertMaterial({color:0xffffff,flatShading:true}),TREES.length*2);
+trunkIM.castShadow=crownIM.castShadow=true;crownIM.receiveShadow=true;scene.add(trunkIM,crownIM);
+{const g1=new THREE.Color('#2d5427'),g2=new THREE.Color('#4f7d36'),g3=new THREE.Color('#3b6a3f'),c=new THREE.Color();
+  TREES.forEach((t,i)=>{c.copy(g1).lerp(t.c<.5?g2:g3,t.s);crownIM.setColorAt(2*i,c);c.multiplyScalar(1.12);crownIM.setColorAt(2*i+1,c)});crownIM.instanceColor.needsUpdate=true}
+function placeTrees(){const M=new THREE.Matrix4(),q=new THREE.Quaternion(),p=new THREE.Vector3(),sc=new THREE.Vector3();
+  TREES.forEach((t,i)=>{const b=height(t.x,t.y)-.1;
+    M.compose(p.set(t.x,b+t.h*.25,-t.y),q,sc.set(1,t.h*.5,1));trunkIM.setMatrixAt(i,M);
+    M.compose(p.set(t.x,b+t.h*.62,-t.y),q,sc.set(t.r,t.r*.85,t.r));crownIM.setMatrixAt(2*i,M);
+    M.compose(p.set(t.x+t.r*.35*(t.s-.5),b+t.h*.82,-t.y+t.r*.3*(t.c-.5)),q,sc.set(t.r*.7,t.r*.65,t.r*.7));crownIM.setMatrixAt(2*i+1,M)});
+  trunkIM.instanceMatrix.needsUpdate=true;crownIM.instanceMatrix.needsUpdate=true}
 const C={road:new THREE.Color('#5f6366'),walk:new THREE.Color('#c9c5bc'),conc:new THREE.Color('#a9a8a2'),grass:new THREE.Color('#7da457'),
   grass2:new THREE.Color('#6c9449'),verde:new THREE.Color('#4f7239'),verde2:new THREE.Color('#3f5f2e'),soil:new THREE.Color('#8b6a47'),fill:new THREE.Color('#d8b46a')};
 const hash=(x,y)=>{const s=Math.sin(x*12.9898+y*78.233)*43758.5453;return s-Math.floor(s)};
@@ -811,7 +831,7 @@ function buildDyn(){
 }
 
 /* câmera */
-const VIEWS={aerea:{p:[10,50,-6],t:[10,0,-10.5]},'3d':{p:[-10,19,-29],t:[11,0,-9]},quintal:{p:[15.6,1.65,-12.4],t:[4,.6,-8.4]},detalhe:{p:[-2.2,2.3,-2.2],t:[8,1.1,-9.2]},frente:{p:[16,8,10],t:[7,2,-3]},foto:{p:[19.5,1.6,5.5],t:[9.0,2.3,-3.2]},churrasco:{p:[14.6,1.9,-12.3],t:[19.2,1.1,-13.0]},piscinaF:{p:[13.5,7.5,7.5],t:[17,0,-2]},escritorio:{p:[13.0,4.2,-16.8],t:[18,1.2,-12.4]},piscinaL:{p:[-1.5,4.8,-8.2],t:[4.2,.4,-1.6]},piscina:{p:[11.5,5.5,-18.5],t:[17,0,-12.6]}};
+const VIEWS={aerea:{p:[10,50,-6],t:[10,0,-10.5]},'3d':{p:[-1,23,9],t:[10,0,-9]},quintal:{p:[15.6,1.65,-12.4],t:[4,.6,-8.4]},detalhe:{p:[-2.2,2.3,-2.2],t:[8,1.1,-9.2]},frente:{p:[16,8,10],t:[7,2,-3]},foto:{p:[19.5,1.6,5.5],t:[9.0,2.3,-3.2]},churrasco:{p:[14.6,1.9,-12.3],t:[19.2,1.1,-13.0]},piscinaF:{p:[13.5,7.5,7.5],t:[17,0,-2]},escritorio:{p:[13.0,4.2,-16.8],t:[18,1.2,-12.4]},piscinaL:{p:[-1.5,4.8,-8.2],t:[4.2,.4,-1.6]},piscina:{p:[11.5,5.5,-18.5],t:[17,0,-12.6]}};
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;let tween=null;
 function setView(v,instant){S.view=v;document.querySelectorAll('.views button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===v));
   const V=VIEWS[v==='piscina'&&E.pool==='frente'?'piscinaF':v==='piscina'&&(E.pool==='lateral'||E.pool==='eco')?'piscinaL':v],p1=new THREE.Vector3(...V.p),t1=new THREE.Vector3(...V.t);
@@ -868,7 +888,7 @@ function renderUI(){
   document.querySelectorAll('[data-fence]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.fence===S.fence));
   $('c-cat').disabled=S.fence==='none';
 }
-function refresh(){updateTerrain();buildDyn();renderUI()}
+function refresh(){updateTerrain();placeTrees();buildDyn();renderUI()}
 document.querySelectorAll('[data-aterro]').forEach(b=>b.addEventListener('click',()=>{S.aterro=b.dataset.aterro==='1';refresh()}));
 document.querySelectorAll('[data-fence]').forEach(b=>b.addEventListener('click',()=>{S.fence=b.dataset.fence;refresh()}));
 document.querySelectorAll('.views button').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
