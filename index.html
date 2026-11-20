@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html,body{margin:0}[hidden]{display:none!important}</style>
+<title>Aterro do Lote 01</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 3D viewport (esquerda, fixo ao rolar no desktop) + painel de controles/custos (direita); empilha no celular */
+:root{
+  --bg:#eef0ec; --surface:#ffffff; --fg:#1b201c; --muted:#5a635b; --line:#d6dbd3;
+  --accent:#c4262c;          /* vermelho de cota, como no projeto */
+  --sel:#2d5b44; --sel-fg:#ffffff; --sel-soft:#e3ece6;
+  --sky:#dde7ec;
+  --f-display:"Archivo","Segoe UI",system-ui,sans-serif;
+  --f-body:"Inter","Segoe UI",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121613; --surface:#1a1f1b; --fg:#e6eae4; --muted:#9aa49b; --line:#2b332d;
+  --accent:#ff6a6a; --sel:#7cc49a; --sel-fg:#0f1a13; --sel-soft:#1f3127; --sky:#1b252c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121613; --surface:#1a1f1b; --fg:#e6eae4; --muted:#9aa49b; --line:#2b332d;
+  --accent:#ff6a6a; --sel:#7cc49a; --sel-fg:#0f1a13; --sel-soft:#1f3127; --sky:#1b252c; color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 32px}
+.wrap{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header h1{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,3vw,30px);margin:0;letter-spacing:-.01em;text-wrap:balance}
+header p{margin:4px 0 0;color:var(--muted);max-width:70ch}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+.app{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start}
+@media (max-width:900px){.app{grid-template-columns:minmax(0,1fr)}}
+.viewer{position:sticky;top:max(12px,env(safe-area-inset-top,0px));background:var(--sky);border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  height:min(78vh,720px);min-height:360px}
+@media (max-width:900px){.viewer{position:relative;top:0;height:62vh;min-height:320px}}
+#stage{position:absolute;inset:0}
+#stage canvas{display:block;width:100%;height:100%;touch-action:none}
+.views{position:absolute;top:10px;left:10px;display:flex;gap:4px;flex-wrap:wrap;z-index:2}
+.legend{position:absolute;left:10px;bottom:10px;right:10px;display:flex;gap:6px 14px;flex-wrap:wrap;z-index:2;pointer-events:none}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-size:12px;background:color-mix(in srgb,var(--surface) 86%,transparent);padding:3px 8px;border-radius:6px;color:var(--fg)}
+.sw{width:18px;height:0;border-top:2px solid var(--accent)}
+.sw.dash{border-top:2px dashed var(--accent)}
+.sw.fill{height:10px;border:0;background:#d8b46a;border-radius:2px}
+.hint{position:absolute;top:10px;right:10px;font-size:11px;color:var(--muted);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:3px 8px;border-radius:6px;z-index:2}
+@media (max-width:520px){.hint{display:none}}
+
+.panel{display:flex;flex-direction:column;gap:12px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card h2{font-family:var(--f-display);font-weight:600;font-size:15px;margin:0}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.seg{display:flex;flex-wrap:wrap;gap:4px}
+.seg button,.views button{font:inherit;font-size:13px;padding:6px 11px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.seg button[aria-pressed="true"],.views button[aria-pressed="true"]{background:var(--sel);color:var(--sel-fg);border-color:var(--sel)}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.field small{color:var(--muted);font-size:12px}
+input[type=range]{width:100%;accent-color:var(--sel)}
+.chk{display:flex;gap:8px;align-items:center;font-size:13px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.stat b{display:block;font-family:var(--f-mono);font-size:17px;font-weight:500}
+.stat span{font-size:12px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+td.n,th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td small{color:var(--muted);display:block;font-size:11.5px}
+tr.total td{border-bottom:0;font-weight:600;font-size:14px}
+tr.total td.n{color:var(--fg);font-size:16px}
+.cmp tr{cursor:pointer}
+.cmp tr.on td{background:var(--sel-soft)}
+.cmp tr:hover td{background:color-mix(in srgb,var(--sel-soft) 60%,transparent)}
+details summary{cursor:pointer;font-weight:600;font-size:13px}
+.prices{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;margin-top:10px;font-size:13px}
+.prices input{width:86px;font:inherit;font-family:var(--f-mono);padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);text-align:right}
+.notes{font-size:12.5px;color:var(--muted);margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.warn{font-size:12.5px;border-left:3px solid var(--accent);padding:4px 10px;color:var(--fg)}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Estudo do Lote 01: aterro, grade e ampliações</h1>
+    <p>Simulação esquemática da faixa junto à divisa curva (R = 50 m, 23,89 m) com a Área Verde do Município. Mude a altura e a largura do barranco conforme medir no local; volumes e custos se recalculam.</p>
+  </header>
+
+  <main class="app">
+    <section class="viewer" aria-label="Vista 3D do lote">
+      <div id="stage"></div>
+      <div class="views" role="group" aria-label="Vista">
+        <button id="v-aerea" data-view="aerea">Aérea</button>
+        <button id="v-3d" data-view="3d" aria-pressed="true">3D</button>
+        <button id="v-quintal" data-view="quintal">Do quintal</button>
+        <button id="v-detalhe" data-view="detalhe">Perfil da grade</button>
+        <button id="v-frente" data-view="frente">Frente</button>
+        <button id="v-foto" data-view="foto">Como na foto</button>
+        <button id="v-churrasco" data-view="churrasco">Churrasco</button>
+        <button id="v-piscina" data-view="piscina">Piscina</button>
+        <button id="v-escritorio" data-view="escritorio">Escritório</button>
+      </div>
+      <div class="legend">
+        <span><i class="sw"></i>Divisa com a Área Verde</span>
+        <span><i class="sw dash"></i>Onde começa o barranco</span>
+        <span id="lg-fill"><i class="sw fill"></i>Terra do aterro</span>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="card">
+        <div class="field"><span class="lbl">Terreno</span>
+          <div class="seg" role="group" aria-label="Terreno">
+            <button id="t-nat" data-aterro="0">Como está</button>
+            <button id="t-at" data-aterro="1" aria-pressed="true">Aterrado</button>
+          </div>
+        </div>
+        <div class="field"><span class="lbl">Fechamento na divisa</span>
+          <div class="seg" role="group" aria-label="Fechamento">
+            <button id="f-none" data-fence="none">Nenhum</button>
+            <button id="f-grade" data-fence="grade" aria-pressed="true">Grade 1,50 m</button>
+            <button id="f-muro" data-fence="muro">Muro 1,80 m</button>
+          </div>
+          <label class="chk"><input type="checkbox" id="c-cat" checked> Topo inclinado para dentro, tipo alambrado de autódromo (anti-fuga de gato)</label>
+        </div>
+        <div class="field">
+          <div class="top"><label for="r-h">Altura do barranco na divisa</label><b class="mono" id="o-h"></b></div>
+          <input type="range" id="r-h" min="0.1" max="1.5" step="0.05" value="0.6">
+          <small>Desnível entre o chão plano e o pé do barranco, junto à divisa.</small>
+        </div>
+        <div class="field">
+          <div class="top"><label for="r-w">Largura da faixa fora do nível</label><b class="mono" id="o-w"></b></div>
+          <input type="range" id="r-w" min="0.5" max="3.5" step="0.1" value="2">
+          <small>Da divisa até onde o chão fica plano. A casa está a 2,28 m da divisa no ponto mais próximo.</small>
+        </div>
+        <label class="chk"><input type="checkbox" id="c-fill" checked> Destacar a terra do aterro</label>
+      </div>
+
+      <div class="card">
+        <h2>Medidas</h2>
+        <div class="stats">
+          <div class="stat"><b id="s-a"></b><span>área a aterrar</span></div>
+          <div class="stat"><b id="s-v"></b><span>volume compactado</span></div>
+          <div class="stat"><b id="s-vs"></b><span>terra a comprar (+25%)</span></div>
+          <div class="stat"><b id="s-cam"></b><span>caçambas de 10 m³</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Custo estimado da opção escolhida</h2>
+        <table id="t-cost"></table>
+        <div class="warn" id="w-arrimo">Aterrar até a divisa exige muro de arrimo: a terra não pode escorrer para a Área Verde do Município.</div>
+      </div>
+
+      <div class="card">
+        <h2>Comparar opções</h2>
+        <table class="cmp" id="t-cmp"></table>
+        <details>
+          <summary>Preços usados (editáveis)</summary>
+          <div class="prices" id="prices"></div>
+        </details>
+      </div>
+
+      <div class="card">
+        <h2>Ampliações (estudo)</h2>
+        <label class="chk"><input type="checkbox" id="c-lav" checked> Fechar a lavação, com porta para os fundos</label>
+        <label class="chk"><input type="checkbox" id="c-cp" checked> Cobertura do carro junto à suíte (opção econômica)</label>
+        <div class="field"><span class="lbl">Piscina</span>
+          <div class="seg" role="group" aria-label="Piscina">
+            <button id="p-eco" data-pool="eco">Econômica: lateral sem garagem</button>
+            <button id="p-none" data-pool="none">Sem piscina</button>
+            <button id="p-frente" data-pool="frente">Na frente</button>
+            <button id="p-fundos" data-pool="fundos">Nos fundos</button>
+            <button id="p-fundos2" data-pool="fundos2">Fundos + churrasqueira a bafo</button>
+            <button id="p-lateral" data-pool="lateral">Lateral + garagem 1 carro + churrasco</button>
+          </div>
+          <label class="chk"><input type="checkbox" id="c-q" checked> Quarto em cima da garagem lateral (sem banheiro)</label>
+          <label class="chk"><input type="checkbox" id="c-edic" checked> Escritório (edícula) atrás da lavação</label>
+          <label class="chk"><input type="checkbox" id="c-car2" checked> 2º carro ao lado, cobertura ampliada (futuro)</label>
+        </div>
+        <label class="chk"><input type="checkbox" id="c-chur" checked> Churrasqueira + bancada + mesa atrás da lavação</label>
+        <label class="chk"><input type="checkbox" id="c-gar"> Garagem para 2 carros lado a lado, com canto de treino</label>
+        <label class="chk"><input type="checkbox" id="c-esc" checked> Escritório + lavabo em cima da garagem</label>
+        <label class="chk"><input type="checkbox" id="c-sotao" checked> Passagem da escada para o sótão da casa</label>
+        <table id="t-ext"></table>
+        <div class="warn">A garagem desenhada ocupa o recuo frontal de 3 m (linha tracejada). Pelo Plano Diretor de Indaial isso provavelmente não é permitido, menos ainda para o andar de cima. Confirme com arquiteto e Prefeitura antes de qualquer gasto.</div>
+        <details>
+          <summary>Preços das ampliações (editáveis)</summary>
+          <div class="prices" id="eprices"></div>
+        </details>
+      </div>
+
+      <div class="card">
+        <span class="lbl">Leia antes de orçar</span>
+        <ul class="notes">
+          <li>Preços de referência para o Vale do Itajaí/SC, com material e mão de obra. Variam bastante: peça ao menos 3 orçamentos.</li>
+          <li>Altura e largura do barranco não constam no projeto; os valores iniciais são exemplo.</li>
+          <li>Muro de arrimo acima de ~1 m precisa de projeto e ART de engenheiro.</li>
+          <li>Confirme na Prefeitura de Indaial se o muro na divisa com a Área Verde precisa de autorização.</li>
+          <li>Anti-fuga de gato só funciona com o perímetro todo fechado: muros com os vizinhos, frente, portão e a lateral de 4,84 m também precisam de topo curvo, sem vãos acima de ~5 cm.</li>
+          <li>Casa e telhados simplificados a partir da implantação (prancha A 01/07). Lateral esquerda de 4,84 m não incluída.</li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+/* ---------- estado ---------- */
+const S={H:0.6,W:2.0,aterro:true,fence:'grade',fill:true,view:'3d',cat:true};
+const P={terra:85,comp:40,veg:140,grama:14,arrimo:800,dreno:70,grade:260,muro:420,gato:95,imp:10};
+const PL={terra:['Terra/saibro entregue','R$/m³'],comp:['Espalhar e compactar','R$/m³'],veg:['Terra vegetal (10 cm)','R$/m³'],
+  grama:['Grama em placas instalada','R$/m²'],arrimo:['Muro de arrimo (com fundação)','R$/m²'],dreno:['Dreno do arrimo (brita+manta+tubo)','R$/m'],
+  grade:['Gradil 1,50 m instalado','R$/m'],muro:['Muro de bloco 1,80 m rebocado','R$/m²'],gato:['Topo inclinado 45° (braços + tela)','R$/m'],imp:['Imprevistos','%']};
+const L_CURVA=23.89;
+const fmt=(v,d=0)=>v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const brl=v=>'R$ '+fmt(Math.round(v/10)*10);
+
+/* ---------- geometria do lote (m) — x ao longo da rua, y para o fundo; origem no vértice V377 ---------- */
+const R=50,CX=-18.0,CY=51.49,LOT_W=19.51,DIV_Y=18.43;
+const dC=(x,y)=>Math.hypot(x-CX,y-CY)-R;            // >0 = lado do lote
+const inLot1=(x,y)=>x>=0&&x<=LOT_W&&y>=0&&dC(x,y)>=0;
+const HX=10.16,HY=3.0;
+const HOUSE=[[0,.6],[3.15,.6],[3.15,0],[6.45,0],[6.45,.45],[9.2,.45],[9.2,8.4],[6.45,8.4],[6.45,7.05],[4.6,7.05],[4.6,5.9],[1.8,5.9],[1.8,4.45],[0,4.45]].map(p=>[p[0]+HX,p[1]+HY]);
+function inPoly(x,y,poly){let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const[xi,yi]=poly[i],[xj,yj]=poly[j];
+  if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c}return c}
+const inHouse=(x,y)=>x>HX-.1&&x<HX+9.3&&y>HY-.1&&y<HY+8.5&&inPoly(x,y,HOUSE);
+function natural(x,y){const d=dC(x,y);if(d>=S.W)return 0;if(d>=0)return -S.H*(1-d/S.W);return Math.max(-S.H-.9,-S.H+d*.05)}
+function height(x,y){
+  if(y<-2.6)return -.15; if(y<0)return 0;
+  if(inHouse(x,y))return 0;
+  if(S.aterro&&inLot1(x,y))return 0;
+  return natural(x,y);
+}
+const aA=Math.atan2(4.84-CY,0-CX),aB=Math.atan2(DIV_Y-CY,LOT_W-CX);
+const arcPt=(t,s)=>[CX+(R+s)*Math.cos(t),CY+(R+s)*Math.sin(t)];
+
+/* ---------- volume ---------- */
+function measure(){let A=0,V=0;const st=.05;
+  for(let x=st/2;x<LOT_W;x+=st)for(let y=st/2;y<19;y+=st){const d=dC(x,y);if(d<0||d>=S.W||inHouse(x,y))continue;A+=st*st;V+=st*st*S.H*(1-d/S.W)}
+  return{A,V}}
+
+/* ---------- three.js ---------- */
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+stage.appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(42,1,.1,400);
+const controls=new THREE.OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;controls.maxPolarAngle=Math.PI*.495;controls.minDistance=3;controls.maxDistance=90;
+const W3=(x,h,y)=>new THREE.Vector3(x,h,-y);
+
+scene.add(new THREE.HemisphereLight(0xf2f6ff,0x5a5040,.75));
+const sun=new THREE.DirectionalLight(0xfff3df,.85);sun.position.set(30,38,8);sun.target.position.set(10,0,-10);
+sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-28,right:28,top:28,bottom:-28,near:1,far:120});
+scene.add(sun,sun.target);
+
+function applySky(){const c=getComputedStyle(document.documentElement).getPropertyValue('--sky').trim()||'#dde7ec';scene.background=new THREE.Color(c);scene.fog=new THREE.Fog(c,55,140)}
+applySky();
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applySky)}catch(e){}
+new MutationObserver(applySky).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+/* terreno */
+const X0=-10,X1=32,Y0=-7,Y1=28,ST=.15,nx=Math.round((X1-X0)/ST)+1,ny=Math.round((Y1-Y0)/ST)+1;
+const tPos=new Float32Array(nx*ny*3),tCol=new Float32Array(nx*ny*3),idx=[];
+for(let j=0;j<ny-1;j++)for(let i=0;i<nx-1;i++){const a=j*nx+i,b=a+1,c=a+nx,d=c+1;idx.push(a,b,c,b,d,c)}
+const tGeo=new THREE.BufferGeometry();tGeo.setAttribute('position',new THREE.BufferAttribute(tPos,3));tGeo.setAttribute('color',new THREE.BufferAttribute(tCol,3));tGeo.setIndex(idx);
+const terrain=new THREE.Mesh(tGeo,new THREE.MeshLambertMaterial({vertexColors:true}));terrain.receiveShadow=true;scene.add(terrain);
+const C={road:new THREE.Color('#5f6366'),walk:new THREE.Color('#c9c5bc'),conc:new THREE.Color('#a9a8a2'),grass:new THREE.Color('#7da457'),
+  grass2:new THREE.Color('#6c9449'),verde:new THREE.Color('#4f7239'),verde2:new THREE.Color('#3f5f2e'),soil:new THREE.Color('#8b6a47'),fill:new THREE.Color('#d8b46a')};
+const hash=(x,y)=>{const s=Math.sin(x*12.9898+y*78.233)*43758.5453;return s-Math.floor(s)};
+const tmp=new THREE.Color();
+function updateTerrain(){
+  for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){
+    const k=(j*nx+i)*3,x=X0+i*ST,y=Y0+j*ST,h=height(x,y);
+    tPos[k]=x;tPos[k+1]=h;tPos[k+2]=-y;
+    const n=hash(Math.round(x*3),Math.round(y*3));const d=dC(x,y);
+    if(y<-2.6)tmp.copy(C.road);else if(y<0)tmp.copy(C.walk);
+    else if(d<0||x<0)tmp.copy(C.verde).lerp(C.verde2,n*.7);
+    else if(x>=1.5&&x<=10.1&&y<=5.4&&(x<=4.5||y>=3.0))tmp.copy(C.conc);
+    else{tmp.copy(C.grass).lerp(C.grass2,n*.6);
+      const lot1=inLot1(x,y);
+      if(d<S.W&&!(S.aterro&&lot1))tmp.lerp(C.soil,(1-d/S.W)*.6);
+      if(S.aterro&&S.fill&&lot1&&d<S.W)tmp.lerp(C.fill,.75);}
+    tCol[k]=tmp.r;tCol[k+1]=tmp.g;tCol[k+2]=tmp.b;}
+  tGeo.attributes.position.needsUpdate=true;tGeo.attributes.color.needsUpdate=true;tGeo.computeVertexNormals();tGeo.computeBoundingSphere();
+}
+
+/* casa 01 */
+const matWall=new THREE.MeshLambertMaterial({color:0xddd0b8}),matBase=new THREE.MeshLambertMaterial({color:0xa9a59c}),
+  matOrange=new THREE.MeshLambertMaterial({color:0xc9693b}),matGranite=new THREE.MeshLambertMaterial({color:0x8e8b86}),matWhite=new THREE.MeshLambertMaterial({color:0xf2f0ea}),
+  matRoof=new THREE.MeshLambertMaterial({color:0x9e4b2e,side:THREE.DoubleSide}),matRoof2=new THREE.MeshLambertMaterial({color:0x9b9a95,side:THREE.DoubleSide}),
+  matGlass=new THREE.MeshLambertMaterial({color:0x2c3a44}),matN=new THREE.MeshLambertMaterial({color:0xcfcac2});
+function extrudePoly(poly,h0,h,mat){const sh=new THREE.Shape();poly.forEach((p,i)=>i?sh.lineTo(p[0],p[1]):sh.moveTo(p[0],p[1]));
+  const g=new THREE.ExtrudeGeometry(sh,{depth:h,bevelEnabled:false});g.rotateX(-Math.PI/2);g.translate(0,h0,0);
+  const m=new THREE.Mesh(g,mat);m.castShadow=m.receiveShadow=true;return m}
+function gable(x0,y0,x1,y1,alongX,base,mat,ov=.45,sl=.35){
+  x0-=ov;y0-=ov;x1+=ov;y1+=ov;let v;
+  if(alongX){const ym=(y0+y1)/2,r=(y1-y0)/2*sl;
+    v=[[x0,base,y0],[x1,base,y0],[x1,base+r,ym],[x0,base,y0],[x1,base+r,ym],[x0,base+r,ym],
+       [x0,base,y1],[x0,base+r,ym],[x1,base+r,ym],[x0,base,y1],[x1,base+r,ym],[x1,base,y1],
+       [x0,base,y0],[x0,base+r,ym],[x0,base,y1],[x1,base,y0],[x1,base,y1],[x1,base+r,ym]];}
+  else{const xm=(x0+x1)/2,r=(x1-x0)/2*sl;
+    v=[[x0,base,y0],[xm,base+r,y0],[xm,base+r,y1],[x0,base,y0],[xm,base+r,y1],[x0,base,y1],
+       [x1,base,y0],[x1,base,y1],[xm,base+r,y1],[x1,base,y0],[xm,base+r,y1],[xm,base+r,y0],
+       [x0,base,y0],[x1,base,y0],[xm,base+r,y0],[x0,base,y1],[xm,base+r,y1],[x1,base,y1]];}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(v.flatMap(p=>[p[0],p[1],-p[2]]),3));g.computeVertexNormals();
+  const m=new THREE.Mesh(g,mat);m.castShadow=true;return m}
+const HOUSE_W=[[0,.6],[3.15,.6],[3.15,0],[6.45,0],[6.45,.45],[9.2,.45],[9.2,7.05],[4.6,7.05],[4.6,5.9],[1.8,5.9],[1.8,4.45],[0,4.45]].map(p=>[p[0]+HX,p[1]+HY]);
+scene.add(extrudePoly(HOUSE,0,.15,matBase),extrudePoly(HOUSE_W,.15,3.15,matWall));
+scene.add(gable(HX,HY,HX+6.45,HY+4.45,true,3.3,matRoof),gable(HX+1.8,HY+4.45,HX+6.45,HY+7.05,true,3.3,matRoof),gable(HX+6.45,HY+.45,HX+9.2,HY+8.4,false,3.3,matRoof));
+// vidro da sala (P03) e janelas dos fundos
+function pane(x,y,w,h,z0,rotY){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),matGlass);m.position.copy(W3(x,z0+h/2,y));m.rotation.y=rotY;scene.add(m)}
+/* fachada como na foto: bloco do dormitório em réguas laranja, suíte bege com janela de canto, faixa branca e rodapé de granito */
+function fbox(x0,x1,y0,y1,h0,h1,mat){const m=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,h1-h0,y1-y0),mat);m.position.copy(W3((x0+x1)/2,(h0+h1)/2,(y0+y1)/2));m.castShadow=m.receiveShadow=true;scene.add(m)}
+fbox(HX+3.15,HX+6.45,HY-.03,HY,.45,3.15,matOrange);
+for(let h=.75;h<3.1;h+=.3)fbox(HX+3.15,HX+6.45,HY-.045,HY-.03,h,h+.02,matRoof);
+fbox(HX,HX+1.45,HY+.57,HY+.6,2.45,3.15,matOrange);fbox(HX,HX+1.45,HY+.57,HY+.6,.45,.55,matOrange);
+fbox(HX-.03,HX,HY+.6,HY+2.1,2.45,3.15,matOrange);fbox(HX-.03,HX,HY+.6,HY+2.1,.45,.55,matOrange);
+[[HX,HX+3.15,HY+.57,HY+.6],[HX+3.15,HX+6.45,HY-.06,HY-.03],[HX+6.45,HX+9.2,HY+.42,HY+.45]].forEach(([a,b,c,d])=>{fbox(a,b,c,d,.15,.45,matGranite);fbox(a,b,c,d,2.98,3.1,matWhite)});
+fbox(HX-.06,HX,HY+.6,HY+4.45,.15,.45,matGranite);fbox(HX-.06,HX,HY+.6,HY+4.45,2.98,3.1,matWhite);
+fbox(HX-.6,HX+9.2,HY-1.3,HY+.45,0,.12,new THREE.MeshLambertMaterial({color:0xe4ded2}));
+pane(HX+7.6,HY+.41,1.8,2.2,.15,Math.PI);pane(HX+4.8,HY-.07,1.5,1.4,.95,Math.PI);
+pane(HX+.7,HY+.56,1.35,1.9,.55,Math.PI);pane(HX-.04,HY+1.3,1.35,1.9,.55,-Math.PI/2);
+
+/* vizinhos e divisa */
+scene.add(extrudePoly([[21.5,3.8],[27.9,3.8],[27.9,11.5],[21.5,11.5]],0,3.15,matN));
+scene.add(gable(21.5,3.8,27.9,11.5,false,3.15,matRoof2));
+const divWall=new THREE.Mesh(new THREE.BoxGeometry(.15,1.8,DIV_Y),new THREE.MeshLambertMaterial({color:0xbdb8ae}));
+divWall.position.copy(W3(LOT_W,.9,DIV_Y/2));divWall.castShadow=divWall.receiveShadow=true;scene.add(divWall);
+
+/* rótulos */
+function label(text,x,h,y,size=1,parent=scene){const c=document.createElement('canvas');c.width=512;c.height=128;const g=c.getContext('2d');
+  g.font='600 44px Inter, Segoe UI, sans-serif';const w=g.measureText(text).width+40;g.fillStyle='rgba(255,255,255,.88)';
+  const x0=(512-w)/2;g.beginPath();g.roundRect?g.roundRect(x0,24,w,80,14):g.rect(x0,24,w,80);g.fill();g.fillStyle='#1b201c';g.textAlign='center';g.textBaseline='middle';g.fillText(text,256,66);
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false}));s.scale.set(4*size,1*size,1);s.position.copy(W3(x,h,y));s.renderOrder=5;parent.add(s)}
+label('Casa 01',HX+4.6,5.2,HY+4);label('Casa 02',24.7,5,7.6,.85);label('Área Verde do Município',2,2.2,17,1.15);label('Rua H',8,.8,-4.5,.8);
+
+/* recuo frontal e fossa/filtro (posição do projeto aprovado) */
+{const g=new THREE.BufferGeometry().setFromPoints([W3(0,.05,3),W3(LOT_W,.05,3)]);const l=new THREE.Line(g,new THREE.LineDashedMaterial({color:0xc4262c,dashSize:.4,gapSize:.25}));l.computeLineDistances();scene.add(l);
+ label('Recuo frontal 3 m',1.6,.7,3.4,.75);
+ [[8.8,1.3],[11.2,1.3]].forEach(([x,y])=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(.7,.7,.06,28),new THREE.MeshLambertMaterial({color:0x8d8a83}));m.position.copy(W3(x,.03,y));scene.add(m)});
+ label('Fossa / filtro',10,.7,.4,.7);}
+
+/* ampliações (estudo) */
+const E={car2:true,edic:true,q:true,pool:'eco',lav:true,cp:true,chur:true,gar:false,esc:true,sotao:true,x0:2.9,x1:8.5,y0:.3,y1:5.1};
+const EP={pool:22000,capa:1500,g1:1800,var:3000,priv:4000,cp:8500,churq:3500,banc:3000,chcob:5500,lav:5500,gar:2400,portao:9000,esc:3500,escada:9000,sotao:7000,treino:2500,proj:10000};
+const EPL={pool:['Piscina de fibra 3,6 × 1,8 m instalada','R$'],capa:['Capa de proteção','R$'],g1:['Garagem 1 carro, térrea, telhado igual à casa','R$/m²'],var:['Varandinha coberta da churrasqueira','R$'],priv:['Cerca viva / muro de privacidade na frente','R$'],cp:['Cobertura do carro anexa à casa (~14 m²)','R$'],churq:['Churrasqueira pré-moldada + base + chaminé','R$'],banc:['Bancada 1,7 m (alvenaria + granito)','R$'],chcob:['Cobertura do churrasco (~8 m²)','R$'],lav:['Fechar lavação (paredes, porta, basculante)','R$'],gar:['Garagem com laje para 2º andar','R$/m²'],portao:['Portão automático 5 m','R$'],
+  esc:['Escritório + lavabo (2º andar)','R$/m²'],escada:['Escada externa metálica','R$'],sotao:['Passarela + porta no oitão + rufos','R$'],treino:['Rack dobrável de parede + piso de borracha','R$'],proj:['Projeto, ART e aprovação','R$']};
+let ext=new THREE.Group();scene.add(ext);
+const matWood=new THREE.MeshLambertMaterial({color:0x7a5232}),matStep=new THREE.MeshLambertMaterial({color:0x3a3f3c});
+function box(x0,x1,y0,y1,h0,h1,mat){const m=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,h1-h0,y1-y0),mat);m.position.copy(W3((x0+x1)/2,(h0+h1)/2,(y0+y1)/2));m.castShadow=m.receiveShadow=true;ext.add(m);return m}
+function car(cx,cy,col){const mt=new THREE.MeshLambertMaterial({color:col});box(cx-.9,cx+.9,cy-2.15,cy+2.15,.18,.85,mt);box(cx-.8,cx+.8,cy-1.0,cy+1.25,.85,1.4,matGlass)}
+function buildExt(){
+  scene.remove(ext);ext.traverse(o=>{if(o.geometry)o.geometry.dispose()});ext=new THREE.Group();scene.add(ext);
+  const mWater=new THREE.MeshLambertMaterial({color:0x3fb3d6}),mStone=new THREE.MeshLambertMaterial({color:0xe4ded2});
+  const edOn=E.edic&&E.pool!=='fundos'&&E.pool!=='fundos2';
+  if(E.lav){const yb=HY+8.4,xl=HX+6.45,xr=HX+9.2,t=.15;
+    if(!edOn){box(xl,xl+.1,yb-t,yb,.15,3.15,matWall);box(xl+.9,xr,yb-t,yb,.15,3.15,matWall);box(xl+.1,xl+.9,yb-t,yb,2.25,3.15,matWall);
+      box(xl+.12,xl+.88,yb-.02,yb+.02,.15,2.25,matWood);
+      box(xl,xl+t,HY+7.05,yb,.15,3.15,matWall);box(xl-.02,xl,HY+7.4,HY+8.0,1.6,2.2,matGlass);}
+    else{box(xl,xr,yb-t,yb,.15,3.15,matWall);
+      box(xl,xl+t,HY+7.05,HY+7.25,.15,3.15,matWall);box(xl,xl+t,HY+8.05,yb,.15,3.15,matWall);box(xl,xl+t,HY+7.25,HY+8.05,2.25,3.15,matWall);
+      box(xl-.02,xl+.02,HY+7.27,HY+8.03,.15,2.25,matWood);}}
+  if(edOn){const ex0=16.61,ex1=19.36,ey0=11.4,ey1=14.0,t=.15,hw=2.9,ho=2.55;
+    box(ex0,ex1,ey0,ey1,0,.15,matBase);
+    box(ex0,ex0+t,ey0,ey1,.15,hw,matWall);box(ex1-t,ex1,ey0,ey1,.15,hw,matWall);box(ex0,ex1,ey1-t,ey1,.15,ho,matWall);
+    box(ex0-.03,ex0,ey0+.9,ey0+1.75,.15,2.25,matWood);box(ex0-.03,ex0,ey0+1.95,ey0+2.45,1.0,2.2,matGlass);
+    box(ex0+.6,ex0+2.0,ey1,ey1+.03,1.0,2.2,matGlass);box(ex0-.03,ex0,ey0,ey1,.15,.45,matGranite);
+    const ang=Math.atan((hw-ho)/(ey1-ey0)),rf=new THREE.Mesh(new THREE.BoxGeometry(ex1-ex0+.5,.08,(ey1-ey0+.6)/Math.cos(ang)),matRoof);
+    rf.position.copy(W3((ex0+ex1)/2-.2,(hw+ho)/2+.12,(ey0+ey1)/2+.3));rf.rotation.x=-ang;rf.castShadow=true;ext.add(rf);
+    label('Escritório (~5,5 m²)',(ex0+ex1)/2,4.0,(ey0+ey1)/2,.8,ext);}
+  if(E.pool==='eco'){
+    box(.6,4.6,.8,3.4,0,.12,mStone);box(.85,4.35,1.05,3.15,.12,.15,matWhite);box(1.0,4.2,1.2,3.0,.15,.155,mWater);
+    label('Piscina 3,2 × 1,8 m',2.6,1.4,2.1,.8,ext);
+    const mD=new THREE.MeshLambertMaterial({color:0x1f1f1f}),mG=new THREE.MeshLambertMaterial({color:0x3d3c3a}),mI=new THREE.MeshLambertMaterial({color:0xb9bcbf});
+    let kx=5.5,ky=2.4;
+    if(!E.car2){box(4.9,6.4,3.75,4.35,0,.86,matWhite);box(4.85,6.45,3.7,4.4,.86,.9,mG);label('Bafo + bancada',5.6,2.3,3.4,.7,ext);}
+    else{kx=2.9;ky=3.85;
+      box(3.4,4.6,3.55,4.15,.82,.86,mI);[[3.45,3.6],[4.55,3.6],[3.45,4.1],[4.55,4.1]].forEach(([x,y])=>box(x-.02,x+.02,y-.02,y+.02,0,.82,mI));
+      label('Bafo + bancada móvel',3.6,2.2,3.9,.7,ext);
+      // 2º carro ao lado + ampliação da cobertura
+      box(4.6,7.2,.05,6.4,0,.03,new THREE.MeshLambertMaterial({color:0xa9a8a2}));
+      car(5.92,3.2,0x30465e);
+      const xa=4.6,xb=7.2,ang=Math.atan((2.95-2.62)/(HX-7.2)),hb=2.62,hm=hb-(xb-xa)/2*Math.tan(ang);
+      const rf=new THREE.Mesh(new THREE.BoxGeometry((xb-xa+.05)/Math.cos(ang),.05,3.6),new THREE.MeshLambertMaterial({color:0xd8d8d4}));
+      rf.position.copy(W3((xa+xb)/2,hm+.05,4.8));rf.rotation.z=ang;rf.castShadow=true;ext.add(rf);
+      box(xa-.15,xa,2.95,6.65,hb-(xb-xa)*Math.tan(ang)-.1,hb-(xb-xa)*Math.tan(ang)+.04,matWhite);
+      [[xa+.05,3.05],[xa+.05,6.5]].forEach(([x,y])=>box(x-.05,x+.05,y-.05,y+.05,0,2.3,matStep));
+      label('2º carro (futuro)',5.9,3.4,2.0,.75,ext);}
+    const k=new THREE.Mesh(new THREE.SphereGeometry(.3,24,16),mD);k.position.copy(W3(kx,.82,ky));k.castShadow=true;ext.add(k);
+    [[-.18,-.12],[.18,-.12],[0,.2]].forEach(([dx,dy])=>box(kx+dx-.015,kx+dx+.015,ky+dy-.015,ky+dy+.015,0,.65,mD));
+    const hedge=new THREE.MeshLambertMaterial({color:0x3f6b35});box(.1,6.9,.05,.5,0,1.6,hedge);box(.05,.5,.5,4.6,0,1.6,hedge);}
+  if(E.pool==='frente'){box(14.9,19.3,.25,2.75,0,.14,mStone);box(15.2,19.0,.5,2.5,.14,.17,matWhite);
+    box(15.35,18.95,.65,2.35,.17,.175,mWater);
+    label('Piscina 3,6 × 1,8 m',17.1,1.4,1.5,.8,ext);}
+  if(E.pool==='fundos'||E.pool==='fundos2'){const b2=E.pool==='fundos2',t=Math.atan2(14.4-CY,15.5-CX);let[cx,cy]=arcPt(t,b2?1.95:1.85);
+    if(b2){cx+=-Math.sin(t)*.3;cy+=Math.cos(t)*.3}
+    const L=b2?3.6:3.0,Wd=b2?1.8:1.6;
+    const g=new THREE.Group();g.position.copy(W3(cx,0,cy));g.rotation.y=Math.atan2(Math.cos(t),-Math.sin(t));ext.add(g);
+    const add=(l,w,h0,h1,mat)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(l,h1-h0,w),mat);m.position.y=(h0+h1)/2;m.receiveShadow=true;g.add(m)};
+    add(L+.6,Wd+.6,0,.09,mStone);add(L+.3,Wd+.3,.09,.12,matWhite);add(L,Wd,.12,.125,mWater);
+    label(b2?'Piscina 3,6 × 1,8 m':'Piscina 3,0 × 1,6 m',cx,1.5,cy,.8,ext);
+    if(b2){const mD=new THREE.MeshLambertMaterial({color:0x1f1f1f}),mG=new THREE.MeshLambertMaterial({color:0x3d3c3a});
+      box(18.85,19.43,11.55,12.9,0,.86,matWhite);box(18.8,19.43,11.55,12.9,.86,.9,mG);
+      const kx=18.3,ky=12.25,k=new THREE.Mesh(new THREE.SphereGeometry(.3,24,16),mD);k.position.copy(W3(kx,.82,ky));k.castShadow=true;ext.add(k);
+      [[-.18,-.12],[.18,-.12],[0,.2]].forEach(([dx,dy])=>box(kx+dx-.015,kx+dx+.015,ky+dy-.015,ky+dy+.015,0,.65,mD));
+      label('Bafo + bancada',18.6,2.2,12.2,.7,ext);}}
+  const lat=E.pool==='lateral';
+  if(lat){const s=E.q?.3:0,g0=5.9-s,g1=9.2-s,y0=.8,y1=5.8,t=.15,mL=new THREE.MeshLambertMaterial({color:0xece7dd}),mD=new THREE.MeshLambertMaterial({color:0x2b2b2b}),mG=new THREE.MeshLambertMaterial({color:0x3d3c3a});
+    // garagem 1 carro no estilo da casa
+    box(g0,g1,y0,y1,0,.05,matBase);
+    box(g0,g0+t,y0,y1,0,2.9,matWall);box(g1-t,g1,y0,y1,0,2.9,matWall);box(g0,g1,y1-t,y1,0,2.9,matWall);
+    box(g0,g1,y0,y0+.3,2.45,2.9,matOrange);box(g0,g1,y0-.02,y0+.3,2.9,3.0,matWhite);
+    box(g0-.03,g0,y0,y1,0,.35,matGranite);car((g0+g1)/2,3.4,0xf2f2f2);
+    if(!E.q){ext.add(gable(g0,y0,g1,y1,true,3.0,matRoof,.4));label('Garagem 1 carro',(g0+g1)/2,4.6,(y0+y1)/2,.8,ext);}
+    else{const h0=3.08,h1=h0+2.8;
+      box(g0-.1,g1+.1,y0-.1,y1+.1,2.9,h0,matWhite);
+      box(g0,g0+t,y0,y1,h0,h1,matWall);box(g1-t,g1,y0,y1,h0,h1,matWall);box(g0,g1,y1-t,y1,h0,h1,matWall);box(g0,g1,y0,y0+t,h0,h1,matWall);
+      box(g0,g1,y0-.03,y0,h0,h1,matOrange);for(let h=h0+.3;h<h1;h+=.3)box(g0,g1,y0-.045,y0-.03,h,h+.02,matRoof);
+      box(g0,g1,y0-.06,y0,h1-.12,h1,matWhite);
+      box(g0+.5,g1-.5,y0-.07,y0-.05,h0+.2,h0+2.3,matGlass);box(g0-.02,g0,y0+1.4,y0+3.0,h0+.9,h0+2.2,matGlass);
+      box(g1,g1+.02,y1-.95,y1-.2,h0,h0+2.1,matWood);
+      ext.add(gable(g0,y0,g1,y1,true,h1,matRoof,.4));
+      const n=17,yA=.9,yB=5.0,xs0=g1+.12,xs1=g1+.97;
+      for(let i=1;i<n;i++){const y=yA+(yB-yA)*(i-1)/(n-1),h=h0*i/n;box(xs0,xs1,y,y+.26,h-.05,h,matStep)}
+      box(xs0,xs1,yB,y1,h0-.06,h0,matStep);box(xs1-.03,xs1,yA+1,y1,h0,h0+1,matStep);
+      [[xs1-.05,yB+.05],[xs1-.05,y1-.05],[xs1-.05,2.8]].forEach(([x,y])=>box(x-.04,x+.04,y-.04,y+.04,0,h0,matStep));
+      label('Quarto em cima (~14 m²)',(g0+g1)/2,7.4,(y0+y1)/2,.85,ext);}
+    // churrasqueira + bancada na parede lateral da garagem, de frente para a piscina
+    const xb=g0-.62;
+    box(xb,g0,1.6,3.5,0,.86,matWhite);box(xb-.05,g0,1.6,3.5,.86,.9,mG);
+    box(xb,g0,3.6,4.5,0,.88,mL);box(xb-.02,xb,3.7,4.4,.92,1.32,mD);box(xb,g0,3.6,4.5,.88,.92,mL);box(xb+.05,g0,3.6,4.5,1.32,1.9,mL);
+    const hc=E.q?7.0:3.9;box(g0-.42,g0-.04,3.88,4.22,1.9,hc,mL);box(g0-.47,g0+.01,3.83,4.27,hc,hc+.07,mD);
+    // varandinha coberta
+    const xa=4.35-s,hw=2.85,ho=2.6,ang=Math.atan((hw-ho)/(g0-xa));
+    const rf=new THREE.Mesh(new THREE.BoxGeometry((g0-xa+.1)/Math.cos(ang),.05,3.4),new THREE.MeshLambertMaterial({color:0xd8d8d4}));
+    rf.position.copy(W3((xa+g0)/2,(hw+ho)/2+.05,3.2));rf.rotation.z=ang;rf.castShadow=true;ext.add(rf);
+    box(xa-.12,xa,1.5,4.9,ho-.1,ho+.04,matWhite);[[xa+.05,1.55],[xa+.05,4.85]].forEach(([x,y])=>box(x-.05,x+.05,y-.05,y+.05,0,ho,matStep));
+    label('Churrasqueira',xb,3.4,4.0,.7,ext);
+    // piscina com deck de pedra
+    box(.4,4.0-s,.55,3.25,0,.12,mStone);box(.65,3.75-s,.8,3.0,.12,.15,matWhite);box(.8,3.6-s,.95,2.85,.15,.155,mWater);
+    label(E.q?'Piscina 2,5 × 1,9 m':'Piscina 2,8 × 1,9 m',2.2-s/2,1.4,1.9,.8,ext);
+    // cerca viva na frente para privacidade
+    box(.1,5.75-s,.05,.5,0,1.6,new THREE.MeshLambertMaterial({color:0x3f6b35}));box(.05,.5,.5,4.6,0,1.6,new THREE.MeshLambertMaterial({color:0x3f6b35}));}
+  if(E.chur&&!lat&&E.pool!=='fundos2'&&E.pool!=='eco'&&!edOn){const xm=19.43,mL=new THREE.MeshLambertMaterial({color:0xece7dd}),mD=new THREE.MeshLambertMaterial({color:0x2b2b2b}),mG=new THREE.MeshLambertMaterial({color:0x3d3c3a});
+    const pb=E.pool==='fundos',xc=pb?18.15:16.6;
+    box(xc,19.36,11.4,14.3,0,.06,new THREE.MeshLambertMaterial({color:0xcfc9bd}));
+    // churrasqueira pré-moldada no canto, boca virada para a mesa
+    box(18.8,xm,13.4,14.3,0,.88,mL);box(18.78,18.8,13.5,14.2,.92,1.32,mD);box(18.8,xm,13.4,14.3,.88,.92,mL);box(18.85,xm,13.4,14.3,1.32,1.9,mL);
+    box(19.0,19.38,13.68,14.02,1.9,3.75,mL);box(18.95,19.43,13.63,14.07,3.75,3.82,mD);
+    // bancada encostada no muro do Lote 02
+    box(18.85,xm,11.55,13.35,0,.86,matWhite);box(18.8,xm,11.55,13.35,.86,.9,mG);
+    // mesa redonda para 4
+    if(!pb){const tx=17.7,ty=12.85,tb=new THREE.Mesh(new THREE.CylinderGeometry(.45,.45,.04,32),matWood);tb.position.copy(W3(tx,.76,ty));tb.castShadow=true;ext.add(tb);
+    box(tx-.04,tx+.04,ty-.04,ty+.04,0,.74,mD);
+    [[0,-.72],[0,.72],[-.72,0],[.72,0]].forEach(([dx,dy])=>{const cx=tx+dx,cy=ty+dy;box(cx-.21,cx+.21,cy-.21,cy+.21,.42,.46,matWood);
+      const bx=dx?(dx>0?[cx+.17,cx+.21,cy-.21,cy+.21]:[cx-.21,cx-.17,cy-.21,cy+.21]):(dy>0?[cx-.21,cx+.21,cy+.17,cy+.21]:[cx-.21,cx+.21,cy-.21,cy-.17]);
+      box(bx[0],bx[1],bx[2],bx[3],.46,.9,matWood);box(cx-.02,cx+.02,cy-.02,cy+.02,0,.42,mD)});}
+    // cobertura presa na parede de trás da lavação
+    const ya=11.4,yb=14.35,hw=2.9,ho=2.6,ang=Math.atan((hw-ho)/(yb-ya));
+    const rf=new THREE.Mesh(new THREE.BoxGeometry(19.41-xc,.05,(yb-ya+.15)/Math.cos(ang)),new THREE.MeshLambertMaterial({color:0xd8d8d4}));
+    rf.position.copy(W3((xc+19.36)/2,(hw+ho)/2+.05,(ya+yb)/2+.07));rf.rotation.x=-ang;rf.castShadow=true;ext.add(rf);
+    box(xc-.05,19.36,yb,yb+.15,ho-.1,ho+.04,matWhite);
+    [[xc+.02,yb-.05],[19.3,yb-.05]].forEach(([x,y])=>box(x-.05,x+.05,y-.05,y+.05,0,ho,matStep));
+    label('Churrasco',18,3.6,12.9,.8,ext);}
+  if(E.cp&&!E.gar&&!lat){const xa=7.2,xw=HX,ya=3.0,yb=7.6,hw=2.95,ho=2.62,ang=Math.atan((hw-ho)/(xw-xa));
+    const roof=new THREE.Mesh(new THREE.BoxGeometry((xw-xa+.2)/Math.cos(ang),.05,yb-ya+.2),new THREE.MeshLambertMaterial({color:0xd8d8d4}));
+    roof.position.copy(W3((xa+xw)/2-.1,(hw+ho)/2+.05,(ya+yb)/2));roof.rotation.z=ang;roof.castShadow=true;ext.add(roof);
+    const pc=new THREE.Mesh(new THREE.BoxGeometry(1.0,.055,yb-ya+.2),new THREE.MeshLambertMaterial({color:0xcfe3ee,transparent:true,opacity:.6}));
+    pc.position.copy(W3(xw-.5,hw+.03-.5*Math.tan(ang),(ya+yb)/2));pc.rotation.z=ang;ext.add(pc);
+    box(xw-.12,xw,ya-.1,yb+.1,hw-.15,hw,matStep);box(xa-.15,xa,ya-.1,yb+.1,ho-.1,ho+.04,matWhite);
+    [[xa+.05,ya],[xa+.05,(ya+yb)/2],[xa+.05,yb],[xw-.1,ya]].forEach(([x,y])=>box(x-.05,x+.05,y-.05,y+.05,0,(x<9?ho:hw)-.02,matStep));
+    car((xa+xw)/2,5.1,0x8a1f24);
+    label('Cobertura do carro',(xa+xw)/2,3.9,(ya+yb)/2,.8,ext);}
+  if(E.gar&&!lat){const{x0,x1,y0,y1}=E,t=.15,hT=2.9,hS=3.08;
+    box(x0,x1,y0,y1,0,.05,matBase);
+    box(x0,x0+t,y0,y1,0,hT,matWall);box(x1-t,x1,y0,y1,0,hT,matWall);box(x0,x1,y1-t,y1,0,hT,matWall);box(x0,x1,y0,y0+t,2.45,hT,matWall);
+    box(x0-.1,x1+.1,y0-.1,y1+.1,hT,hS,matWhite);
+    box(x0-.03,x0,y0,y1,0,.35,matGranite);box(x1,x1+.03,y0,y1,0,.35,matGranite);
+    car(x0+1.45,2.75,0x8a1f24);car(x1-1.45,2.75,0x5d6670);
+    box(x0+t,x0+t+.2,3.0,4.6,.4,2.3,matStep);
+    label(E.esc?'Garagem + escritório':'Garagem 2 carros',(x0+x1)/2,E.esc?7.6:4.2,(y0+y1)/2,1,ext);
+    if(E.esc){const h0=hS,h1=hS+2.8;
+      box(x0,x0+t,y0,y1,h0,h1,matWall);box(x1-t,x1,y0,y1,h0,h1,matWall);box(x0,x1,y1-t,y1,h0,h1,matWall);box(x0,x1,y0,y0+t,h0,h1,matWall);
+      box(x0,x1,y0-.03,y0,h0,h1,matOrange);for(let h=h0+.3;h<h1;h+=.3)box(x0,x1,y0-.045,y0-.03,h,h+.02,matRoof);
+      box(x0,x1,y0-.06,y0,h0-.1,h0,matWhite);box(x0,x1,y0-.06,y0,h1-.12,h1,matWhite);
+      box(x0+1.2,x0+3.6,y0-.07,y0-.05,h0+.9,h0+2.2,matGlass);box(x1,x1+.02,y0+1.2,y0+3.2,h0+.9,h0+2.2,matGlass);box(x0+4.4,x0+5,y1,y1+.02,h0+1.6,h0+2.2,matGlass);
+      box(x1,x1+.02,y1-1.0,y1-.25,h0,h0+2.1,matWood);
+      ext.add(gable(x0,y0,x1,y1,true,h1,matRoof,.4));
+      const n=17,yA=.4,yB=4.2,xs0=x1+.1,xs1=x1+.95;
+      for(let i=1;i<n;i++){const y=yA+(yB-yA)*(i-1)/(n-1),h=h0*i/n;box(xs0,xs1,y,y+.26,h-.05,h,matStep)}
+      box(xs0,xs1,yB,y1,h0-.06,h0,matStep);
+      [[xs1-.05,yB+.05],[xs1-.05,y1-.05],[xs1-.05,2.4]].forEach(([x,y])=>box(x-.04,x+.04,y-.04,y+.04,0,h0,matStep));
+      box(xs0,xs0+.03,yA+1,y1,h0,h0+1.0,matStep);
+      if(E.sotao){const xe=HX-.45;
+        box(xs1,xe+.05,yB+.1,y1-.05,h0-.06,h0,matStep);
+        box(xs1,xe,yB+.1,yB+.13,h0,h0+1.0,matStep);box(xs1,xe,y1-.08,y1-.05,h0,h0+1.0,matStep);
+        box(xe,xe+.03,yB+.2,y1-.15,h0+.05,h0+.8,matWood);
+        label('Acesso ao sótão',xe,h0+1.6,(yB+y1)/2,.7,ext);}}
+  }
+}
+function calcExt(){const it=[];const A=(E.x1-E.x0)*(E.y1-E.y0);
+  const edOn=E.edic&&E.pool!=='fundos'&&E.pool!=='fundos2';
+  if(E.pool==='eco'){
+    if(E.cp)it.push(['Cobertura do carro','~3 × 4,6 m junto à suíte',EP.cp]);
+    if(E.lav)it.push(['Fechar lavação',edOn?'porta para o quintal na lateral':'~10 m² de parede + porta 80 cm',EP.lav]);
+    if(edOn){it.push(['Escritório nos fundos','~7 m² construídos (~5,5 m² úteis), fundação reforçada no lado do barranco',7*3500]);}
+    it.push(['Piscina de fibra','~3,2 × 1,8 m na lateral esquerda, sem garagem',EP.pool*.95]);it.push(['Capa de proteção','crianças e gato',EP.capa]);
+    it.push(['Churrasqueira a bafo','tipo americana, móvel',2500]);it.push(['Bancada de preparo',E.car2?'móvel, inox 1,2 m atrás da piscina':'1,6 m ao lado da piscina',E.car2?1800:EP.banc*.8]);
+    it.push(['Privacidade na frente','cerca viva',EP.priv]);
+    if(E.car2){it.push(['2ª vaga: piso (futuro)','~2,5 × 6 m de bloquete ou porcelanato externo',2000]);it.push(['2ª vaga: ampliar cobertura (futuro)','+1 módulo de ~2,6 × 3,6 m para a esquerda',7500]);}
+    it.push(['Projeto, ART e aprovação','escritório + piscina',EP.proj*.5]);
+    return{it,total:it.reduce((s,r)=>s+r[2],0)}}
+  if(edOn)it.push(['Escritório nos fundos','~7 m² construídos (~5,5 m² úteis)',7*3500]);
+  if(E.pool==='lateral'){const Ag=3.3*5.0;
+    it.push(['Garagem 1 carro',fmt(Ag,1)+' m², '+(E.q?'com laje e estrutura para o 2º andar':'térrea, no estilo da casa'),Ag*EP.g1+(E.q?15000:0)]);
+    if(E.q){it.push(['Quarto em cima','~14 m² úteis, sem banheiro (usa os da casa)',Ag*EP.esc*.9]);it.push(['Escada externa','metálica, lado direito da garagem',EP.escada]);}
+    it.push(['Piscina de fibra',(E.q?'~2,5':'~2,8')+' × 1,9 m na lateral, escavação, filtro, borda e deck',EP.pool]);it.push(['Capa de proteção','crianças e gato',EP.capa]);
+    it.push(['Churrasqueira pré-moldada','na parede lateral da garagem',EP.churq]);it.push(['Bancada de preparo','1,9 m, alvenaria + granito',EP.banc]);
+    it.push(['Varandinha coberta','~1,5 × 3,4 m sobre churrasqueira e bancada',EP.var]);it.push(['Privacidade na frente','cerca viva ou muro + vegetação',EP.priv]);
+    if(E.lav)it.push(['Fechar lavação','~10 m² de parede + porta 80 cm',EP.lav]);
+    it.push(['Projeto, ART e aprovação','garagem + piscina',EP.proj*.7]);
+    return{it,total:it.reduce((s,r)=>s+r[2],0)}}
+  if(E.pool==='fundos2'){
+    it.push(['Piscina de fibra','3,6 × 1,8 m nos fundos; só com aterro + arrimo (custo no quadro do aterro)',EP.pool]);it.push(['Capa de proteção','crianças e gato',EP.capa]);
+    it.push(['Churrasqueira a bafo','tipo americana, móvel (não precisa de obra)',2500]);it.push(['Bancada de preparo','1,35 m no muro do Lote 02, alvenaria + granito',EP.banc*.8]);
+    if(E.cp&&!E.gar)it.push(['Cobertura do carro','~3 × 4,6 m junto à suíte',EP.cp]);
+    if(E.lav)it.push(['Fechar lavação','~10 m² de parede + porta de correr',EP.lav]);
+    return{it,total:it.reduce((s,r)=>s+r[2],0)}}
+  if(E.cp&&!E.gar)it.push(['Cobertura do carro','~3 × 4,6 m junto à suíte, termoacústica + faixa de policarbonato, calha e rufo',EP.cp]);
+  if(E.pool!=='none'){it.push(['Piscina de fibra',E.pool==='fundos'?'3,0 × 1,6 m nos fundos; só com aterro + arrimo (custo no quadro do aterro)':'3,6 × 1,8 m na frente, escavação, filtro, borda e deck',E.pool==='fundos'?EP.pool*.9:EP.pool]);it.push(['Capa de proteção','crianças e gato',EP.capa]);}
+  if(E.chur){const pb=E.pool==='fundos';it.push(['Churrasqueira pré-moldada','no canto do muro do Lote 02, com chaminé',EP.churq]);it.push(['Bancada de preparo','1,7 m, alvenaria + granito',EP.banc]);it.push(['Cobertura do churrasco',pb?'~1,2 × 3 m, só sobre bancada e churrasqueira':'~2,8 × 3 m, presa na parede da lavação',pb?EP.chcob*.45:EP.chcob]);}
+  if(E.lav)it.push(['Fechar lavação','~10 m² de parede + porta 80 cm',EP.lav]);
+  if(E.gar){it.push(['Garagem 2 carros',fmt(A,1)+' m², com laje',A*EP.gar]);it.push(['Portão automático','5 m',EP.portao]);it.push(['Canto de treino','rack dobrável + piso',EP.treino]);}
+  if(E.gar&&E.esc){it.push(['Escritório + lavabo',fmt(A,1)+' m²',A*EP.esc]);it.push(['Escada externa','metálica, lado direito',EP.escada]);
+    if(E.sotao)it.push(['Passagem para o sótão','passarela + porta baixa + rufos',EP.sotao]);}
+  if(E.gar)it.push(['Projeto, ART e aprovação','arquiteto + estrutural',EP.proj]);
+  return{it,total:it.reduce((s,r)=>s+r[2],0)}}
+
+/* divisa, início do barranco e fechamento */
+let dyn=new THREE.Group();scene.add(dyn);
+const matConc=new THREE.MeshLambertMaterial({color:0x9c9b94}),matMuro=new THREE.MeshLambertMaterial({color:0xddd7cc}),
+  matCap=new THREE.MeshLambertMaterial({color:0xb8b2a6}),matIron=new THREE.MeshLambertMaterial({color:0x2a2f2c}),
+  matNet=new THREE.MeshLambertMaterial({color:0x1d2320,transparent:true,opacity:.45,side:THREE.DoubleSide,depthWrite:false});
+function seg(t0,t1,s,len,hgt,thk,yc,mat){const[a0,b0]=arcPt(t0,s),[a1,b1]=arcPt(t1,s);
+  const m=new THREE.Mesh(new THREE.BoxGeometry(len,hgt,thk),mat);m.position.copy(W3((a0+a1)/2,yc,(b0+b1)/2));m.rotation.y=Math.atan2(b1-b0,a1-a0);
+  m.castShadow=m.receiveShadow=true;dyn.add(m)}
+function arcLine(s,hFn,dashed){const pts=[];for(let i=0;i<=120;i++){const t=aA+(aB-aA)*i/120,[x,y]=arcPt(t,s);pts.push(W3(x,hFn(x,y)+.04,y))}
+  const g=new THREE.BufferGeometry().setFromPoints(pts);const col=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#c4262c';
+  const m=dashed?new THREE.LineDashedMaterial({color:col,dashSize:.35,gapSize:.25}):new THREE.LineBasicMaterial({color:col});
+  const l=new THREE.Line(g,m);if(dashed)l.computeLineDistances();dyn.add(l)}
+function buildDyn(){
+  scene.remove(dyn);dyn.traverse(o=>{if(o.geometry)o.geometry.dispose()});dyn=new THREE.Group();scene.add(dyn);
+  const Larc=R*(aB-aA),N=Math.ceil(Larc/.5),dt=(aB-aA)/N,segLen=Larc/N+.02;
+  const base=S.aterro?.12:-S.H,sF=.12;
+  if(S.aterro)for(let i=0;i<N;i++)seg(aA+i*dt,aA+(i+1)*dt,.11,segLen,S.H+.42,.22,(-S.H-.3+.12)/2,matConc);
+  if(S.fence==='muro')for(let i=0;i<N;i++){seg(aA+i*dt,aA+(i+1)*dt,sF,segLen,1.8,.15,base+.9,matMuro);seg(aA+i*dt,aA+(i+1)*dt,sF,segLen,.05,.2,base+1.82,matCap)}
+  if(S.fence==='grade'){
+    for(let i=0;i<N;i++){seg(aA+i*dt,aA+(i+1)*dt,sF,segLen,.04,.03,base+.12,matIron);seg(aA+i*dt,aA+(i+1)*dt,sF,segLen,.04,.03,base+1.48,matIron)}
+    const np=Math.ceil(Larc/2);for(let i=0;i<=np;i++){const t=aA+(aB-aA)*i/np,[x,y]=arcPt(t,sF);const m=new THREE.Mesh(new THREE.BoxGeometry(.06,1.62,.06),matIron);m.position.copy(W3(x,base+.81,y));m.castShadow=true;dyn.add(m)}
+    const nb=Math.floor(Larc/.1),im=new THREE.InstancedMesh(new THREE.BoxGeometry(.016,1.4,.016),matIron,nb),M=new THREE.Matrix4();
+    for(let i=0;i<nb;i++){const t=aA+(aB-aA)*(i+.5)/nb,[x,y]=arcPt(t,sF);M.makeTranslation(x,base+.8,-y);im.setMatrixAt(i,M)}
+    im.castShadow=true;dyn.add(im)}
+  if(S.cat&&S.fence!=='none'){
+    const top=S.fence==='muro'?base+1.85:base+1.5,r=.5,NA=10,np=Math.ceil(Larc/2);
+    const LA=.6,c45=Math.SQRT1_2;
+    const arm=t=>{const a=[];for(let k=0;k<=NA;k++){const q=k/NA*LA,[x,y]=arcPt(t,sF+q*c45);a.push(W3(x,top+q*c45,y))}return a};
+    for(let i=0;i<=np;i++){const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(arm(aA+(aB-aA)*i/np)),12,.02,6,false),matIron);m.castShadow=true;dyn.add(m)}
+    const NT=Math.ceil(Larc/.5),v=[],ix=[];
+    for(let i=0;i<=NT;i++)arm(aA+(aB-aA)*i/NT).forEach(p=>v.push(p.x,p.y,p.z));
+    for(let i=0;i<NT;i++)for(let k=0;k<NA;k++){const a=i*(NA+1)+k,b=a+1,c=a+NA+1,d=c+1;ix.push(a,b,c,b,d,c)}
+    if(S.fence==='grade'){const o=v.length/3;for(let i=0;i<=NT;i++){const[x,y]=arcPt(aA+(aB-aA)*i/NT,sF+.02);v.push(x,base+.05,-y,x,top,-y)}
+      for(let i=0;i<NT;i++){const a=o+i*2;ix.push(a,a+1,a+2,a+1,a+3,a+2)}}
+    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(v,3));g.setIndex(ix);g.computeVertexNormals();
+    dyn.add(new THREE.Mesh(g,matNet));
+    const tip=[];for(let i=0;i<=120;i++){const[x,y]=arcPt(aA+(aB-aA)*i/120,sF+LA*c45);tip.push(W3(x,top+LA*c45,y))}
+    dyn.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(tip),120,.012,5,false),matIron));
+  }
+  arcLine(-.02,(x,y)=>S.aterro?.12:-S.H,false);
+  arcLine(S.W,(x,y)=>0,true);
+}
+
+/* câmera */
+const VIEWS={aerea:{p:[10,50,-6],t:[10,0,-10.5]},'3d':{p:[-10,19,-29],t:[11,0,-9]},quintal:{p:[15.6,1.65,-12.4],t:[4,.6,-8.4]},detalhe:{p:[-2.2,2.3,-2.2],t:[8,1.1,-9.2]},frente:{p:[16,8,10],t:[7,2,-3]},foto:{p:[19.5,1.6,5.5],t:[9.0,2.3,-3.2]},churrasco:{p:[14.6,1.9,-12.3],t:[19.2,1.1,-13.0]},piscinaF:{p:[13.5,7.5,7.5],t:[17,0,-2]},escritorio:{p:[13.0,4.2,-16.8],t:[18,1.2,-12.4]},piscinaL:{p:[-1.5,4.8,-8.2],t:[4.2,.4,-1.6]},piscina:{p:[11.5,5.5,-18.5],t:[17,0,-12.6]}};
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;let tween=null;
+function setView(v,instant){S.view=v;document.querySelectorAll('.views button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===v));
+  const V=VIEWS[v==='piscina'&&E.pool==='frente'?'piscinaF':v==='piscina'&&(E.pool==='lateral'||E.pool==='eco')?'piscinaL':v],p1=new THREE.Vector3(...V.p),t1=new THREE.Vector3(...V.t);
+  if(instant||reduce){camera.position.copy(p1);controls.target.copy(t1);controls.update();return}
+  tween={p0:camera.position.clone(),t0:controls.target.clone(),p1,t1,s:performance.now()}}
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+new ResizeObserver(resize).observe(stage);resize();
+(function loop(now){requestAnimationFrame(loop);
+  if(tween){let k=Math.min(1,(now-tween.s)/700);k=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+    camera.position.lerpVectors(tween.p0,tween.p1,k);controls.target.lerpVectors(tween.t0,tween.t1,k);if(k>=1)tween=null}
+  controls.update();renderer.render(scene,camera)})(performance.now());
+
+/* ---------- custos ---------- */
+function calc(aterro,fence,m){const it=[];const L=L_CURVA;
+  if(aterro){const veg=Math.min(m.V,m.A*.1),sai=Math.max(0,m.V-veg);
+    it.push(['Terra/saibro',fmt(sai*1.25,1)+' m³ solto',sai*1.25*P.terra]);
+    it.push(['Espalhar e compactar',fmt(m.V,1)+' m³',m.V*P.comp]);
+    it.push(['Terra vegetal (10 cm)',fmt(veg*1.25,1)+' m³',veg*1.25*P.veg]);
+    it.push(['Grama em placas',fmt(m.A,0)+' m²',m.A*P.grama]);
+    it.push(['Muro de arrimo',fmt(L,1)+' m × '+fmt(S.H+.4,2)+' m',L*(S.H+.4)*P.arrimo]);
+    it.push(['Dreno do arrimo',fmt(L,1)+' m',L*P.dreno]);}
+  if(fence==='grade')it.push(['Gradil 1,50 m',fmt(L,1)+' m',L*P.grade]);
+  if(fence==='muro')it.push(['Muro 1,80 m',fmt(L*1.8,1)+' m²',L*1.8*P.muro]);
+  if(S.cat&&fence!=='none')it.push(['Topo inclinado 45° + tela',fmt(L,1)+' m',L*P.gato]);
+  const sub=it.reduce((s,r)=>s+r[2],0);if(sub>0)it.push(['Imprevistos',P.imp+'%',sub*P.imp/100]);
+  return{it,total:sub*(1+P.imp/100)}}
+const NAMES={none:'sem fechamento',grade:'grade',muro:'muro'};
+const SCEN=[[false,'grade'],[false,'muro'],[true,'none'],[true,'grade'],[true,'muro']];
+
+/* ---------- UI ---------- */
+const $=id=>document.getElementById(id);
+const pr=$('prices');Object.keys(P).forEach(k=>{const l=document.createElement('label');l.htmlFor='p-'+k;l.textContent=PL[k][0]+' ('+PL[k][1]+')';
+  const i=document.createElement('input');i.type='number';i.id='p-'+k;i.min=0;i.step=1;i.value=P[k];i.addEventListener('input',()=>{P[k]=Math.max(0,+i.value||0);renderUI()});pr.append(l,i)});
+const epr=$('eprices');Object.keys(EP).forEach(k=>{const l=document.createElement('label');l.htmlFor='e-'+k;l.textContent=EPL[k][0]+' ('+EPL[k][1]+')';
+  const i=document.createElement('input');i.type='number';i.id='e-'+k;i.min=0;i.step=50;i.value=EP[k];i.addEventListener('input',()=>{EP[k]=Math.max(0,+i.value||0);renderUI()});epr.append(l,i)});
+function renderUI(){
+  const ce=calcExt();
+  $('t-ext').innerHTML=ce.it.length?'<tr><th>Item</th><th class="n">Valor</th></tr>'+ce.it.map(r=>`<tr><td>${r[0]}<small>${r[1]}</small></td><td class="n">${brl(r[2])}</td></tr>`).join('')
+    +`<tr class="total"><td>Total estimado<small>faixa realista ${brl(ce.total*.8)} a ${brl(ce.total*1.3)}</small></td><td class="n">${brl(ce.total)}</td></tr>`:'<tr><td>Nenhuma ampliação marcada.</td></tr>';
+  $('c-esc').disabled=!E.gar;$('c-cp').disabled=E.gar;
+  document.querySelectorAll('[data-pool]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.pool===E.pool));
+  $('c-q').disabled=E.pool!=='lateral';$('c-edic').disabled=E.pool==='fundos'||E.pool==='fundos2';$('c-car2').disabled=E.pool!=='eco';$('c-sotao').disabled=!(E.gar&&E.esc);
+  const m=measure();
+  $('o-h').textContent=fmt(S.H,2)+' m';$('o-w').textContent=fmt(S.W,1)+' m';
+  $('s-a').textContent=fmt(m.A,0)+' m²';$('s-v').textContent=fmt(m.V,1)+' m³';$('s-vs').textContent=fmt(m.V*1.25,1)+' m³';
+  $('s-cam').textContent=fmt(m.V*1.25/10,1);
+  const c=calc(S.aterro,S.fence,m);
+  $('t-cost').innerHTML=c.it.length?'<tr><th>Item</th><th class="n">Valor</th></tr>'+c.it.map(r=>`<tr><td>${r[0]}<small>${r[1]}</small></td><td class="n">${brl(r[2])}</td></tr>`).join('')
+    +`<tr class="total"><td>Total estimado</td><td class="n">${brl(c.total)}</td></tr>`:'<tr><td>Nada a fazer nesta opção.</td></tr>';
+  $('w-arrimo').hidden=!S.aterro;$('lg-fill').hidden=!(S.aterro&&S.fill);
+  $('t-cmp').innerHTML='<tr><th>Opção</th><th class="n">Total</th></tr>'+SCEN.map(([a,f])=>{const on=a===S.aterro&&f===S.fence;
+    return `<tr class="${on?'on':''}" data-a="${a?1:0}" data-f="${f}" tabindex="0"><td>${a?'Aterro + arrimo':'Sem aterro'}, ${NAMES[f]}${S.cat&&f!=='none'?' anti-fuga':''}</td><td class="n">${brl(calc(a,f,m).total)}</td></tr>`}).join('');
+  document.querySelectorAll('[data-aterro]').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.aterro==='1')===S.aterro));
+  document.querySelectorAll('[data-fence]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.fence===S.fence));
+  $('c-cat').disabled=S.fence==='none';
+}
+function refresh(){updateTerrain();buildDyn();renderUI()}
+document.querySelectorAll('[data-aterro]').forEach(b=>b.addEventListener('click',()=>{S.aterro=b.dataset.aterro==='1';refresh()}));
+document.querySelectorAll('[data-fence]').forEach(b=>b.addEventListener('click',()=>{S.fence=b.dataset.fence;refresh()}));
+document.querySelectorAll('.views button').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
+$('r-h').addEventListener('input',e=>{S.H=+e.target.value;refresh()});
+$('r-w').addEventListener('input',e=>{S.W=+e.target.value;refresh()});
+$('c-fill').addEventListener('change',e=>{S.fill=e.target.checked;refresh()});
+$('c-cat').addEventListener('change',e=>{S.cat=e.target.checked;refresh()});
+document.querySelectorAll('[data-pool]').forEach(b=>b.addEventListener('click',()=>{E.pool=b.dataset.pool;buildExt();renderUI()}));
+[['c-car2','car2'],['c-edic','edic'],['c-q','q'],['c-cp','cp'],['c-chur','chur'],['c-lav','lav'],['c-gar','gar'],['c-esc','esc'],['c-sotao','sotao']].forEach(([id,k])=>$(id).addEventListener('change',e=>{E[k]=e.target.checked;buildExt();renderUI()}));
+buildExt();
+const pick=tr=>{if(!tr||!tr.dataset.f)return;S.aterro=tr.dataset.a==='1';S.fence=tr.dataset.f;refresh()};
+$('t-cmp').addEventListener('click',e=>pick(e.target.closest('tr')));
+$('t-cmp').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(e.target.closest('tr'))}});
+refresh();setView('3d',true);
+})();
+</script>
