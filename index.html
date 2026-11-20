@@ -134,7 +134,7 @@ details summary{cursor:pointer;font-weight:600;font-size:13px}
         </div>
         <div class="field">
           <div class="top"><label for="r-w">Largura da faixa fora do nível</label><b class="mono" id="o-w"></b></div>
-          <input type="range" id="r-w" min="0.5" max="3.5" step="0.1" value="2">
+          <input type="range" id="r-w" min="0.5" max="3.5" step="0.1" value="1.2">
           <small>Da divisa até onde o chão fica plano. A casa está a 2,28 m da divisa no ponto mais próximo.</small>
         </div>
         <label class="chk"><input type="checkbox" id="c-fill" checked> Destacar a terra do aterro</label>
@@ -214,7 +214,7 @@ details summary{cursor:pointer;font-weight:600;font-size:13px}
 <script>
 (function(){
 /* ---------- estado ---------- */
-const S={H:0.6,W:2.0,aterro:true,fence:'grade',fill:true,view:'3d',cat:true};
+const S={H:0.6,W:1.2,aterro:true,fence:'grade',fill:true,view:'3d',cat:true};
 const P={terra:85,comp:40,veg:140,grama:14,arrimo:800,dreno:70,grade:260,muro:420,gato:95,imp:10};
 const PL={terra:['Terra/saibro entregue','R$/m³'],comp:['Espalhar e compactar','R$/m³'],veg:['Terra vegetal (10 cm)','R$/m³'],
   grama:['Grama em placas instalada','R$/m²'],arrimo:['Muro de arrimo (com fundação)','R$/m²'],dreno:['Dreno do arrimo (brita+manta+tubo)','R$/m'],
