@@ -115,6 +115,9 @@ details.more .checks{margin-top:10px}
 .views button[aria-pressed="true"]{background:var(--sel)!important;color:var(--sel-fg)}
 .legend{position:absolute;left:12px;bottom:12px;right:12px;display:flex;gap:6px 8px;flex-wrap:wrap;z-index:2;pointer-events:none}
 .legend span{display:inline-flex;align-items:center;gap:6px;font-size:12px;background:color-mix(in srgb,var(--surface) 82%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding:4px 10px;border-radius:999px;color:var(--fg)}
+.legend .navhint{margin-left:auto}
+.legend kbd{font-family:var(--f-mono);font-size:10.5px;min-width:16px;text-align:center;padding:1px 4px;border-radius:4px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+@media (hover:none){.legend .navhint{display:none}}
 .sw{width:18px;height:0;border-top:2px solid var(--accent)}
 .sw.dash{border-top:2px dashed var(--accent)}
 .sw.fill{height:10px;border:0;background:#d8b46a;border-radius:2px}
@@ -265,6 +268,7 @@ header a{color:var(--sel);font-weight:600}
         <span><i class="sw"></i>Divisa com a Área Verde</span>
         <span><i class="sw dash"></i>Onde começa o barranco</span>
         <span id="lg-fill"><i class="sw fill"></i>Terra do aterro</span>
+        <span class="navhint"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> andar · <kbd>Q</kbd><kbd>E</kbd> descer/subir · clique na maquete antes</span>
       </div>
     </section>
 
@@ -664,8 +668,9 @@ function buildExt(){
     rf.position.copy(W3((ex0+ex1)/2-.2,(hw+ho)/2+.12,(ey0+ey1)/2+.3));rf.rotation.x=-ang;rf.castShadow=true;ext.add(rf);
     label('Escritório (~5,5 m²)',(ex0+ex1)/2,4.0,(ey0+ey1)/2,.8,ext);}
   if(E.pool==='eco'){
-    box(.6,4.6,.8,3.4,0,.12,mStone);box(.85,4.35,1.05,3.15,.12,.15,matWhite);box(1.0,4.2,1.2,3.0,.15,.155,mWater);
-    label('Piscina 3,2 × 1,8 m',2.6,1.4,2.1,.8,ext);
+    const sh=S.aterro?0:1.4;
+    box(.6,4.6,.55,3.05,0,.12,mStone);box(.85,4.35,.75,2.85,.12,.15,matWhite);box(1.0,4.2,.9,2.7,.15,.155,mWater);
+    label('Piscina 3,2 × 1,8 m',2.6,1.4,1.8,.8,ext);
     const mD=new THREE.MeshLambertMaterial({color:0x1f1f1f}),mG=new THREE.MeshLambertMaterial({color:0x3d3c3a}),mI=new THREE.MeshLambertMaterial({color:0xb9bcbf});
     let kx=5.5,ky=2.4;
     if(!E.car2){box(4.9,6.4,3.75,4.35,0,.86,matWhite);box(4.85,6.45,3.7,4.4,.86,.9,mG);label('Bafo + bancada',5.6,2.3,3.4,.7,ext);}
@@ -673,13 +678,13 @@ function buildExt(){
       box(3.4,4.6,3.55,4.15,.82,.86,mI);[[3.45,3.6],[4.55,3.6],[3.45,4.1],[4.55,4.1]].forEach(([x,y])=>box(x-.02,x+.02,y-.02,y+.02,0,.82,mI));
       label('Bafo + bancada móvel',3.6,2.2,3.9,.7,ext);
       // 2º carro ao lado + ampliação da cobertura
-      box(4.6,7.2,.05,6.4,0,.03,new THREE.MeshLambertMaterial({color:0xa9a8a2}));
+      box(4.6,7.2,.05,6.4-sh,0,.03,new THREE.MeshLambertMaterial({color:0xa9a8a2}));
       car(5.92,3.2,0x30465e);
       const xa=4.6,xb=7.2,ang=Math.atan((2.95-2.62)/(HX-7.2)),hb=2.62,hm=hb-(xb-xa)/2*Math.tan(ang);
       const rf=new THREE.Mesh(new THREE.BoxGeometry((xb-xa+.05)/Math.cos(ang),.05,3.6),new THREE.MeshLambertMaterial({color:0xd8d8d4}));
-      rf.position.copy(W3((xa+xb)/2,hm+.05,4.8));rf.rotation.z=ang;rf.castShadow=true;ext.add(rf);
-      box(xa-.15,xa,2.95,6.65,hb-(xb-xa)*Math.tan(ang)-.1,hb-(xb-xa)*Math.tan(ang)+.04,matWhite);
-      [[xa+.05,3.05],[xa+.05,6.5]].forEach(([x,y])=>box(x-.05,x+.05,y-.05,y+.05,0,2.3,matStep));
+      rf.position.copy(W3((xa+xb)/2,hm+.05,4.8-sh));rf.rotation.z=ang;rf.castShadow=true;ext.add(rf);
+      box(xa-.15,xa,2.95-sh,6.65-sh,hb-(xb-xa)*Math.tan(ang)-.1,hb-(xb-xa)*Math.tan(ang)+.04,matWhite);
+      [[xa+.05,3.05-sh],[xa+.05,6.5-sh]].forEach(([x,y])=>box(x-.05,x+.05,y-.05,y+.05,0,2.3,matStep));
       label('2º carro (futuro)',5.9,3.4,2.0,.75,ext);}
     const k=new THREE.Mesh(new THREE.SphereGeometry(.3,24,16),mD);k.position.copy(W3(kx,.82,ky));k.castShadow=true;ext.add(k);
     [[-.18,-.12],[.18,-.12],[0,.2]].forEach(([dx,dy])=>box(kx+dx-.015,kx+dx+.015,ky+dy-.015,ky+dy+.015,0,.65,mD));
@@ -757,14 +762,14 @@ function buildExt(){
     box(xc-.05,19.36,yb,yb+.15,ho-.1,ho+.04,matWhite);
     [[xc+.02,yb-.05],[19.3,yb-.05]].forEach(([x,y])=>box(x-.05,x+.05,y-.05,y+.05,0,ho,matStep));
     label('Churrasco',18,3.6,12.9,.8,ext);}
-  if(E.cp&&!E.gar&&!lat){const xa=7.2,xw=HX,ya=3.0,yb=7.6,hw=2.95,ho=2.62,ang=Math.atan((hw-ho)/(xw-xa));
+  if(E.cp&&!E.gar&&!lat){const sh=S.aterro?0:1.4,xa=7.2,xw=HX,ya=3.0-sh,yb=7.6-sh,hw=2.95,ho=2.62,ang=Math.atan((hw-ho)/(xw-xa));
     const roof=new THREE.Mesh(new THREE.BoxGeometry((xw-xa+.2)/Math.cos(ang),.05,yb-ya+.2),new THREE.MeshLambertMaterial({color:0xd8d8d4}));
     roof.position.copy(W3((xa+xw)/2-.1,(hw+ho)/2+.05,(ya+yb)/2));roof.rotation.z=ang;roof.castShadow=true;ext.add(roof);
     const pc=new THREE.Mesh(new THREE.BoxGeometry(1.0,.055,yb-ya+.2),new THREE.MeshLambertMaterial({color:0xcfe3ee,transparent:true,opacity:.6}));
     pc.position.copy(W3(xw-.5,hw+.03-.5*Math.tan(ang),(ya+yb)/2));pc.rotation.z=ang;ext.add(pc);
     box(xw-.12,xw,ya-.1,yb+.1,hw-.15,hw,matStep);box(xa-.15,xa,ya-.1,yb+.1,ho-.1,ho+.04,matWhite);
     [[xa+.05,ya],[xa+.05,(ya+yb)/2],[xa+.05,yb],[xw-.1,ya]].forEach(([x,y])=>box(x-.05,x+.05,y-.05,y+.05,0,(x<9?ho:hw)-.02,matStep));
-    car((xa+xw)/2,5.1,0x8a1f24);
+    car((xa+xw)/2,5.1-sh,0x8a1f24);
     label('Cobertura do carro',(xa+xw)/2,3.9,(ya+yb)/2,.8,ext);}
   if(E.gar&&!lat){const{x0,x1,y0,y1}=E,t=.15,hT=2.9,hS=3.08;
     box(x0,x1,y0,y1,0,.05,matBase);
@@ -881,15 +886,38 @@ function buildDyn(){
 }
 
 /* câmera */
-const VIEWS={aerea:{p:[10,50,-6],t:[10,0,-10.5]},'3d':{p:[-1,23,9],t:[10,0,-9]},quintal:{p:[16.2,1.65,-10.9],t:[4,.4,-8.0]},detalhe:{p:[6.6,2.4,-12.4],t:[13.5,.4,-9.4]},frente:{p:[16,8,10],t:[7,2,-3]},foto:{p:[19.5,1.6,5.5],t:[9.0,2.3,-3.2]},churrasco:{p:[14.6,1.9,-12.3],t:[19.2,1.1,-13.0]},piscinaF:{p:[13.5,7.5,7.5],t:[17,0,-2]},escritorio:{p:[13.0,4.2,-16.8],t:[18,1.2,-12.4]},piscinaL:{p:[-1.5,4.8,-8.2],t:[4.2,.4,-1.6]},piscina:{p:[11.5,5.5,-18.5],t:[17,0,-12.6]}};
+const VIEWS={aerea:{p:[10,50,-6],t:[10,0,-10.5]},'3d':{p:[-1,23,9],t:[10,0,-9]},quintal:{p:[16.2,1.65,-10.9],t:[4,.4,-8.0]},detalhe:{p:[6.6,2.4,-12.4],t:[13.5,.4,-9.4]},frente:{p:[16,8,10],t:[7,2,-3]},foto:{p:[19.5,1.6,5.5],t:[9.0,2.3,-3.2]},churrasco:{p:[14.6,1.9,-12.3],t:[19.2,1.1,-13.0]},piscinaF:{p:[13.5,7.5,7.5],t:[17,0,-2]},escritorio:{p:[13.0,4.2,-16.8],t:[18,1.2,-12.4]},piscinaL:{p:[3.4,7.8,4.6],t:[2.8,0,-2.3]},churrascoL:{p:[-3.0,6.5,3.5],t:[3.2,.4,-3.6]},piscina:{p:[11.5,5.5,-18.5],t:[17,0,-12.6]}};
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;let tween=null;
 function setView(v,instant){S.view=v;document.querySelectorAll('.views button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===v));
-  const V=VIEWS[v==='piscina'&&E.pool==='frente'?'piscinaF':v==='piscina'&&(E.pool==='lateral'||E.pool==='eco')?'piscinaL':v],p1=new THREE.Vector3(...V.p),t1=new THREE.Vector3(...V.t);
+  const latP=E.pool==='lateral'||E.pool==='eco';
+  const V=VIEWS[v==='piscina'&&E.pool==='frente'?'piscinaF':v==='piscina'&&latP?'piscinaL':v==='churrasco'&&latP?'churrascoL':v],p1=new THREE.Vector3(...V.p),t1=new THREE.Vector3(...V.t);
   if(instant||reduce){camera.position.copy(p1);controls.target.copy(t1);controls.update();return}
   tween={p0:camera.position.clone(),t0:controls.target.clone(),p1,t1,s:performance.now()}}
 function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
 new ResizeObserver(resize).observe(stage);resize();
-(function loop(now){requestAnimationFrame(loop);
+/* andar pela maquete: clique no 3D e use W A S D (Q/E desce/sobe, Shift corre) */
+const keys={};let navOn=false,lastT=performance.now();const cv=renderer.domElement;
+cv.tabIndex=0;cv.style.outline='none';cv.setAttribute('aria-label','Maquete 3D: clique e use W A S D para andar');
+controls.enableKeys=false;
+cv.addEventListener('pointerdown',()=>{cv.focus({preventScroll:true});navOn=true});
+cv.addEventListener('focus',()=>{navOn=true});
+cv.addEventListener('blur',()=>{navOn=false;for(const k in keys)keys[k]=false});
+const NAVK=['w','a','s','d','q','e','shift','arrowup','arrowdown','arrowleft','arrowright'];
+const _fw=new THREE.Vector3(),_rt=new THREE.Vector3();
+function moveBy(f,r,u,sp){
+  camera.getWorldDirection(_fw);_fw.y=0;if(_fw.lengthSq()<1e-6)_fw.set(0,0,-1);_fw.normalize();_rt.crossVectors(_fw,camera.up).normalize();
+  const mv=_fw.multiplyScalar(f*sp).add(_rt.multiplyScalar(r*sp));mv.y=u*sp;
+  if(camera.position.y+mv.y<.6)mv.y=.6-camera.position.y;
+  camera.position.add(mv);controls.target.add(mv);
+  document.querySelectorAll('.views button').forEach(b=>b.setAttribute('aria-pressed',false))}
+const dirOf=k=>({w:[1,0,0],arrowup:[1,0,0],s:[-1,0,0],arrowdown:[-1,0,0],d:[0,1,0],arrowright:[0,1,0],a:[0,-1,0],arrowleft:[0,-1,0],e:[0,0,1],q:[0,0,-1]})[k];
+cv.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(!NAVK.includes(k))return;e.preventDefault();tween=null;keys[k]=true;
+  const d=dirOf(k);if(d&&!e.repeat)moveBy(d[0],d[1],d[2],keys.shift?.8:.35)});
+cv.addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
+function navStep(now){const dt=Math.min(.05,(now-lastT)/1000);lastT=now;if(!navOn)return;
+  const f=(keys.w||keys.arrowup?1:0)-(keys.s||keys.arrowdown?1:0),r=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),u=(keys.e?1:0)-(keys.q?1:0);
+  if(f||r||u)moveBy(f,r,u,(keys.shift?14:5)*dt)}
+(function loop(now){requestAnimationFrame(loop);navStep(now);
   if(tween){let k=Math.min(1,(now-tween.s)/700);k=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
     camera.position.lerpVectors(tween.p0,tween.p1,k);controls.target.lerpVectors(tween.t0,tween.t1,k);if(k>=1)tween=null}
   controls.update();renderer.render(scene,camera)})(performance.now());
@@ -938,7 +966,7 @@ function renderUI(){
   document.querySelectorAll('[data-fence]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.fence===S.fence));
   $('c-cat').disabled=S.fence==='none';
 }
-function refresh(){updateTerrain();placeTrees();buildDyn();renderUI()}
+function refresh(){updateTerrain();placeTrees();buildExt();buildDyn();renderUI()}
 document.querySelectorAll('[data-aterro]').forEach(b=>b.addEventListener('click',()=>{S.aterro=b.dataset.aterro==='1';refresh()}));
 document.querySelectorAll('[data-fence]').forEach(b=>b.addEventListener('click',()=>{S.fence=b.dataset.fence;refresh()}));
 document.querySelectorAll('.views button').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));

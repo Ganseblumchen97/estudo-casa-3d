@@ -2,7 +2,7 @@
 
 Maquete 3D esquemática e orçamento editável das melhorias estudadas para a casa.
 
-## [▶ Abrir o projeto](https://ganseblumchen97.github.io/estudo-casa-3d/?v=10)
+## [▶ Abrir o projeto](https://ganseblumchen97.github.io/estudo-casa-3d/?v=11)
 
 Tudo fica nessa página: a maquete 3D, a troca das opções (piscina, carro, escritório, grade) e o orçamento, que gera o PDF.
 
