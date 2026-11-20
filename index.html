@@ -67,6 +67,30 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .checks{display:flex;flex-direction:column;gap:8px}
 details.more summary{color:var(--muted);font-weight:500}
 details.more .checks{margin-top:10px}
+#plano{scroll-margin-top:84px}
+.plan .orc-head h2{font-family:var(--f-display);font-weight:500;font-size:24px}
+.plan .orc-head p{margin:4px 0 0;color:var(--muted);font-size:13px;max-width:70ch}
+.pl-note{margin:0;font-size:13px;color:var(--fg);background:var(--sel-soft);border-radius:12px;padding:10px 14px}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;position:relative}
+@media (max-width:1000px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.steps{grid-template-columns:minmax(0,1fr)}}
+.step{border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px;background:var(--bg);min-width:0;position:relative}
+.step .when{align-self:flex-start;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:999px;background:var(--sel);color:var(--sel-fg)}
+.step.s0 .when{background:transparent;color:var(--sel);border:1px solid color-mix(in srgb,var(--sel) 45%,transparent)}
+.step h3{margin:0;font-family:var(--f-display);font-weight:500;font-size:17px}
+.step ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:13px}
+.step li{display:flex;justify-content:space-between;gap:10px}
+.step li span:last-child{font-family:var(--f-mono);white-space:nowrap;color:var(--muted)}
+.step.s0 li span:last-child{font-family:inherit;white-space:normal;color:var(--fg)}
+.step.s0 li::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--sel);margin-top:7px}
+.step.s0 li{justify-content:flex-start}
+.step .sub{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:8px;font-weight:600;font-size:14px}
+.step .sub b{font-family:var(--f-mono)}
+.step button{margin-top:auto;font:inherit;font-size:13px;padding:7px 12px;border-radius:999px;border:1px solid var(--sel);background:transparent;color:var(--sel);cursor:pointer;font-weight:600}
+.step button:hover{background:var(--sel-soft)}
+.step .tip{font-size:12px;color:var(--muted);margin:0}
+.pl-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-size:15px}
+.pl-foot b{font-family:var(--f-mono)}
 .foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;color:var(--muted);font-size:12.5px;padding:8px 4px 0;border-top:1px solid var(--line)}
 .hero .eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--sel);font-weight:600;margin:0}
 .hero h1{font-family:var(--f-display);font-weight:500;font-size:clamp(26px,4vw,40px);line-height:1.12;margin:0;letter-spacing:-.01em;text-wrap:balance;max-width:20ch}
@@ -194,6 +218,7 @@ header a{color:var(--sel);font-weight:600}
     <div class="toplinks">
       <a href="#maquete">Maquete</a>
       <a href="#opcoes">Opções</a>
+      <a href="#plano">Plano</a>
       <a class="pill" href="#orcamento">Orçamento</a>
     </div>
   </nav>
@@ -365,6 +390,25 @@ header a{color:var(--sel);font-weight:600}
       </div>
     </aside>
   </main>
+
+  <section class="card plan" id="plano" aria-labelledby="plano-t">
+    <div class="orc-head">
+      <div>
+        <h2 id="plano-t">Plano do proprietário</h2>
+        <p>A ordem que pretendemos seguir, uma etapa de cada vez. Clique em "Ver na maquete" para ver a casa como ficaria ao fim de cada etapa.</p>
+      </div>
+      <div class="orc-actions">
+        <div class="seg" role="group" aria-label="Aterro na etapa Agora">
+          <button id="pa-0" data-pa="0" aria-pressed="true">Sem aterro</button>
+          <button id="pa-1" data-pa="1">Com aterro já no início</button>
+        </div>
+        <button id="pl-orc" type="button" class="primary">Levar o plano ao orçamento</button>
+      </div>
+    </div>
+    <p class="pl-note" id="pl-note"></p>
+    <ol class="steps" id="pl-steps"></ol>
+    <div class="pl-foot"><span id="pl-total"></span><span class="okmsg" id="pl-msg" role="status"></span></div>
+  </section>
 
   <section class="card orc" id="orcamento" aria-labelledby="orc-t">
     <div class="orc-head">
@@ -605,7 +649,7 @@ function buildExt(){
   const mWater=new THREE.MeshLambertMaterial({color:0x3fb3d6}),mStone=new THREE.MeshLambertMaterial({color:0xe4ded2});
   const edOn=E.edic&&E.pool!=='fundos'&&E.pool!=='fundos2';
   if(E.lav){const yb=HY+8.4,xl=HX+6.45,xr=HX+9.2,t=.15;
-    if(!edOn){box(xl,xl+.1,yb-t,yb,.15,3.15,matWall);box(xl+.9,xr,yb-t,yb,.15,3.15,matWall);box(xl+.1,xl+.9,yb-t,yb,2.25,3.15,matWall);
+    if(!edOn&&!E.latDoor){box(xl,xl+.1,yb-t,yb,.15,3.15,matWall);box(xl+.9,xr,yb-t,yb,.15,3.15,matWall);box(xl+.1,xl+.9,yb-t,yb,2.25,3.15,matWall);
       box(xl+.12,xl+.88,yb-.02,yb+.02,.15,2.25,matWood);
       box(xl,xl+t,HY+7.05,yb,.15,3.15,matWall);box(xl-.02,xl,HY+7.4,HY+8.0,1.6,2.2,matGlass);}
     else{box(xl,xr,yb-t,yb,.15,3.15,matWall);
@@ -980,5 +1024,57 @@ function buildReport(){let img='';if(O.img)try{renderer.render(scene,camera);img
    <p class="note">${img?'Imagem da maquete 3D esquemática, sem escala de obra. ':''}Valores conforme preenchidos neste orçamento.</p>`}
 $('o-pdf').addEventListener('click',()=>{buildReport();try{window.print()}catch(e){}if(inFrame)msg('Se a janela de impressão não abriu, use a versão do GitHub Pages.')});
 window.addEventListener('beforeprint',buildReport);
+
+/* ---------- plano do proprietário ---------- */
+let PA=0;
+const ET1='1 – agora',ET2='2 – ~5 anos',ET3='3 – por último';
+function planRows(at){const R=[],L=L_CURVA;const add=(et,tp,d,u,q,p)=>R.push({et,tp,d,u,q:Math.round(q*100)/100,p:Math.round(p*100)/100});
+  if(at){const sv={...S};S.aterro=true;const m=measure(),veg=Math.min(m.V,m.A*.1),sai=Math.max(0,m.V-veg);Object.assign(S,sv);
+    add(ET1,'Material','Aterro: terra/saibro entregue','m³',sai*1.25,P.terra);add(ET1,'Serviço','Aterro: espalhar e compactar','m³',m.V,P.comp);
+    add(ET1,'Material','Terra vegetal (10 cm)','m³',veg*1.25,P.veg);add(ET1,'Material + serviço','Grama em placas','m²',m.A,P.grama);
+    add(ET1,'Material + serviço','Muro de arrimo com fundação','m²',L*(S.H+.4),P.arrimo);add(ET1,'Material + serviço','Dreno do arrimo (brita, manta, tubo)','m',L,P.dreno);}
+  add(ET1,'Material + serviço',at?'Gradil 1,50 m sobre o muro de arrimo':'Gradil 1,50 m no alto do barranco, em painéis removíveis','m',L,P.grade);
+  add(ET1,'Material + serviço','Topo inclinado 45° anti-fuga de gato + tela','m',L,P.gato);
+  add(ET1,'Material + serviço','Portãozinho na grade para manutenção','un',1,900);
+  add(ET1,'Material + serviço','Fechar a lavação: porta na lateral, parede do fundo inteira e conduíte de luz','vb',1,EP.lav);
+  add(ET1,'Material + serviço','Cobertura do carro, preparada para o 2º módulo','vb',1,EP.cp);
+  add(ET1,'Material','Mudas da cerca viva (opcional: plantar já para crescer)','vb',1,1500);
+  add(ET2,'Material + serviço','Escritório nos fundos (~7 m²), fundação reforçada no lado do barranco','vb',1,7*3500);
+  add(ET2,'Projeto / taxa','Projeto, ART e aprovação do escritório','vb',1,2500);
+  add(ET3,'Material + serviço','Piscina de fibra ~3,2 × 1,8 m instalada','vb',1,EP.pool*.95);
+  add(ET3,'Material','Capa de proteção da piscina','un',1,EP.capa);
+  add(ET3,'Material','Churrasqueira a bafo','un',1,2500);
+  add(ET3,'Material','Bancada móvel de inox','un',1,1800);
+  add(ET3,'Material + serviço','Cerca viva complementar / privacidade','vb',1,EP.priv-1500);
+  add(ET3,'Material + serviço','2º carro: piso da vaga','vb',1,2000);
+  add(ET3,'Material + serviço','2º carro: ampliar a cobertura (+1 módulo)','vb',1,7500);
+  add(ET3,'Projeto / taxa','Projeto, ART e aprovação da piscina','vb',1,2500);
+  return R}
+const STEPS=[[ET1,'Agora','Segurança e uso diário',1,'Serralheiro (grade + cobertura num pacote só) e pedreiro (lavação) podem trabalhar ao mesmo tempo.'],
+  [ET2,'Daqui ~5 anos','Escritório nos fundos',2,'Antes da piscina: entulho e material passam pela lateral sem atrapalhar o lazer.'],
+  [ET3,'Por último','Lazer e 2º carro',3,'A piscina e a segunda vaga ficam lado a lado na lateral esquerda.']];
+const shortD=d=>d.replace(/\s*\(.*?\)/g,'').replace(/^(Aterro|2º carro): /,'$1 – ').replace(/^Projeto, ART e aprovação/,'Projeto e ART').replace(/:.*$/,'').replace(/, .*$/,'');
+function renderPlan(){const rows=planRows(PA);let tot=0;
+  const s0=`<li class="step s0"><span class="when">Antes de começar</span><h3>Medir e decidir</h3><ul>
+    <li><span>Medir largura e altura do barranco</span></li><li><span>Orçar aterro + muro de arrimo e decidir</span></li>
+    <li><span>Localizar as tampas da fossa e do filtro</span></li><li><span>Consultar a Prefeitura (alvará, recuo, rebaixo)</span></li></ul>
+    <p class="tip">Quase sem custo. A decisão do aterro define onde a grade vai ficar.</p></li>`;
+  $('pl-steps').innerHTML=s0+STEPS.map(([et,when,title,n,tip])=>{const it=rows.filter(r=>r.et===et);const sub=it.reduce((s,r)=>s+r.q*r.p,0);tot+=sub;
+    return `<li class="step"><span class="when">${when}</span><h3>${title}</h3><ul>${it.map(r=>`<li><span>${esc(shortD(r.d))}</span><span>${money(r.q*r.p)}</span></li>`).join('')}</ul>
+      <div class="sub"><span>Subtotal</span><b>${money(sub)}</b></div><p class="tip">${tip}</p><button type="button" data-stage="${n}">Ver na maquete</button></li>`}).join('');
+  $('pl-total').innerHTML=`Plano completo: <b>${money(tot)}</b> <span style="color:var(--muted);font-size:13px">(sem BDI; estimativas)</span>`;
+  $('pl-note').textContent=PA?'Com aterro já no início: a terra e o muro de arrimo entram na etapa "Agora", e a grade vai em cima do arrimo. Os valores dependem da altura e da largura reais do barranco (ajuste na aba "Fundos e grade").'
+    :'Sem aterro: a grade fica no alto do barranco, em painéis que podem ser remontados se um dia o aterro for feito. Se o orçamento do aterro vier bom, troque para "Com aterro já no início".';
+  document.querySelectorAll('[data-pa]').forEach(b=>b.setAttribute('aria-pressed',(+b.dataset.pa)===PA))}
+function applyStage(n){S.aterro=!!PA;S.fence='grade';S.cat=true;
+  Object.assign(E,{cp:true,lav:true,gar:false,chur:false,latDoor:true,edic:n>=2,pool:n>=3?'eco':'none',car2:n>=3});
+  [['c-cp','cp'],['c-lav','lav'],['c-gar','gar'],['c-chur','chur'],['c-edic','edic'],['c-car2','car2']].forEach(([id,k])=>$(id).checked=!!E[k]);
+  buildExt();refresh();setView(n>=2&&n<3?'escritorio':'3d');$('maquete').scrollIntoView({behavior:reduce?'auto':'smooth'})}
+document.querySelectorAll('[data-pa]').forEach(b=>b.addEventListener('click',()=>{PA=+b.dataset.pa;renderPlan()}));
+$('pl-steps').addEventListener('click',e=>{const b=e.target.closest('[data-stage]');if(b)applyStage(+b.dataset.stage)});
+$('pl-orc').addEventListener('click',()=>confirmBtn('pl-orc','substituir itens do orçamento',()=>{$('pl-orc').textContent='Levar o plano ao orçamento';
+  O.rows=planRows(PA);renderRows();saveO();$('pl-msg').textContent='Plano levado ao orçamento.';setTimeout(()=>$('pl-msg').textContent='',4000);
+  $('orcamento').scrollIntoView({behavior:reduce?'auto':'smooth'})}));
+renderPlan();
 })();
 </script>
