@@ -8,35 +8,45 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: 3D viewport (esquerda, fixo ao rolar no desktop) + painel de controles/custos (direita); empilha no celular */
+/* Layout: boas-vindas no topo; 3D (esquerda, fixo ao rolar) + painel (direita); orçamento largo embaixo. Clima: verde da área verde, calmo e claro */
 :root{
-  --bg:#eef0ec; --surface:#ffffff; --fg:#1b201c; --muted:#5a635b; --line:#d6dbd3;
-  --accent:#c4262c;          /* vermelho de cota, como no projeto */
-  --sel:#2d5b44; --sel-fg:#ffffff; --sel-soft:#e3ece6;
-  --sky:#dde7ec;
-  --f-display:"Archivo","Segoe UI",system-ui,sans-serif;
-  --f-body:"Inter","Segoe UI",system-ui,sans-serif;
+  --bg:#f2f5ee; --surface:#fbfcf8; --fg:#1f2b23; --muted:#5d6b60; --line:#dce3d6;
+  --accent:#c4262c;          /* vermelho de cota, só nas linhas técnicas */
+  --sel:#3e6b50; --sel-fg:#ffffff; --sel-soft:#e3ece2;
+  --sky:#dfe9ed; --hero1:#e6eedf; --hero2:#cfe0cb; --leaf:#6f9a5e;
+  --shadow:0 1px 2px rgba(31,43,35,.05),0 10px 28px -18px rgba(31,43,35,.35);
+  --f-display:"Fraunces",Georgia,"Times New Roman",serif;
+  --f-body:"Figtree","Segoe UI",system-ui,sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#121613; --surface:#1a1f1b; --fg:#e6eae4; --muted:#9aa49b; --line:#2b332d;
-  --accent:#ff6a6a; --sel:#7cc49a; --sel-fg:#0f1a13; --sel-soft:#1f3127; --sky:#1b252c; color-scheme:dark}}
+  --bg:#111a14; --surface:#17221b; --fg:#e4ece3; --muted:#9db0a1; --line:#28362c;
+  --accent:#ff7a6b; --sel:#8cc79f; --sel-fg:#0f1a13; --sel-soft:#1d3125; --sky:#1b292b; --hero1:#16251b; --hero2:#1e3526; --leaf:#8cc79f;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px -18px rgba(0,0,0,.6); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#121613; --surface:#1a1f1b; --fg:#e6eae4; --muted:#9aa49b; --line:#2b332d;
-  --accent:#ff6a6a; --sel:#7cc49a; --sel-fg:#0f1a13; --sel-soft:#1f3127; --sky:#1b252c; color-scheme:dark}
+  --bg:#111a14; --surface:#17221b; --fg:#e4ece3; --muted:#9db0a1; --line:#28362c;
+  --accent:#ff7a6b; --sel:#8cc79f; --sel-fg:#0f1a13; --sel-soft:#1d3125; --sky:#1b292b; --hero1:#16251b; --hero2:#1e3526; --leaf:#8cc79f;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px -18px rgba(0,0,0,.6); color-scheme:dark}
 
-body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 32px}
-.wrap{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
-header h1{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,3vw,30px);margin:0;letter-spacing:-.01em;text-wrap:balance}
-header p{margin:4px 0 0;color:var(--muted);max-width:70ch}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14.5px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.hero{position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(135deg,var(--hero1),var(--hero2));padding-block:26px 24px;padding-inline:clamp(18px,4vw,36px);display:flex;flex-direction:column;gap:8px}
+.hero .eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--sel);font-weight:600;margin:0}
+.hero h1{font-family:var(--f-display);font-weight:500;font-size:clamp(26px,4vw,40px);line-height:1.12;margin:0;letter-spacing:-.01em;text-wrap:balance;max-width:20ch}
+.hero p{margin:0;color:var(--muted);max-width:62ch;position:relative}
+.hero .cta{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;position:relative}
+.hero .cta a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:600;font-size:14px;padding:9px 16px;border-radius:999px;background:var(--sel);color:var(--sel-fg)}
+.hero .cta a.ghost{background:transparent;color:var(--sel);border:1px solid color-mix(in srgb,var(--sel) 40%,transparent)}
+.hero svg.leaves{position:absolute;right:-30px;bottom:-40px;width:min(42vw,360px);height:auto;opacity:.5;pointer-events:none}
+@media (max-width:640px){.hero svg.leaves{opacity:.22}}
 .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 
 .app{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start}
 @media (max-width:900px){.app{grid-template-columns:minmax(0,1fr)}}
-.viewer{position:sticky;top:max(12px,env(safe-area-inset-top,0px));background:var(--sky);border:1px solid var(--line);border-radius:10px;overflow:hidden;
+.viewer{position:sticky;top:max(12px,env(safe-area-inset-top,0px));background:var(--sky);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow);
   height:min(78vh,720px);min-height:360px}
 @media (max-width:900px){.viewer{position:relative;top:0;height:62vh;min-height:320px}}
 #stage{position:absolute;inset:0}
@@ -51,11 +61,11 @@ header p{margin:4px 0 0;color:var(--muted);max-width:70ch}
 @media (max-width:520px){.hint{display:none}}
 
 .panel{display:flex;flex-direction:column;gap:12px;min-width:0}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0;box-shadow:var(--shadow)}
 .card h2{font-family:var(--f-display);font-weight:600;font-size:15px;margin:0}
 .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
 .seg{display:flex;flex-wrap:wrap;gap:4px}
-.seg button,.views button{font:inherit;font-size:13px;padding:6px 11px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.seg button,.views button{font:inherit;font-size:13px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
 .seg button[aria-pressed="true"],.views button[aria-pressed="true"]{background:var(--sel);color:var(--sel-fg);border-color:var(--sel)}
 button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .field{display:flex;flex-direction:column;gap:4px}
@@ -82,16 +92,79 @@ details summary{cursor:pointer;font-weight:600;font-size:13px}
 .prices input{width:86px;font:inherit;font-family:var(--f-mono);padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);text-align:right}
 .notes{font-size:12.5px;color:var(--muted);margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
 .warn{font-size:12.5px;border-left:3px solid var(--accent);padding:4px 10px;color:var(--fg)}
+header a{color:var(--sel);font-weight:600}
+/* orçamento */
+.orc-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:flex-start}
+.orc-head h2{font-family:var(--f-display);font-weight:500;font-size:24px}
+.card h2{font-family:var(--f-display);font-weight:500;letter-spacing:-.005em}
+.orc-head p{margin:4px 0 0;color:var(--muted);font-size:13px;max-width:70ch}
+.orc-actions{display:flex;flex-wrap:wrap;gap:6px}
+.orc-actions button,.orc .btnlike{font:inherit;font-size:13px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;display:inline-flex;align-items:center}
+.orc-actions .primary{background:var(--sel);color:var(--sel-fg);border-color:var(--sel);font-weight:600}
+.orc-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.orc label:not(.btnlike){display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.orc input,.orc textarea{font:inherit;font-size:14px;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;min-width:0;box-sizing:border-box}
+.tablewrap{overflow-x:auto}
+#o-tab{min-width:1080px}
+#o-tab td{padding:4px 3px;border-bottom:1px solid var(--line)}
+#o-tab input{width:100%}
+#o-tab .c-e{width:76px}#o-tab .c-t{width:150px}#o-tab .c-u{width:66px}#o-tab .c-q{width:84px}#o-tab .c-p{width:120px}#o-tab .c-tot{width:120px}#o-tab .c-x{width:34px}
+#o-tab input[type=number]{text-align:right;font-family:var(--f-mono)}
+#o-tab td.n{font-family:var(--f-mono);white-space:nowrap;padding-right:8px}
+.del{background:none;border:0;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:4px 8px;border-radius:6px}
+.del:hover{color:var(--accent)}
+.orc-tot{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 18px;align-items:end}
+.tots{grid-column:span 2;min-width:0}
+@media (max-width:640px){.tots{grid-column:auto}}
+.tot-line{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:5px 0;font-size:14px}
+.tot-line b{font-family:var(--f-mono);font-weight:500}
+.tot-line.big{font-size:17px;border-bottom:2px solid var(--fg)}
+.tot-line.big b{font-weight:600}
+.okmsg{margin:0;font-size:13px;color:var(--sel);min-height:1em}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+#print-report{display:none}
+@media print{
+  @page{size:A4;margin:14mm}
+  body{background:#fff!important;padding:0!important}
+  body>*:not(#print-report){display:none!important}
+  #print-report{display:block!important;color:#111;font-family:var(--f-body);font-size:10.5pt}
+  #print-report h1{font-family:var(--f-display);font-size:18pt;margin:0 0 2mm}
+  #print-report .meta{display:grid;grid-template-columns:1fr 1fr;gap:1mm 8mm;margin:0 0 4mm;font-size:10pt}
+  #print-report img{width:100%;max-height:85mm;object-fit:cover;border:1px solid #ccc;margin:0 0 4mm}
+  #print-report table{width:100%;border-collapse:collapse;font-size:9.5pt}
+  #print-report th,#print-report td{border-bottom:1px solid #ccc;padding:1.6mm 1.5mm;text-align:left;vertical-align:top}
+  #print-report th{background:#eef0ec;font-size:8.5pt;text-transform:uppercase;letter-spacing:.03em}
+  #print-report td.n,#print-report th.n{text-align:right;white-space:nowrap}
+  #print-report tr{break-inside:avoid}
+  #print-report .sum{display:flex;gap:10mm;margin-top:5mm;break-inside:avoid}
+  #print-report .sum>div{flex:1}
+  #print-report .total{font-size:13pt;font-weight:700;border-top:2px solid #111}
+  #print-report .obs{margin-top:5mm;white-space:pre-wrap;break-inside:avoid}
+  #print-report .sign{display:flex;gap:12mm;margin-top:16mm;break-inside:avoid}
+  #print-report .sign div{flex:1;border-top:1px solid #111;padding-top:1.5mm;font-size:9pt;text-align:center}
+  #print-report .note{margin-top:6mm;font-size:8.5pt;color:#555}
+}
 </style>
 
 <div class="wrap">
-  <header>
-    <h1>Estudo do Lote 01: aterro, grade e ampliações</h1>
-    <p>Simulação esquemática da faixa junto à divisa curva (R = 50 m, 23,89 m) com a Área Verde do Município. Mude a altura e a largura do barranco conforme medir no local; volumes e custos se recalculam.</p>
+  <header class="hero">
+    <p class="eyebrow">Casa 01 · estudo de melhorias</p>
+    <h1>Nossa casa, ao lado da área verde</h1>
+    <p>Uma maquete para imaginar com calma o que vem pela frente: o carro coberto, a grade que deixa o gato seguro sem tirar a vista das árvores, o cantinho de trabalho nos fundos e a piscina com churrasco ao lado. Gire a maquete, troque as opções e monte o orçamento.</p>
+    <div class="cta"><a href="#orcamento">Abrir o orçamento ↓</a><a class="ghost" href="#stage-anchor">Ver a maquete</a></div>
+    <svg class="leaves" viewBox="0 0 360 260" aria-hidden="true">
+      <g fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round">
+        <path d="M40 250 C120 170 200 140 330 120"/><path d="M90 205 c-10-38 8-62 38-74 c6 34-10 58-38 74z" fill="var(--leaf)" fill-opacity=".25"/>
+        <path d="M150 170 c-4-40 20-62 52-68 c0 36-20 58-52 68z" fill="var(--leaf)" fill-opacity=".3"/>
+        <path d="M215 146 c2-38 30-56 62-56 c-6 34-28 52-62 56z" fill="var(--leaf)" fill-opacity=".25"/>
+        <path d="M128 182 c30 10 48 34 50 64 c-32-6-48-30-50-64z" fill="var(--leaf)" fill-opacity=".2"/>
+        <path d="M250 132 c30 14 44 38 42 68 c-30-10-44-34-42-68z" fill="var(--leaf)" fill-opacity=".2"/>
+      </g>
+    </svg>
   </header>
 
   <main class="app">
-    <section class="viewer" aria-label="Vista 3D do lote">
+    <section class="viewer" id="stage-anchor" aria-label="Vista 3D do lote">
       <div id="stage"></div>
       <div class="views" role="group" aria-label="Vista">
         <button id="v-aerea" data-view="aerea">Aérea</button>
@@ -207,14 +280,71 @@ details summary{cursor:pointer;font-weight:600;font-size:13px}
       </div>
     </aside>
   </main>
+
+  <section class="card orc" id="orcamento" aria-labelledby="orc-t">
+    <div class="orc-head">
+      <div>
+        <h2 id="orc-t">Orçamento editável</h2>
+        <p>Altere quantidades e preços, inclua materiais e serviços (escolha da lista ou escreva) e gere o PDF. Tudo fica salvo neste navegador; para mandar o orçamento editável a outra pessoa, use "Salvar arquivo".</p>
+      </div>
+      <div class="orc-actions">
+        <button id="o-load" type="button">Puxar itens da maquete</button>
+        <button id="o-add" type="button">+ Adicionar item</button>
+        <button id="o-pdf" type="button" class="primary">Gerar PDF</button>
+        <button id="o-save" type="button">Salvar arquivo</button>
+        <label class="btnlike" for="o-open">Abrir arquivo<input type="file" id="o-open" accept=".json,application/json" hidden></label>
+        <button id="o-clear" type="button">Limpar</button>
+      </div>
+    </div>
+    <p class="warn" id="o-frame" hidden>Para gerar o PDF e salvar o arquivo, abra a versão publicada: ganseblumchen97.github.io/estudo-casa-3d</p>
+    <p class="okmsg" id="o-msg" role="status"></p>
+    <div class="orc-meta">
+      <label for="o-obra">Obra<input id="o-obra" type="text"></label>
+      <label for="o-resp">Responsável pelo orçamento<input id="o-resp" type="text" placeholder="Nome / empresa / CREA"></label>
+      <label for="o-data">Data<input id="o-data" type="date"></label>
+      <label for="o-val">Validade (dias)<input id="o-val" type="number" min="0" step="1"></label>
+    </div>
+    <div class="tablewrap">
+      <table id="o-tab">
+        <thead><tr><th>Etapa</th><th>Tipo</th><th>Descrição</th><th>Un.</th><th class="n">Qtd.</th><th class="n">Preço unit. (R$)</th><th class="n">Total</th><th><span class="sr">Remover</span></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <datalist id="dl-etapa"><option value="1"><option value="2"><option value="3"><option value="Futuro"><option value="Opcional"></datalist>
+    <datalist id="dl-tipo"><option value="Material"><option value="Serviço"><option value="Mão de obra"><option value="Material + serviço"><option value="Equipamento / aluguel"><option value="Projeto / taxa"></datalist>
+    <datalist id="dl-un"><option value="un"><option value="m"><option value="m²"><option value="m³"><option value="kg"><option value="saco"><option value="L"><option value="diária"><option value="h"><option value="vb"><option value="mês"></datalist>
+    <datalist id="dl-desc">
+      <option value="Cimento CP-II 50 kg"><option value="Areia média"><option value="Brita 1"><option value="Pedrisco"><option value="Cal hidratada 20 kg"><option value="Argamassa colante AC-II 20 kg">
+      <option value="Bloco cerâmico 14×19×29"><option value="Bloco de concreto 14×19×39"><option value="Vergalhão CA-50 10 mm (barra 12 m)"><option value="Vergalhão CA-60 5 mm (barra 12 m)"><option value="Treliça para laje"><option value="Concreto usinado fck 25">
+      <option value="Telha cerâmica"><option value="Telha termoacústica 30 mm"><option value="Telha de policarbonato alveolar 10 mm"><option value="Madeiramento do telhado"><option value="Calha e rufo galvanizados"><option value="Tubo metálico para estrutura">
+      <option value="Gradil 1,53 m com postes"><option value="Tela de proteção para gatos"><option value="Braço inclinado anti-fuga"><option value="Porta de madeira 80 cm com batente"><option value="Porta de correr de alumínio"><option value="Janela basculante de alumínio"><option value="Janela de correr de alumínio">
+      <option value="Piso porcelanato externo"><option value="Bloquete / paver"><option value="Tampo de granito"><option value="Tinta acrílica 18 L"><option value="Massa corrida / selador"><option value="Fio e cabo elétrico"><option value="Tomadas e interruptores"><option value="Tubos e conexões PVC">
+      <option value="Piscina de fibra"><option value="Filtro e bomba da piscina"><option value="Capa de proteção da piscina"><option value="Churrasqueira a bafo"><option value="Mudas para cerca viva">
+      <option value="Pedreiro (diária)"><option value="Servente (diária)"><option value="Mestre de obras (diária)"><option value="Serralheria: fabricação e instalação"><option value="Instalação da cobertura"><option value="Escavação manual"><option value="Escavação com retroescavadeira (hora)">
+      <option value="Instalação elétrica"><option value="Instalação hidráulica"><option value="Pintura"><option value="Assentamento de piso"><option value="Instalação da piscina"><option value="Caçamba de entulho"><option value="Frete de material"><option value="Limpeza final da obra">
+      <option value="Projeto arquitetônico"><option value="Projeto estrutural"><option value="ART / RRT"><option value="Taxa de alvará da Prefeitura">
+    </datalist>
+    <div class="orc-tot">
+      <label for="o-bdi">BDI / imprevistos (%)<input id="o-bdi" type="number" min="0" step="0.5"></label>
+      <label for="o-desc">Desconto (R$)<input id="o-desc" type="number" min="0" step="0.01"></label>
+      <div class="tots">
+        <div class="tot-line"><span>Subtotal</span><b id="o-sub"></b></div>
+        <div class="tot-line"><span>BDI / imprevistos</span><b id="o-bdiv"></b></div>
+        <div class="tot-line"><span>Desconto</span><b id="o-descv"></b></div>
+        <div class="tot-line big"><span>Total do orçamento</span><b id="o-total"></b></div>
+      </div>
+    </div>
+    <label for="o-obs">Observações<textarea id="o-obs" rows="3" placeholder="Condições de pagamento, prazo, o que não está incluso..."></textarea></label>
+  </section>
 </div>
+<div id="print-report" aria-hidden="true"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
 (function(){
 /* ---------- estado ---------- */
-const S={H:0.6,W:1.2,aterro:true,fence:'grade',fill:true,view:'3d',cat:true};
+const S={H:0.6,W:1.2,aterro:false,fence:'grade',fill:true,view:'3d',cat:true};
 const P={terra:85,comp:40,veg:140,grama:14,arrimo:800,dreno:70,grade:260,muro:420,gato:95,imp:10};
 const PL={terra:['Terra/saibro entregue','R$/m³'],comp:['Espalhar e compactar','R$/m³'],veg:['Terra vegetal (10 cm)','R$/m³'],
   grama:['Grama em placas instalada','R$/m²'],arrimo:['Muro de arrimo (com fundação)','R$/m²'],dreno:['Dreno do arrimo (brita+manta+tubo)','R$/m'],
@@ -249,7 +379,7 @@ function measure(){let A=0,V=0;const st=.05;
 
 /* ---------- three.js ---------- */
 const stage=document.getElementById('stage');
-const renderer=new THREE.WebGLRenderer({antialias:true});
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 stage.appendChild(renderer.domElement);
 const scene=new THREE.Scene();
@@ -662,5 +792,79 @@ const pick=tr=>{if(!tr||!tr.dataset.f)return;S.aterro=tr.dataset.a==='1';S.fence
 $('t-cmp').addEventListener('click',e=>pick(e.target.closest('tr')));
 $('t-cmp').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(e.target.closest('tr'))}});
 refresh();setView('3d',true);
+
+/* ---------- orçamento editável ---------- */
+const OKEY='orcamento-casa01-v1';
+const moneyF=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
+const money=v=>moneyF.format(isFinite(v)?v:0);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const today=()=>new Date().toISOString().slice(0,10);
+function modelItems(){const R=[],L=L_CURVA;const add=(et,tp,d,u,q,p)=>R.push({et,tp,d,u,q:Math.round(q*100)/100,p:Math.round(p*100)/100});
+  if(S.fence==='grade')add('1','Material + serviço','Gradil 1,50 m na divisa dos fundos, instalado','m',L,P.grade);
+  if(S.fence==='muro')add('1','Material + serviço','Muro de bloco 1,80 m rebocado na divisa dos fundos','m²',L*1.8,P.muro);
+  if(S.cat&&S.fence!=='none')add('1','Material + serviço','Topo inclinado 45° anti-fuga de gato + tela','m',L,P.gato);
+  if(S.aterro){const m=measure(),veg=Math.min(m.V,m.A*.1),sai=Math.max(0,m.V-veg);
+    add('Opcional','Material','Aterro: terra/saibro entregue','m³',sai*1.25,P.terra);add('Opcional','Serviço','Aterro: espalhar e compactar','m³',m.V,P.comp);
+    add('Opcional','Material','Terra vegetal (10 cm)','m³',veg*1.25,P.veg);add('Opcional','Material + serviço','Grama em placas','m²',m.A,P.grama);
+    add('Opcional','Material + serviço','Muro de arrimo com fundação','m²',L*(S.H+.4),P.arrimo);add('Opcional','Material + serviço','Dreno do arrimo (brita, manta, tubo)','m',L,P.dreno);}
+  calcExt().it.forEach(([l,det,v])=>{const et=/futuro/i.test(l)?'Futuro':/Escrit|Quarto|Garagem|Escada/.test(l)?'2':/Piscina|Capa|Churras|Bancada|Privac|Varand|churrasco/.test(l)?'3':'1';
+    const tp=/Projeto/.test(l)?'Projeto / taxa':'Material + serviço';add(et,tp,l+(det?' – '+det:''),'vb',1,v)});
+  return R}
+let O;
+function blank(){return{obra:'Casa 01 – estudo de melhorias',resp:'',data:today(),val:30,bdi:10,desc:0,obs:'',rows:modelItems()}}
+function saveO(){try{localStorage.setItem(OKEY,JSON.stringify(O))}catch(e){}}
+function loadO(){try{const t=localStorage.getItem(OKEY);if(t){const o=JSON.parse(t);if(o&&Array.isArray(o.rows))return o}}catch(e){}return blank()}
+function msg(t){$('o-msg').textContent=t;clearTimeout(msg.t);msg.t=setTimeout(()=>$('o-msg').textContent='',4000)}
+function totals(){const sub=O.rows.reduce((s,r)=>s+(+r.q||0)*(+r.p||0),0),bdi=sub*(+O.bdi||0)/100,desc=+O.desc||0;return{sub,bdi,desc,total:sub+bdi-desc}}
+function renderTotals(){const t=totals();$('o-sub').textContent=money(t.sub);$('o-bdiv').textContent=money(t.bdi);$('o-descv').textContent='− '+money(t.desc);$('o-total').textContent=money(t.total);
+  document.querySelectorAll('#o-tab tbody tr').forEach((tr,i)=>{const r=O.rows[i];if(r)tr.querySelector('.tot').textContent=money((+r.q||0)*(+r.p||0))})}
+function renderRows(){const tb=document.querySelector('#o-tab tbody');
+  tb.innerHTML=O.rows.map((r,i)=>`<tr data-i="${i}">
+    <td class="c-e"><input aria-label="Etapa" data-k="et" list="dl-etapa" value="${esc(r.et)}"></td>
+    <td class="c-t"><input aria-label="Tipo" data-k="tp" list="dl-tipo" value="${esc(r.tp)}"></td>
+    <td><input aria-label="Descrição" data-k="d" list="dl-desc" value="${esc(r.d)}"></td>
+    <td class="c-u"><input aria-label="Unidade" data-k="u" list="dl-un" value="${esc(r.u)}"></td>
+    <td class="c-q"><input aria-label="Quantidade" data-k="q" type="number" step="0.01" min="0" value="${esc(r.q)}"></td>
+    <td class="c-p"><input aria-label="Preço unitário" data-k="p" type="number" step="0.01" min="0" value="${esc(r.p)}"></td>
+    <td class="c-tot n tot"></td>
+    <td class="c-x"><button type="button" class="del" aria-label="Remover item" data-del="${i}">×</button></td></tr>`).join('')
+    ||'<tr><td colspan="8">Nenhum item. Use "Puxar itens da maquete" ou "+ Adicionar item".</td></tr>';
+  renderTotals()}
+function renderMeta(){$('o-obra').value=O.obra||'';$('o-resp').value=O.resp||'';$('o-data').value=O.data||'';$('o-val').value=O.val??'';$('o-bdi').value=O.bdi??0;$('o-desc').value=O.desc??0;$('o-obs').value=O.obs||''}
+O=loadO();renderMeta();renderRows();
+document.querySelector('#o-tab tbody').addEventListener('input',e=>{const k=e.target.dataset.k,tr=e.target.closest('tr');if(!k||!tr)return;const r=O.rows[+tr.dataset.i];
+  r[k]=(k==='q'||k==='p')?(e.target.value===''?'':+e.target.value):e.target.value;renderTotals();saveO()});
+document.querySelector('#o-tab tbody').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(!b)return;O.rows.splice(+b.dataset.del,1);renderRows();saveO()});
+[['o-obra','obra'],['o-resp','resp'],['o-data','data'],['o-val','val'],['o-bdi','bdi'],['o-desc','desc'],['o-obs','obs']].forEach(([id,k])=>$(id).addEventListener('input',e=>{O[k]=e.target.type==='number'?(+e.target.value||0):e.target.value;renderTotals();saveO()}));
+$('o-add').addEventListener('click',()=>{O.rows.push({et:'',tp:'Material',d:'',u:'un',q:1,p:0});renderRows();saveO();const ins=document.querySelectorAll('#o-tab tbody tr:last-child input[data-k="d"]');if(ins[0])ins[0].focus()});
+let armed=null;
+function confirmBtn(id,text,fn){const b=$(id),orig=b.textContent;if(armed===id){armed=null;b.textContent=orig.replace(/^Confirmar: /,'');fn();return}
+  armed=id;b.textContent='Confirmar: '+text;setTimeout(()=>{if(armed===id){armed=null;b.textContent=orig}},3500)}
+$('o-load').addEventListener('click',()=>confirmBtn('o-load','substituir itens',()=>{$('o-load').textContent='Puxar itens da maquete';O.rows=modelItems();renderRows();saveO();msg('Itens da opção escolhida na maquete carregados.')}));
+$('o-clear').addEventListener('click',()=>confirmBtn('o-clear','apagar tudo',()=>{$('o-clear').textContent='Limpar';O={...blank(),rows:[]};renderMeta();renderRows();saveO();msg('Orçamento limpo.')}));
+const inFrame=(()=>{try{return window.self!==window.top}catch(e){return true}})();$('o-frame').hidden=!inFrame;
+$('o-save').addEventListener('click',()=>{try{const b=new Blob([JSON.stringify(O,null,2)],{type:'application/json'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(b);a.download='orcamento-casa01-'+(O.data||today())+'.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);msg('Arquivo do orçamento salvo.')}catch(e){msg('Não foi possível salvar aqui. Use a versão do GitHub Pages.')}});
+$('o-open').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=()=>{try{const o=JSON.parse(rd.result);if(!o||!Array.isArray(o.rows))throw 0;O={...blank(),...o};renderMeta();renderRows();saveO();msg('Orçamento aberto: '+f.name)}catch(err){msg('Esse arquivo não é um orçamento desta página.')}e.target.value=''};rd.readAsText(f)});
+function buildReport(){let img='';try{renderer.render(scene,camera);img=renderer.domElement.toDataURL('image/jpeg',.85)}catch(e){}
+  const t=totals(),by={};O.rows.forEach(r=>{const k=r.et?('Etapa '+r.et).replace('Etapa Futuro','Futuro').replace('Etapa Opcional','Opcional'):'Sem etapa';by[k]=(by[k]||0)+(+r.q||0)*(+r.p||0)});
+  const byT={};O.rows.forEach(r=>{const k=r.tp||'Outros';byT[k]=(byT[k]||0)+(+r.q||0)*(+r.p||0)});
+  const dt=O.data?O.data.split('-').reverse().join('/'):'';
+  $('print-report').innerHTML=`<h1>Orçamento</h1>
+   <div class="meta"><div><b>Obra:</b> ${esc(O.obra)}</div><div><b>Data:</b> ${esc(dt)}</div><div><b>Responsável:</b> ${esc(O.resp)||'—'}</div><div><b>Validade:</b> ${O.val?esc(O.val)+' dias':'—'}</div></div>
+   ${img?`<img src="${img}" alt="Vista da maquete 3D">`:''}
+   <table><thead><tr><th>Etapa</th><th>Tipo</th><th>Descrição</th><th>Un.</th><th class="n">Qtd.</th><th class="n">Preço unit.</th><th class="n">Total</th></tr></thead><tbody>
+   ${O.rows.map(r=>`<tr><td>${esc(r.et)}</td><td>${esc(r.tp)}</td><td>${esc(r.d)}</td><td>${esc(r.u)}</td><td class="n">${(+r.q||0).toLocaleString('pt-BR',{maximumFractionDigits:2})}</td><td class="n">${money(+r.p||0)}</td><td class="n">${money((+r.q||0)*(+r.p||0))}</td></tr>`).join('')}
+   </tbody></table>
+   <div class="sum"><div><table><tbody>${Object.entries(by).map(([k,v])=>`<tr><td>${esc(k)}</td><td class="n">${money(v)}</td></tr>`).join('')}</tbody></table>
+     <table style="margin-top:3mm"><tbody>${Object.entries(byT).map(([k,v])=>`<tr><td>${esc(k)}</td><td class="n">${money(v)}</td></tr>`).join('')}</tbody></table></div>
+     <div><table><tbody><tr><td>Subtotal</td><td class="n">${money(t.sub)}</td></tr><tr><td>BDI / imprevistos (${(+O.bdi||0).toLocaleString('pt-BR')}%)</td><td class="n">${money(t.bdi)}</td></tr>
+     <tr><td>Desconto</td><td class="n">− ${money(t.desc)}</td></tr><tr class="total"><td>Total do orçamento</td><td class="n">${money(t.total)}</td></tr></tbody></table></div></div>
+   ${O.obs?`<div class="obs"><b>Observações</b><br>${esc(O.obs)}</div>`:''}
+   <div class="sign"><div>Responsável pelo orçamento</div><div>Proprietário</div></div>
+   <p class="note">Imagem da maquete 3D esquemática, sem escala de obra. Valores conforme preenchidos neste orçamento.</p>`}
+$('o-pdf').addEventListener('click',()=>{buildReport();try{window.print()}catch(e){}if(inFrame)msg('Se a janela de impressão não abriu, use a versão do GitHub Pages.')});
+window.addEventListener('beforeprint',buildReport);
 })();
 </script>
