@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Maquete 3D e orçamento editável do estudo de melhorias da Casa 01.">
 <style>html,body{margin:0}[hidden]{display:none!important}</style>
-<title>Aterro do Lote 01</title>
+<title>Casa 01 · Estudo de melhorias</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,27 +34,63 @@
 body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14.5px;line-height:1.55;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
 .wrap{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
-.hero{position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(135deg,var(--hero1),var(--hero2));padding-block:26px 24px;padding-inline:clamp(18px,4vw,36px);display:flex;flex-direction:column;gap:8px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.topbar{position:sticky;top:max(10px,env(safe-area-inset-top,0px));z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 8px 7px 12px;border-radius:999px;background:color-mix(in srgb,var(--surface) 84%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--fg);min-width:0}
+.brand svg{width:30px;height:30px;flex:none}
+.brand b{font-family:var(--f-display);font-weight:600;font-size:17px;display:block;line-height:1.1}
+.brand small{display:block;font-size:11.5px;color:var(--muted);line-height:1.2}
+.toplinks{display:flex;gap:2px;align-items:center}
+.toplinks a{text-decoration:none;color:var(--fg);font-size:14px;font-weight:500;padding:8px 14px;border-radius:999px}
+.toplinks a:hover{background:var(--sel-soft)}
+.toplinks a.pill{background:var(--sel);color:var(--sel-fg);font-weight:600}
+@media (max-width:560px){.toplinks a:not(.pill){display:none}}
+.hero{position:relative;overflow:hidden;border-radius:24px;background:linear-gradient(135deg,var(--hero1),var(--hero2));padding-block:clamp(26px,4vw,44px);padding-inline:clamp(18px,4vw,44px);display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:28px;align-items:end}
+@media (max-width:860px){.hero{grid-template-columns:minmax(0,1fr)}}
+.hero-text{display:flex;flex-direction:column;gap:10px;position:relative;z-index:1;min-width:0}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0;position:relative;z-index:1}
+.facts div{background:color-mix(in srgb,var(--surface) 72%,transparent);border:1px solid color-mix(in srgb,var(--sel) 16%,transparent);border-radius:16px;padding:12px 14px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);min-width:0}
+.facts dt{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;font-weight:600}
+.facts dd{margin:4px 0 0;font-family:var(--f-display);font-size:clamp(19px,2.2vw,24px);font-weight:500;font-variant-numeric:tabular-nums}
+.facts dd small{font-family:var(--f-body);font-size:12px;color:var(--muted);display:block;font-weight:400;margin-top:2px}
+.tabs{display:flex;gap:4px;padding:4px;background:color-mix(in srgb,var(--sel) 10%,var(--surface));border:1px solid var(--line);border-radius:999px}
+.tabs button{flex:1;font:inherit;font-size:13.5px;font-weight:600;padding:8px 10px;border:0;border-radius:999px;background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 3px rgba(31,43,35,.12)}
+.tabpanel{display:flex;flex-direction:column;gap:12px}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opts button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;font:inherit;padding:10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;transition:border-color .15s,background .15s}
+.opts button:hover{border-color:color-mix(in srgb,var(--sel) 45%,var(--line))}
+.opts button b{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.opts button small{font-size:12.5px;color:var(--muted)}
+.opts button[aria-pressed="true"]{border-color:var(--sel);background:var(--sel-soft);box-shadow:inset 0 0 0 1px var(--sel)}
+.tag{font-style:normal;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--sel);color:var(--sel-fg)}
+.checks{display:flex;flex-direction:column;gap:8px}
+details.more summary{color:var(--muted);font-weight:500}
+details.more .checks{margin-top:10px}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;color:var(--muted);font-size:12.5px;padding:8px 4px 0;border-top:1px solid var(--line)}
 .hero .eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--sel);font-weight:600;margin:0}
 .hero h1{font-family:var(--f-display);font-weight:500;font-size:clamp(26px,4vw,40px);line-height:1.12;margin:0;letter-spacing:-.01em;text-wrap:balance;max-width:20ch}
 .hero p{margin:0;color:var(--muted);max-width:62ch;position:relative}
 .hero .cta{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;position:relative}
 .hero .cta a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:600;font-size:14px;padding:9px 16px;border-radius:999px;background:var(--sel);color:var(--sel-fg)}
 .hero .cta a.ghost{background:transparent;color:var(--sel);border:1px solid color-mix(in srgb,var(--sel) 40%,transparent)}
-.hero svg.leaves{position:absolute;right:-30px;bottom:-40px;width:min(42vw,360px);height:auto;opacity:.5;pointer-events:none}
-@media (max-width:640px){.hero svg.leaves{opacity:.22}}
+.hero svg.leaves{position:absolute;right:-30px;top:-70px;width:min(40vw,420px);height:auto;opacity:.28;pointer-events:none;z-index:0}
+@media (max-width:860px){.hero svg.leaves{left:auto;right:-40px;opacity:.2}}
 .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 
-.app{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start}
+.app{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:18px;align-items:start;scroll-margin-top:84px}
 @media (max-width:900px){.app{grid-template-columns:minmax(0,1fr)}}
-.viewer{position:sticky;top:max(12px,env(safe-area-inset-top,0px));background:var(--sky);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow);
-  height:min(78vh,720px);min-height:360px}
-@media (max-width:900px){.viewer{position:relative;top:0;height:62vh;min-height:320px}}
+#orcamento,#opcoes{scroll-margin-top:84px}
+.viewer{position:sticky;top:calc(max(10px,env(safe-area-inset-top,0px)) + 68px);background:var(--sky);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);
+  height:min(calc(100vh - 100px),720px);min-height:380px}
+@media (max-width:900px){.viewer{position:relative;top:0;height:64vh;min-height:320px}}
 #stage{position:absolute;inset:0}
 #stage canvas{display:block;width:100%;height:100%;touch-action:none}
-.views{position:absolute;top:10px;left:10px;display:flex;gap:4px;flex-wrap:wrap;z-index:2}
-.legend{position:absolute;left:10px;bottom:10px;right:10px;display:flex;gap:6px 14px;flex-wrap:wrap;z-index:2;pointer-events:none}
-.legend span{display:inline-flex;align-items:center;gap:6px;font-size:12px;background:color-mix(in srgb,var(--surface) 86%,transparent);padding:3px 8px;border-radius:6px;color:var(--fg)}
+.views{position:absolute;top:12px;left:12px;right:12px;width:fit-content;max-width:calc(100% - 24px);display:flex;gap:2px;flex-wrap:wrap;z-index:2;padding:4px;border-radius:18px;background:color-mix(in srgb,var(--surface) 80%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);box-shadow:var(--shadow)}
+.views button{border:0!important;background:transparent!important;color:var(--fg)}
+.views button[aria-pressed="true"]{background:var(--sel)!important;color:var(--sel-fg)}
+.legend{position:absolute;left:12px;bottom:12px;right:12px;display:flex;gap:6px 8px;flex-wrap:wrap;z-index:2;pointer-events:none}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-size:12px;background:color-mix(in srgb,var(--surface) 82%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding:4px 10px;border-radius:999px;color:var(--fg)}
 .sw{width:18px;height:0;border-top:2px solid var(--accent)}
 .sw.dash{border-top:2px dashed var(--accent)}
 .sw.fill{height:10px;border:0;background:#d8b46a;border-radius:2px}
@@ -62,7 +99,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14
 
 .panel{display:flex;flex-direction:column;gap:12px;min-width:0}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0;box-shadow:var(--shadow)}
-.card h2{font-family:var(--f-display);font-weight:600;font-size:15px;margin:0}
+.card h2{font-family:var(--f-display);font-weight:500;font-size:18px;margin:0}
 .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
 .seg{display:flex;flex-wrap:wrap;gap:4px}
 .seg button,.views button{font:inherit;font-size:13px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
@@ -146,12 +183,32 @@ header a{color:var(--sel);font-weight:600}
 }
 </style>
 
-<div class="wrap">
+<div class="wrap" id="topo">
+  <nav class="topbar" aria-label="Seções da página">
+    <a class="brand" href="#topo">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="var(--sel)"/><path d="M9 22c2-8 7-12 15-13-1 8-6 13-15 13z" fill="var(--sel-fg)" opacity=".92"/><path d="M9 22l8-7" stroke="var(--sel)" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span><b>Casa 01</b><small>Estudo de melhorias</small></span>
+    </a>
+    <div class="toplinks">
+      <a href="#maquete">Maquete</a>
+      <a href="#opcoes">Opções</a>
+      <a class="pill" href="#orcamento">Orçamento</a>
+    </div>
+  </nav>
+
   <header class="hero">
-    <p class="eyebrow">Casa 01 · estudo de melhorias</p>
-    <h1>Nossa casa, ao lado da área verde</h1>
-    <p>Uma maquete para imaginar com calma o que vem pela frente: o carro coberto, a grade que deixa o gato seguro sem tirar a vista das árvores, o cantinho de trabalho nos fundos e a piscina com churrasco ao lado. Gire a maquete, troque as opções e monte o orçamento.</p>
-    <div class="cta"><a href="#orcamento">Abrir o orçamento ↓</a><a class="ghost" href="#stage-anchor">Ver a maquete</a></div>
+    <div class="hero-text">
+      <p class="eyebrow">Lote 01 · ao lado da área verde</p>
+      <h1>Nossa casa, ao lado da área verde</h1>
+      <p>Uma maquete para imaginar com calma o que vem pela frente: o carro coberto, a grade que deixa o gato seguro sem tirar a vista das árvores, o cantinho de trabalho nos fundos e a piscina com churrasco ao lado.</p>
+      <div class="cta"><a href="#maquete">Explorar a maquete</a><a class="ghost" href="#orcamento">Montar o orçamento</a></div>
+    </div>
+    <dl class="facts">
+      <div><dt>Terreno</dt><dd>210,88 m²<small>Lote 01</small></dd></div>
+      <div><dt>Casa atual</dt><dd>57,24 m²<small>2 quartos, 2 banheiros</small></dd></div>
+      <div><dt>Divisa verde</dt><dd>~24 m<small>curva, raio de 50 m</small></dd></div>
+      <div><dt>Estimativa</dt><dd>~R$ 84 mil<small>em 3 etapas, sem aterro</small></dd></div>
+    </dl>
     <svg class="leaves" viewBox="0 0 360 260" aria-hidden="true">
       <g fill="none" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round">
         <path d="M40 250 C120 170 200 140 330 120"/><path d="M90 205 c-10-38 8-62 38-74 c6 34-10 58-38 74z" fill="var(--leaf)" fill-opacity=".25"/>
@@ -163,19 +220,19 @@ header a{color:var(--sel);font-weight:600}
     </svg>
   </header>
 
-  <main class="app">
+  <main class="app" id="maquete">
     <section class="viewer" id="stage-anchor" aria-label="Vista 3D do lote">
       <div id="stage"></div>
       <div class="views" role="group" aria-label="Vista">
         <button id="v-aerea" data-view="aerea">Aérea</button>
         <button id="v-3d" data-view="3d" aria-pressed="true">3D</button>
-        <button id="v-quintal" data-view="quintal">Do quintal</button>
-        <button id="v-detalhe" data-view="detalhe">Perfil da grade</button>
-        <button id="v-frente" data-view="frente">Frente</button>
         <button id="v-foto" data-view="foto">Como na foto</button>
-        <button id="v-churrasco" data-view="churrasco">Churrasco</button>
+        <button id="v-frente" data-view="frente">Frente</button>
         <button id="v-piscina" data-view="piscina">Piscina</button>
         <button id="v-escritorio" data-view="escritorio">Escritório</button>
+        <button id="v-quintal" data-view="quintal">Quintal</button>
+        <button id="v-detalhe" data-view="detalhe">Grade</button>
+        <button id="v-churrasco" data-view="churrasco">Churrasco</button>
       </div>
       <div class="legend">
         <span><i class="sw"></i>Divisa com a Área Verde</span>
@@ -184,99 +241,125 @@ header a{color:var(--sel);font-weight:600}
       </div>
     </section>
 
-    <aside class="panel">
-      <div class="card">
-        <div class="field"><span class="lbl">Terreno</span>
-          <div class="seg" role="group" aria-label="Terreno">
-            <button id="t-nat" data-aterro="0">Como está</button>
-            <button id="t-at" data-aterro="1" aria-pressed="true">Aterrado</button>
+    <aside class="panel" id="opcoes">
+      <div class="tabs" role="tablist" aria-label="Painéis">
+        <button role="tab" id="tab-proj" aria-controls="pn-proj" aria-selected="true">Projeto</button>
+        <button role="tab" id="tab-fundos" aria-controls="pn-fundos" aria-selected="false">Fundos e grade</button>
+        <button role="tab" id="tab-notas" aria-controls="pn-notas" aria-selected="false">Observações</button>
+      </div>
+
+      <div class="tabpanel" id="pn-proj" role="tabpanel" aria-labelledby="tab-proj">
+        <div class="card">
+          <h2>Configuração</h2>
+          <div class="opts" role="group" aria-label="Configuração da piscina e do lazer">
+            <button id="p-eco" data-pool="eco"><b>Econômica <em class="tag">escolhida</em></b><small>Piscina e bafo na lateral, carro coberto, escritório nos fundos</small></button>
+            <button id="p-lateral" data-pool="lateral"><b>Lateral com garagem</b><small>Garagem de 1 carro, churrasqueira fixa, quarto em cima opcional</small></button>
+            <button id="p-fundos2" data-pool="fundos2"><b>Piscina nos fundos + bafo</b><small>Vista para a área verde; exige aterro e arrimo</small></button>
+            <button id="p-fundos" data-pool="fundos"><b>Piscina nos fundos</b><small>Com churrasqueira fixa no muro do vizinho</small></button>
+            <button id="p-frente" data-pool="frente"><b>Piscina na frente</b><small>Em frente à sala</small></button>
+            <button id="p-none" data-pool="none"><b>Sem piscina</b><small>Só as demais melhorias</small></button>
           </div>
         </div>
-        <div class="field"><span class="lbl">Fechamento na divisa</span>
-          <div class="seg" role="group" aria-label="Fechamento">
-            <button id="f-none" data-fence="none">Nenhum</button>
-            <button id="f-grade" data-fence="grade" aria-pressed="true">Grade 1,50 m</button>
-            <button id="f-muro" data-fence="muro">Muro 1,80 m</button>
+
+        <div class="card">
+          <h2>Itens</h2>
+          <div class="checks">
+            <label class="chk"><input type="checkbox" id="c-cp" checked> Cobertura do carro junto à suíte</label>
+            <label class="chk"><input type="checkbox" id="c-lav" checked> Fechar a lavação, com porta para o quintal</label>
+            <label class="chk"><input type="checkbox" id="c-edic" checked> Escritório (edícula) atrás da lavação</label>
+            <label class="chk"><input type="checkbox" id="c-car2" checked> 2º carro ao lado, cobertura ampliada (futuro)</label>
           </div>
-          <label class="chk"><input type="checkbox" id="c-cat" checked> Topo inclinado para dentro, tipo alambrado de autódromo (anti-fuga de gato)</label>
+          <details class="more">
+            <summary>Itens das configurações alternativas</summary>
+            <div class="checks">
+              <label class="chk"><input type="checkbox" id="c-q" checked> Quarto em cima da garagem lateral</label>
+              <label class="chk"><input type="checkbox" id="c-chur" checked> Churrasqueira + bancada + mesa atrás da lavação</label>
+              <label class="chk"><input type="checkbox" id="c-gar"> Garagem para 2 carros lado a lado</label>
+              <label class="chk"><input type="checkbox" id="c-esc" checked> Escritório + lavabo em cima da garagem dupla</label>
+              <label class="chk"><input type="checkbox" id="c-sotao" checked> Passagem da escada para o sótão da casa</label>
+            </div>
+          </details>
         </div>
-        <div class="field">
-          <div class="top"><label for="r-h">Altura do barranco na divisa</label><b class="mono" id="o-h"></b></div>
-          <input type="range" id="r-h" min="0.1" max="1.5" step="0.05" value="0.6">
-          <small>Desnível entre o chão plano e o pé do barranco, junto à divisa.</small>
-        </div>
-        <div class="field">
-          <div class="top"><label for="r-w">Largura da faixa fora do nível</label><b class="mono" id="o-w"></b></div>
-          <input type="range" id="r-w" min="0.5" max="3.5" step="0.1" value="1.2">
-          <small>Da divisa até onde o chão fica plano. A casa está a 2,28 m da divisa no ponto mais próximo.</small>
-        </div>
-        <label class="chk"><input type="checkbox" id="c-fill" checked> Destacar a terra do aterro</label>
-      </div>
 
-      <div class="card">
-        <h2>Medidas</h2>
-        <div class="stats">
-          <div class="stat"><b id="s-a"></b><span>área a aterrar</span></div>
-          <div class="stat"><b id="s-v"></b><span>volume compactado</span></div>
-          <div class="stat"><b id="s-vs"></b><span>terra a comprar (+25%)</span></div>
-          <div class="stat"><b id="s-cam"></b><span>caçambas de 10 m³</span></div>
+        <div class="card">
+          <h2>Custo estimado</h2>
+          <table id="t-ext"></table>
+          <div class="warn" id="w-gar" hidden>A garagem ocupa o recuo frontal de 3 m (linha tracejada). Confirme com arquiteto e Prefeitura antes de qualquer gasto.</div>
+          <details>
+            <summary>Preços usados (editáveis)</summary>
+            <div class="prices" id="eprices"></div>
+          </details>
         </div>
       </div>
 
-      <div class="card">
-        <h2>Custo estimado da opção escolhida</h2>
-        <table id="t-cost"></table>
-        <div class="warn" id="w-arrimo">Aterrar até a divisa exige muro de arrimo: a terra não pode escorrer para a Área Verde do Município.</div>
-      </div>
-
-      <div class="card">
-        <h2>Comparar opções</h2>
-        <table class="cmp" id="t-cmp"></table>
-        <details>
-          <summary>Preços usados (editáveis)</summary>
-          <div class="prices" id="prices"></div>
-        </details>
-      </div>
-
-      <div class="card">
-        <h2>Ampliações (estudo)</h2>
-        <label class="chk"><input type="checkbox" id="c-lav" checked> Fechar a lavação, com porta para os fundos</label>
-        <label class="chk"><input type="checkbox" id="c-cp" checked> Cobertura do carro junto à suíte (opção econômica)</label>
-        <div class="field"><span class="lbl">Piscina</span>
-          <div class="seg" role="group" aria-label="Piscina">
-            <button id="p-eco" data-pool="eco">Econômica: lateral sem garagem</button>
-            <button id="p-none" data-pool="none">Sem piscina</button>
-            <button id="p-frente" data-pool="frente">Na frente</button>
-            <button id="p-fundos" data-pool="fundos">Nos fundos</button>
-            <button id="p-fundos2" data-pool="fundos2">Fundos + churrasqueira a bafo</button>
-            <button id="p-lateral" data-pool="lateral">Lateral + garagem 1 carro + churrasco</button>
+      <div class="tabpanel" id="pn-fundos" role="tabpanel" aria-labelledby="tab-fundos" hidden>
+        <div class="card">
+          <div class="field"><span class="lbl">Terreno</span>
+            <div class="seg" role="group" aria-label="Terreno">
+              <button id="t-nat" data-aterro="0">Como está</button>
+              <button id="t-at" data-aterro="1">Aterrado</button>
+            </div>
           </div>
-          <label class="chk"><input type="checkbox" id="c-q" checked> Quarto em cima da garagem lateral (sem banheiro)</label>
-          <label class="chk"><input type="checkbox" id="c-edic" checked> Escritório (edícula) atrás da lavação</label>
-          <label class="chk"><input type="checkbox" id="c-car2" checked> 2º carro ao lado, cobertura ampliada (futuro)</label>
+          <div class="field"><span class="lbl">Fechamento na divisa</span>
+            <div class="seg" role="group" aria-label="Fechamento">
+              <button id="f-none" data-fence="none">Nenhum</button>
+              <button id="f-grade" data-fence="grade" aria-pressed="true">Grade 1,50 m</button>
+              <button id="f-muro" data-fence="muro">Muro 1,80 m</button>
+            </div>
+            <label class="chk"><input type="checkbox" id="c-cat" checked> Topo inclinado para dentro (anti-fuga de gato)</label>
+          </div>
+          <div class="field">
+            <div class="top"><label for="r-h">Altura do barranco na divisa</label><b class="mono" id="o-h"></b></div>
+            <input type="range" id="r-h" min="0.1" max="1.5" step="0.05" value="0.6">
+            <small>Desnível entre o chão plano e o pé do barranco, junto à divisa.</small>
+          </div>
+          <div class="field">
+            <div class="top"><label for="r-w">Largura da faixa fora do nível</label><b class="mono" id="o-w"></b></div>
+            <input type="range" id="r-w" min="0.5" max="3.5" step="0.1" value="1.2">
+            <small>Da divisa até onde o chão fica plano. A casa está a 2,28 m da divisa no ponto mais próximo.</small>
+          </div>
+          <label class="chk"><input type="checkbox" id="c-fill" checked> Destacar a terra do aterro</label>
         </div>
-        <label class="chk"><input type="checkbox" id="c-chur" checked> Churrasqueira + bancada + mesa atrás da lavação</label>
-        <label class="chk"><input type="checkbox" id="c-gar"> Garagem para 2 carros lado a lado, com canto de treino</label>
-        <label class="chk"><input type="checkbox" id="c-esc" checked> Escritório + lavabo em cima da garagem</label>
-        <label class="chk"><input type="checkbox" id="c-sotao" checked> Passagem da escada para o sótão da casa</label>
-        <table id="t-ext"></table>
-        <div class="warn">A garagem desenhada ocupa o recuo frontal de 3 m (linha tracejada). Pelo Plano Diretor de Indaial isso provavelmente não é permitido, menos ainda para o andar de cima. Confirme com arquiteto e Prefeitura antes de qualquer gasto.</div>
-        <details>
-          <summary>Preços das ampliações (editáveis)</summary>
-          <div class="prices" id="eprices"></div>
-        </details>
+
+        <div class="card">
+          <h2>Medidas do aterro</h2>
+          <div class="stats">
+            <div class="stat"><b id="s-a"></b><span>área a aterrar</span></div>
+            <div class="stat"><b id="s-v"></b><span>volume compactado</span></div>
+            <div class="stat"><b id="s-vs"></b><span>terra a comprar (+25%)</span></div>
+            <div class="stat"><b id="s-cam"></b><span>caçambas de 10 m³</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Custo da divisa</h2>
+          <table id="t-cost"></table>
+          <div class="warn" id="w-arrimo">Aterrar até a divisa exige muro de arrimo: a terra não pode escorrer para a Área Verde do Município.</div>
+        </div>
+
+        <div class="card">
+          <h2>Comparar opções da divisa</h2>
+          <table class="cmp" id="t-cmp"></table>
+          <details>
+            <summary>Preços usados (editáveis)</summary>
+            <div class="prices" id="prices"></div>
+          </details>
+        </div>
       </div>
 
-      <div class="card">
-        <span class="lbl">Leia antes de orçar</span>
-        <ul class="notes">
-          <li>Preços de referência para o Vale do Itajaí/SC, com material e mão de obra. Variam bastante: peça ao menos 3 orçamentos.</li>
-          <li>Altura e largura do barranco não constam no projeto; os valores iniciais são exemplo.</li>
-          <li>Muro de arrimo acima de ~1 m precisa de projeto e ART de engenheiro.</li>
-          <li>Confirme na Prefeitura de Indaial se o muro na divisa com a Área Verde precisa de autorização.</li>
-          <li>Anti-fuga de gato só funciona com o perímetro todo fechado: muros com os vizinhos, frente, portão e a lateral de 4,84 m também precisam de topo curvo, sem vãos acima de ~5 cm.</li>
-          <li>Casa e telhados simplificados a partir da implantação (prancha A 01/07). Lateral esquerda de 4,84 m não incluída.</li>
-        </ul>
+      <div class="tabpanel" id="pn-notas" role="tabpanel" aria-labelledby="tab-notas" hidden>
+        <div class="card">
+          <h2>Antes de orçar</h2>
+          <ul class="notes">
+            <li>Preços de referência para o Vale do Itajaí/SC, com material e mão de obra. Variam bastante: peça ao menos 3 orçamentos.</li>
+            <li>Altura e largura do barranco não constam no projeto; os valores iniciais são exemplo.</li>
+            <li>Piscina, cobertura e vagas no recuo frontal de 3 m dependem de confirmação na Prefeitura de Indaial.</li>
+            <li>Muro de arrimo acima de ~1 m precisa de projeto e ART de engenheiro.</li>
+            <li>Anti-fuga de gato só funciona com o perímetro todo fechado, sem vãos acima de ~5 cm.</li>
+            <li>Fossa e filtro continuam necessários; as tampas precisam de acesso e, sob o carro, de reforço.</li>
+            <li>Casa e telhados simplificados a partir da implantação do projeto aprovado.</li>
+          </ul>
+        </div>
       </div>
     </aside>
   </main>
@@ -336,6 +419,11 @@ header a{color:var(--sel);font-weight:600}
     </div>
     <label for="o-obs">Observações<textarea id="o-obs" rows="3" placeholder="Condições de pagamento, prazo, o que não está incluso..."></textarea></label>
   </section>
+
+  <footer class="foot">
+    <span>Casa 01 · estudo de melhorias feito a partir do projeto aprovado</span>
+    <span>Maquete esquemática; medidas e valores são estimativas para conversa com engenheiro e construtora.</span>
+  </footer>
 </div>
 <div id="print-report" aria-hidden="true"></div>
 
@@ -760,7 +848,7 @@ function renderUI(){
   const ce=calcExt();
   $('t-ext').innerHTML=ce.it.length?'<tr><th>Item</th><th class="n">Valor</th></tr>'+ce.it.map(r=>`<tr><td>${r[0]}<small>${r[1]}</small></td><td class="n">${brl(r[2])}</td></tr>`).join('')
     +`<tr class="total"><td>Total estimado<small>faixa realista ${brl(ce.total*.8)} a ${brl(ce.total*1.3)}</small></td><td class="n">${brl(ce.total)}</td></tr>`:'<tr><td>Nenhuma ampliação marcada.</td></tr>';
-  $('c-esc').disabled=!E.gar;$('c-cp').disabled=E.gar;
+  $('c-esc').disabled=!E.gar;$('c-cp').disabled=E.gar;$('w-gar').hidden=!(E.gar||E.pool==='lateral');
   document.querySelectorAll('[data-pool]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.pool===E.pool));
   $('c-q').disabled=E.pool!=='lateral';$('c-edic').disabled=E.pool==='fundos'||E.pool==='fundos2';$('c-car2').disabled=E.pool!=='eco';$('c-sotao').disabled=!(E.gar&&E.esc);
   const m=measure();
@@ -792,6 +880,8 @@ const pick=tr=>{if(!tr||!tr.dataset.f)return;S.aterro=tr.dataset.a==='1';S.fence
 $('t-cmp').addEventListener('click',e=>pick(e.target.closest('tr')));
 $('t-cmp').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(e.target.closest('tr'))}});
 refresh();setView('3d',true);
+document.querySelectorAll('.tabs [role=tab]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tabs [role=tab]').forEach(x=>{const on=x===b;x.setAttribute('aria-selected',on);$(x.getAttribute('aria-controls')).hidden=!on})}));
 
 /* ---------- orçamento editável ---------- */
 const OKEY='orcamento-casa01-v1';
