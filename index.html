@@ -704,8 +704,8 @@ function buildExt(){
     const k=new THREE.Mesh(new THREE.SphereGeometry(.3,24,16),mD);k.position.copy(W3(kx,.82,ky));k.castShadow=true;ext.add(k);
     [[-.18,-.12],[.18,-.12],[0,.2]].forEach(([dx,dy])=>box(kx+dx-.015,kx+dx+.015,ky+dy-.015,ky+dy+.015,0,.65,mD));
     const hedge=new THREE.MeshLambertMaterial({color:0x3f6b35});box(.05,.5,.5,3.0,0,1.6,hedge);
-    if(!E.car2)box(.1,6.9,.05,.5,0,1.6,hedge);
-    else box(.1,4.45,.05,.5,0,1.6,hedge);}// com 2 carros a cerca viva termina antes da 2ª vaga
+    if(!E.car2)box(.1,6.75,.24,.54,0,1.6,hedge);
+    else box(.1,4.35,.24,.54,0,1.6,hedge);}// com 2 carros a cerca viva termina antes da 2ª vaga
   if(E.pool==='frente'){box(14.9,19.3,.25,2.75,0,.14,mStone);box(15.2,19.0,.5,2.5,.14,.17,matWhite);
     box(15.35,18.95,.65,2.35,.17,.175,mWater);
     label('Piscina 3,6 × 1,8 m',17.1,1.4,1.5,.8,ext);}
@@ -1003,9 +1003,11 @@ function buildFurniture(){buildRoutes();
       label('Ampliado ≈ 2,45 × 3,65 m',17.98,3.3,13.2,.6,ext);}}
 }
 /* portão da frente: corre para a direita, atrás do murinho, no sentido da casa */
-function frontGate(){const two=E.pool==='eco'&&E.car2,gR=10.25,gL=two?4.55:6.95,W=gR-gL,mEnd=LOT_W-.08,gy0=.3,gy1=.36,gh=1.7,mt=matStep;
-  const mur=new THREE.MeshLambertMaterial({color:0xd9d2c4});box(gR,mEnd,.02,.2,0,.7,mur);box(gR-.05,mEnd,0,.22,.7,.75,matCap);
-  box(gR-.2,gR,0,.22,0,1.85,mur);box(gL-.2,gL,0,.22,0,1.85,mur);                        // pilares de cada lado do vão
+function frontGate(){const two=E.pool==='eco'&&E.car2,gR=10.25,gL=two?4.55:6.95,W=gR-gL,mEnd=LOT_W-.08,gy0=.3,gy1=.36,gh=1.45,mt=matStep;
+  const mur=new THREE.MeshLambertMaterial({color:0xd9d2c4});// muro de ~1 m dos dois lados do portão (à esquerda vai até a divisa)
+  box(gR,mEnd,.02,.2,0,1.0,mur);box(gR-.05,mEnd,0,.22,1.0,1.05,matCap);
+  box(.05,gL-.2,.02,.2,0,1.0,mur);box(.03,gL-.15,0,.22,1.0,1.05,matCap);
+  box(gR-.2,gR,0,.22,0,1.6,mur);box(gL-.2,gL,0,.22,0,1.6,mur);                        // pilares de cada lado do vão
   box(gL+.02,gR+.3,gy0,gy1,.06,.12,mt);box(gL+.02,gR+.3,gy0,gy1,gh-.08,gh,mt);           // quadro
   box(gL+.02,gL+.1,gy0,gy1,.06,gh,mt);box(gR+.22,gR+.3,gy0,gy1,.06,gh,mt);
   for(let x=gL+.18;x<gR+.22;x+=.12)box(x,x+.04,gy0+.01,gy1-.01,.12,gh-.08,mt);           // grade vertical
