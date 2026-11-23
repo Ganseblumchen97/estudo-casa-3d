@@ -291,6 +291,7 @@ header a{color:var(--sel);font-weight:600}
         <button id="v-quintal" data-view="quintal">Quintal</button>
         <button id="v-detalhe" data-view="detalhe">Grade</button>
         <button id="v-churrasco" data-view="churrasco">Churrasco</button>
+        <button id="v-casa" class="tgl" type="button" title="Tira o telhado da casa e mostra os cômodos com os móveis da planta">Dentro da casa</button>
         <button id="v-open" class="tgl" type="button" aria-pressed="false" title="Tira os telhados e mostra os móveis em escala">Sem telhado + móveis</button>
       </div>
       <div class="legend">
@@ -662,7 +663,7 @@ function gable(x0,y0,x1,y1,alongX,base,mat,ov=.45,sl=.35){
   g.setAttribute('uv',new THREE.Float32BufferAttribute(v.flatMap(p=>alongX?[p[0]/1.6,p[2]/1.6]:[p[2]/1.6,p[0]/1.6]),2));g.computeVertexNormals();
   const m=new THREE.Mesh(g,mat);m.castShadow=true;m.userData.roof=true;return m}
 const HOUSE_W=[[0,.6],[3.15,.6],[3.15,0],[6.45,0],[6.45,.45],[9.2,.45],[9.2,7.05],[4.6,7.05],[4.6,5.9],[1.8,5.9],[1.8,4.45],[0,4.45]].map(p=>[p[0]+HX,p[1]+HY]);
-scene.add(extrudePoly(HOUSE,0,.15,matBase),extrudePoly(HOUSE_W,.15,3.15,matWall));
+const houseSolid=extrudePoly(HOUSE_W,.15,3.15,matWall);scene.add(extrudePoly(HOUSE,0,.15,matBase),houseSolid);
 const houseRoofs=[gable(HX,HY,HX+6.45,HY+4.45,true,3.3,matRoof),gable(HX+1.8,HY+4.45,HX+6.45,HY+7.05,true,3.3,matRoof),gable(HX+6.45,HY+.45,HX+9.2,HY+8.4,false,3.3,matRoof)];
 scene.add(...houseRoofs);
 // sem telhado: a casa existente aparece fechada (a planta interna dela não está na maquete)
@@ -725,7 +726,7 @@ function withEff(fn){const sv={cp:E.cp,lav:E.lav,edic:E.edic,amp:E.amp,banho:E.b
     _pia:on('Bancada com pia'),_mesa:on('Mesa externa + 4 cadeiras'),_portaozinho:on('Portãozinho na cerca'),_viz:on('Anti-gato no muro do vizinho'),_pool:on('Piscina de fibra'),_bafo:on('Churrasqueira a bafo'),_hedge:on('Cerca viva'),_deck:on('Área do churrasco no canto da piscina')});
   if(S.fence==='grade'&&!on('Gradil 1,50 m'))S.fence='none';if(S.fence==='muro'&&!on('Muro 1,80 m'))S.fence='none';S.cat=S.cat&&on('Topo inclinado 45° + tela');
   try{return fn()}finally{Object.assign(E,sv);Object.assign(S,sf)}}
-const E={car2:true,edic:true,q:true,pool:'eco',lav:true,cp:true,chur:true,gar:false,esc:true,sotao:true,banho:true,maq:'banheiro',amp:false,x0:2.9,x1:8.5,y0:.3,y1:5.1};
+const E={latDoor:true,car2:true,edic:true,q:true,pool:'eco',lav:true,cp:true,chur:true,gar:false,esc:true,sotao:true,banho:true,maq:'banheiro',amp:false,x0:2.9,x1:8.5,y0:.3,y1:5.1};
 const EP={cmaqb:4000,tpiscb:2600,elpb:900,murop:2000,cobp:2000,pia:3200,piai:2000,cobm:3500,pedras:1400,ducha:1800,banho:10000,cmaq:3500,esg:1200,agua:500,elp:1500,tpisc:600,deck:7500,mesa:1500,ele:2500,rede:600,amp:12000,portao2:9500,pool:22000,capa:1500,g1:1800,var:3000,priv:4000,cp:8500,churq:3500,banc:3000,chcob:5500,lav:5500,gar:2400,portao:9000,esc:3500,escada:9000,sotao:7000,treino:2500,proj:10000};
 const EPL={cmaqb:['Casa de máquinas junto do banheiro (casinha)','R$'],tpiscb:['Tubos da piscina até o banheiro + bomba autoescorvante','R$'],elpb:['Elétrica da casa de máquinas junto do banheiro','R$'],murop:['Muro atrás da pia (com revestimento)','R$'],cobp:['Cobertura da pia (policarbonato)','R$'],pia:['Bancada com pia (alvenaria + granito + cuba)','R$'],piai:['Água e esgoto da pia (caixa de gordura)','R$'],cobm:['Cobertura da mesa (policarbonato)','R$'],pedras:['Caminho de pedras (com aterro)','R$'],ducha:['Cantinho da ducha sobre o barranco (piso + grade)','R$'],tpisc:['Tubos da piscina até a casa de máquinas','R$'],deck:['Deck de madeira do canto (sem aterro)','R$'],mesa:['Mesa externa + 4 cadeiras','R$'],agua:['Água fria até o banheiro e a ducha','R$'],elp:['Elétrica da casa de máquinas (circuito + DR)','R$'],ele:['Elétrica do escritório (circuito próprio)','R$'],rede:['Internet no escritório (cabo de rede)','R$'],amp:['Ampliação do escritório para trás (~3,3 m²)','R$'],portao2:['Portão de correr de 2 carros (~5,7 m) + motor','R$'],banho:['Banheiro externo (vaso, pia, ducha)','R$'],cmaq:['Casa de máquinas da piscina','R$'],esg:['Esgoto do banheiro até a fossa','R$'],pool:['Piscina de fibra 3,6 × 1,8 m instalada','R$'],capa:['Capa de proteção','R$'],g1:['Garagem 1 carro, térrea, telhado igual à casa','R$/m²'],var:['Varandinha coberta da churrasqueira','R$'],priv:['Cerca viva / muro de privacidade na frente','R$'],cp:['Cobertura do carro anexa à casa (~14 m²)','R$'],churq:['Churrasqueira pré-moldada + base + chaminé','R$'],banc:['Bancada 1,7 m (alvenaria + granito)','R$'],chcob:['Cobertura do churrasco (~8 m²)','R$'],lav:['Fechar lavação (paredes, porta, basculante)','R$'],gar:['Garagem com laje para 2º andar','R$/m²'],portao:['Portão automático 5 m','R$'],
   esc:['Escritório + lavabo (2º andar)','R$/m²'],escada:['Escada externa metálica','R$'],sotao:['Passarela + porta no oitão + rufos','R$'],treino:['Rack dobrável de parede + piso de borracha','R$'],proj:['Projeto, ART e aprovação','R$']};
@@ -898,7 +899,7 @@ function _buildExt(){
   buildBanho();
   if(S.open)buildFurniture();
   ext.traverse(o=>{if(o.userData.roof)o.visible=!S.open});
-  houseRoofs.forEach(m=>m.visible=!S.open);houseCap.visible=S.open;
+  houseRoofs.forEach(m=>m.visible=!S.open);houseCap.visible=false;houseSolid.visible=!S.open;if(S.open)buildInterior();
 }
 /* banheiro externo + casa de máquinas, atrás da piscina da lateral */
 const banhoOn=()=>E.banho&&(E.pool==='eco'||E.pool==='lateral');
@@ -1049,6 +1050,58 @@ function buildRoutes(){
       label('Água + luz pela casa',HX-.5,3.4,6.95,.6,ext);label('Esgoto → fossa',7.6,1.0,3.6,.5,ext);}}
   if(edOn)escRoutes();
 }
+/* casa por dentro, conforme a planta aprovada: paredes de 15 cm, vãos de porta abertos e móveis da planta */
+function buildInterior(){const H=3.1,t=.15,mFl=new THREE.MeshLambertMaterial({color:0xd9cbb3}),mWet=new THREE.MeshLambertMaterial({color:0xc9d3d6}),
+    mFw=new THREE.MeshLambertMaterial({color:0xc9a27a}),mFab=new THREE.MeshLambertMaterial({color:0x7f97ab}),mSheet=new THREE.MeshLambertMaterial({color:0xf4f1ea}),
+    mDk=new THREE.MeshLambertMaterial({color:0x3a3f3c}),mInox=new THREE.MeshLambertMaterial({color:0xb9bcbf}),mGr=new THREE.MeshLambertMaterial({color:0x3d3c3a});
+  const b=(x0,x1,y0,y1,h0,h1,m)=>box(HX+x0,HX+x1,HY+y0,HY+y1,h0,h1,m);
+  // piso
+  ext.add(extrudePoly(HOUSE_W,.15,.005,mFl));
+  [[1.95,4.55,4.45,5.75],[4.7,6.3,4.45,6.9],[6.45,9.05,7.2,8.25]].forEach(([a,c,d,e])=>b(a,c,d,e,.155,.16,mWet));
+  // paredes externas: segue o contorno da casa, para dentro
+  const P=HOUSE_W;for(let i=0;i<P.length;i++){const[a0,b0]=P[i],[a1,b1]=P[(i+1)%P.length],len=Math.hypot(a1-a0,b1-b0);if(b0===b1&&b0===HY+7.05)continue;let nx=-(b1-b0)/len,ny=(a1-a0)/len;
+    if(!inPoly((a0+a1)/2+nx*.2,(b0+b1)/2+ny*.2,HOUSE_W)){nx=-nx;ny=-ny}
+    const m=new THREE.Mesh(new THREE.BoxGeometry(len+t,H-.15,t),matWall);m.position.copy(W3((a0+a1)/2+nx*t/2,.15+(H-.15)/2,(b0+b1)/2+ny*t/2));m.rotation.y=Math.atan2(b1-b0,a1-a0);m.castShadow=m.receiveShadow=true;ext.add(m)}
+  // paredes internas (com vãos de porta)
+  const W=(x0,x1,y0,y1)=>b(x0,x1,y0,y1,.15,H,matWall);
+  W(3.15,3.3,.6,3.3);W(3.15,3.3,4.1,4.45);                       // suíte | dormitório e circulação (porta da suíte)
+  W(3.3,5.3,3.0,3.15);W(6.1,6.3,3.0,3.15);                        // fundo do dormitório (porta)
+  W(6.3,6.45,.15,3.15);                                           // dormitório | sala
+  W(1.8,3.3,4.3,4.45);                                            // suíte | banheiro da suíte (parede inteira)
+  W(4.55,4.7,4.45,5.9);                                           // banheiro da suíte | banheiro social
+  W(3.3,3.75,4.3,4.45);W(4.5,5.6,4.3,4.45);                       // circulação | banheiros (portas dos dois banheiros)
+  W(6.3,6.45,4.3,7.05);                                           // banheiro social | cozinha
+  W(4.6,6.6,6.9,7.05);W(7.4,9.2,6.9,7.05);                        // fundo do banheiro e cozinha | lavação, com a porta da lavação
+  // suíte: cama de casal com a cabeceira na parede do dormitório, criados e guarda-roupa
+  b(1.25,3.15,1.55,2.95,.15,.45,mFw);b(1.28,3.12,1.58,2.92,.45,.62,mSheet);b(2.75,3.08,1.65,2.85,.62,.72,mFab);
+  b(2.7,3.15,1.05,1.5,.15,.65,mFw);b(2.7,3.15,3.0,3.45,.15,.65,mFw);b(.15,2.2,3.72,4.3,.15,2.2,mFw);b(.15,.73,2.3,3.72,.15,2.2,mFw);
+  // banheiro da suíte: box, pia e vaso
+  b(1.95,2.85,4.6,5.75,.16,.2,mWet);b(2.85,2.87,4.6,5.75,.2,2.0,new THREE.MeshLambertMaterial({color:0xcfe3ee,transparent:true,opacity:.45}));
+  b(3.3,3.7,5.55,5.75,.15,.95,matWhite);b(3.32,3.68,5.05,5.55,.15,.55,matWhite);b(4.05,4.5,5.35,5.75,.8,.9,matWhite);
+  // banheiro social: box no fundo, vaso e pia
+  b(4.7,6.3,6.05,6.9,.16,.2,mWet);b(4.7,6.3,6.03,6.05,.2,2.0,new THREE.MeshLambertMaterial({color:0xcfe3ee,transparent:true,opacity:.45}));
+  b(5.85,6.25,5.15,5.55,.15,.95,matWhite);b(5.35,5.85,5.17,5.53,.15,.55,matWhite);b(4.75,5.2,4.55,4.95,.8,.9,matWhite);
+  // dormitório: cama com a cabeceira na parede da suíte, armário no fundo e no lado
+  b(3.3,5.2,.95,2.35,.15,.45,mFw);b(3.33,5.17,.98,2.32,.45,.62,mSheet);b(3.4,3.75,1.05,2.25,.62,.72,mFab);
+  b(3.4,5.1,2.45,3.0,.15,2.2,mFw);b(5.75,6.3,.4,2.2,.15,2.0,mFw);
+  // sala de estar: sofá na parede do dormitório e rack com TV
+  b(6.45,7.25,1.0,2.9,.15,.55,mFab);b(6.45,6.65,1.0,2.9,.55,.9,mFab);b(6.45,7.25,1.0,1.12,.55,.75,mFab);b(6.45,7.25,2.78,2.9,.55,.75,mFab);b(8.6,9.0,1.0,2.6,.15,.6,mFw);b(8.94,8.98,1.2,2.4,1.0,1.7,mDk);
+  // cozinha e jantar: bancada com pia e fogão na parede da direita, geladeira e mesa de 4 lugares
+  // bancada em L: trecho com a pia na parede da lavação, fogão na parede da direita
+  b(7.45,9.05,6.45,7.05,.15,.9,matWhite);b(7.43,9.05,6.43,7.05,.9,.94,mGr);b(8.4,9.05,5.4,6.45,.15,.9,matWhite);b(8.38,9.05,5.4,6.45,.9,.94,mGr);
+  b(7.75,8.35,6.55,6.95,.9,.945,new THREE.MeshLambertMaterial({color:0x8d9295}));b(7.78,8.32,6.58,6.92,.945,.947,mInox);b(8.03,8.07,6.98,7.02,.94,1.22,mInox);b(8.03,8.07,6.8,7.02,1.18,1.22,mInox);
+  b(8.5,9.0,5.6,6.2,.94,.97,mDk);
+  b(6.6,7.3,5.2,5.9,.15,1.85,mInox);
+  // mesa encostada na parede da direita, comprida para o meio da casa
+  b(7.75,9.05,3.4,4.15,.87,.91,mFw);[[7.8,3.45],[7.8,4.1]].forEach(([x,y])=>b(x-.02,x+.02,y-.02,y+.02,.15,.87,mDk));
+  [[8.05,3.15],[8.65,3.15],[8.05,4.4],[8.65,4.4]].forEach(([x,y])=>{b(x-.2,x+.2,y-.2,y+.2,.57,.61,mFw);b(x-.02,x+.02,y-.02,y+.02,.15,.57,mDk)});
+  // lavação: máquina de lavar e tanque
+  // tanque na parede da pia da cozinha (aproveita o mesmo encanamento) e máquina de lavar ao lado
+  b(7.6,8.25,7.2,7.75,.15,.86,matWhite);b(7.68,8.17,7.28,7.68,.84,.87,new THREE.MeshLambertMaterial({color:0x9aa3a8}));b(7.9,7.95,7.21,7.26,.86,1.12,mInox);
+  b(8.35,9.0,7.2,7.82,.15,1.0,matWhite);const dr=new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.02,24),new THREE.MeshLambertMaterial({color:0x6e7a82}));dr.position.copy(W3(HX+8.675,1.005,HY+7.51));ext.add(dr);
+  // nomes dos cômodos (áreas da planta)
+  [['Suíte 12,2 m²',1.7,2.3],['Dormitório 9,0 m²',4.8,1.6],['Sala 6,5 m²',7.7,1.7],['Cozinha/jantar 9,6 m²',7.6,5.6],['Banheiro 3,4 m²',3.3,5.1],['Banheiro 3,8 m²',5.5,5.8],['Lavação 3,2 m²',7.8,7.7],['Circulação',4.6,3.7]]
+    .forEach(([n,x,y])=>label(n,HX+x,2.4,HY+y,.55,ext))}
 function buildFurniture(){buildRoutes();
   const lat=E.pool==='lateral',edOn=E.edic&&E.pool!=='fundos'&&E.pool!=='fundos2';
   // carros: faixa amarela = porta da frente aberta (~0,9 m); número = folga real até parede/pilar/outro carro
@@ -1139,7 +1192,7 @@ function calcExt(){const it=[];const A=(E.x1-E.x0)*(E.y1-E.y0);
     it.push(['Piscina de fibra',(E.q?'~2,5':'~2,8')+' × 1,9 m na lateral, escavação, filtro, borda e deck',EP.pool]);it.push(['Capa de proteção','crianças e gato',EP.capa]);
     it.push(['Churrasqueira pré-moldada','na parede lateral da garagem',EP.churq]);it.push(['Bancada de preparo','1,9 m, alvenaria + granito',EP.banc]);
     it.push(['Varandinha coberta','~1,5 × 3,4 m sobre churrasqueira e bancada',EP.var]);it.push(['Privacidade na frente','cerca viva ou muro + vegetação',EP.priv]);
-    if(E.lav)it.push(['Fechar lavação','~10 m² de parede + porta 80 cm',EP.lav]);
+    if(E.lav)it.push(['Fechar lavação','parede do fundo inteira + porta 80 cm na lateral, para o lado do portãozinho',EP.lav]);
     banhoIt();
     it.push(['Projeto, ART e aprovação','garagem + piscina',EP.proj*.7]);
     return{it,total:it.reduce((s,r)=>s+r[2],0)}}
@@ -1152,7 +1205,7 @@ function calcExt(){const it=[];const A=(E.x1-E.x0)*(E.y1-E.y0);
   if(E.cp&&!E.gar)it.push(['Cobertura do carro','~3 × 4,6 m junto à suíte, termoacústica + faixa de policarbonato, calha e rufo',EP.cp]);
   if(E.pool!=='none'){it.push(['Piscina de fibra',E.pool==='fundos'?'3,0 × 1,6 m nos fundos; só com aterro + arrimo (custo no quadro do aterro)':'3,6 × 1,8 m na frente, escavação, filtro, borda e deck',E.pool==='fundos'?EP.pool*.9:EP.pool]);it.push(['Capa de proteção','crianças e gato',EP.capa]);}
   if(E.chur){const pb=E.pool==='fundos';it.push(['Churrasqueira pré-moldada','no canto do muro do Lote 02, com chaminé',EP.churq]);it.push(['Bancada de preparo','1,7 m, alvenaria + granito',EP.banc]);it.push(['Cobertura do churrasco',pb?'~1,2 × 3 m, só sobre bancada e churrasqueira':'~2,8 × 3 m, presa na parede da lavação',pb?EP.chcob*.45:EP.chcob]);}
-  if(E.lav)it.push(['Fechar lavação','~10 m² de parede + porta 80 cm',EP.lav]);
+  if(E.lav)it.push(['Fechar lavação','parede do fundo inteira + porta 80 cm na lateral, para o lado do portãozinho',EP.lav]);
   if(E.gar){it.push(['Garagem 2 carros',fmt(A,1)+' m², com laje',A*EP.gar]);it.push(['Portão automático','5 m',EP.portao]);it.push(['Canto de treino','rack dobrável + piso',EP.treino]);}
   if(E.gar&&E.esc){it.push(['Escritório + lavabo',fmt(A,1)+' m²',A*EP.esc]);it.push(['Escada externa','metálica, lado direito',EP.escada]);
     if(E.sotao)it.push(['Passagem para o sótão','passarela + porta baixa + rufos',EP.sotao]);}
@@ -1236,7 +1289,7 @@ function _buildDyn(){
 }
 
 /* câmera */
-const VIEWS={dentro:{p:[6.2,13.5,5.2],t:[6.8,0,-4.2]},dentroF:{p:[17.9,9.5,-10.4],t:[18.0,0,-12.8]},dentroF2:{p:[17.9,11.5,-10.0],t:[18.0,0,-13.4]},aerea:{p:[10,50,-6],t:[10,0,-10.5]},'3d':{p:[-1,23,9],t:[10,0,-9]},quintal:{p:[16.2,1.65,-10.9],t:[4,.4,-8.0]},detalhe:{p:[6.6,2.4,-12.4],t:[13.5,.4,-9.4]},frente:{p:[16,8,10],t:[7,2,-3]},foto:{p:[19.5,1.6,5.5],t:[9.0,2.3,-3.2]},churrasco:{p:[14.6,1.9,-12.3],t:[19.2,1.1,-13.0]},piscinaF:{p:[13.5,7.5,7.5],t:[17,0,-2]},escritorio:{p:[13.0,4.2,-16.8],t:[18,1.2,-12.4]},piscinaL:{p:[3.4,7.8,4.6],t:[2.8,0,-2.3]},churrascoL:{p:[-3.0,6.5,3.5],t:[3.2,.4,-3.6]},piscina:{p:[11.5,5.5,-18.5],t:[17,0,-12.6]}};
+const VIEWS={casa:{p:[14.7,17,-2.4],t:[14.7,0,-7.4]},dentro:{p:[6.2,13.5,5.2],t:[6.8,0,-4.2]},dentroF:{p:[17.9,9.5,-10.4],t:[18.0,0,-12.8]},dentroF2:{p:[17.9,11.5,-10.0],t:[18.0,0,-13.4]},aerea:{p:[10,50,-6],t:[10,0,-10.5]},'3d':{p:[-1,23,9],t:[10,0,-9]},quintal:{p:[16.2,1.65,-10.9],t:[4,.4,-8.0]},detalhe:{p:[6.6,2.4,-12.4],t:[13.5,.4,-9.4]},frente:{p:[16,8,10],t:[7,2,-3]},foto:{p:[19.5,1.6,5.5],t:[9.0,2.3,-3.2]},churrasco:{p:[14.6,1.9,-12.3],t:[19.2,1.1,-13.0]},piscinaF:{p:[13.5,7.5,7.5],t:[17,0,-2]},escritorio:{p:[13.0,4.2,-16.8],t:[18,1.2,-12.4]},piscinaL:{p:[3.4,7.8,4.6],t:[2.8,0,-2.3]},churrascoL:{p:[-3.0,6.5,3.5],t:[3.2,.4,-3.6]},piscina:{p:[11.5,5.5,-18.5],t:[17,0,-12.6]}};
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;let tween=null;
 function setView(v,instant){S.view=v;document.querySelectorAll('.views button[data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===v));
   const latP=E.pool==='lateral'||E.pool==='eco';
@@ -1350,6 +1403,7 @@ document.querySelectorAll('[data-aterro]').forEach(b=>b.addEventListener('click'
 document.querySelectorAll('[data-fence]').forEach(b=>b.addEventListener('click',()=>{S.fence=b.dataset.fence;refresh()}));
 document.querySelectorAll('[data-ext]').forEach(b=>b.addEventListener('click',()=>{S.ext=b.dataset.ext;refresh();renderPlan()}));
 document.querySelectorAll('.views button[data-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
+$('v-casa').addEventListener('click',()=>{if(!S.open){S.open=true;$('v-open').setAttribute('aria-pressed',true);$('lg-open').hidden=false;document.querySelectorAll('.lg-inst').forEach(e=>e.hidden=false);buildExt()}setView('casa')});
 $('v-open').addEventListener('click',()=>{S.open=!S.open;$('v-open').setAttribute('aria-pressed',S.open);$('lg-open').hidden=!S.open;document.querySelectorAll('.lg-inst').forEach(e=>e.hidden=!S.open);buildExt();setView(S.open?'dentro':'3d')});
 document.querySelectorAll('[data-maq]').forEach(b=>b.addEventListener('click',()=>{E.maq=b.dataset.maq;buildExt();buildDyn();renderUI();renderPlan()}));
 document.querySelectorAll('[data-amp]').forEach(b=>b.addEventListener('click',()=>{E.amp=b.dataset.amp==='1';buildExt();buildDyn();renderUI();renderPlan()}));
