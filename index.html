@@ -126,6 +126,29 @@ details.more .checks{margin-top:10px}
 .roomuse{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;margin:-2px 0 2px 26px}
 .roomuse .seg button{padding:3px 10px;font-size:12px}
 .roomuse[aria-disabled="true"]{opacity:.45;pointer-events:none}
+.chk.prim{align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin:4px 0 8px}.chk.prim small{display:block;color:var(--muted);font-size:12px;margin-top:2px}.chk.prim input{margin-top:3px}
+.done-btn{font:inherit;font-size:11px;padding:2px 8px;margin:5px 0 0;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap}
+.done-btn:hover{color:var(--fg);border-color:var(--sel)}.done-btn[aria-pressed="true"]{background:var(--sel-soft);border-color:var(--sel);color:var(--fg)}
+.it-list li.done .nm,.it-list li.done .pr{color:var(--muted)}.it-list li.done .num{color:var(--sel)}
+.it-list{list-style:none;margin:4px 0 8px;padding:0;display:flex;flex-direction:column}.it-list li{border-top:1px solid var(--line)}
+.it-list label{display:grid;grid-template-columns:20px auto minmax(0,1fr) auto;gap:8px;align-items:start;font-size:13px;padding:8px 4px;cursor:pointer;border-radius:8px}
+.it-list label:hover{background:var(--sel-soft)}.it-list input{margin-top:2px}.it-list .num{color:var(--muted);font-variant-numeric:tabular-nums;text-align:right;font-size:12px;padding-top:1px}
+.it-list .nm small{display:block;color:var(--muted);font-size:11.5px;line-height:1.35;margin-top:1px}
+.it-list .pr{text-align:right;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}.it-list .pr small{display:block;font-weight:400;color:var(--muted);font-size:11px;margin-top:2px}
+.it-list li.off .nm,.it-list li.off .pr{color:var(--muted)}.it-list li.off .pr{text-decoration:line-through;font-weight:400}.it-list li.dep{opacity:.5}.it-list li.dep label{cursor:default}
+.slot{display:flex;flex-direction:column;gap:8px}.slot:empty{display:none}.it-list .slot{padding:0 6px 10px 32px}.slot .field{margin:0}.slot .roomuse{margin:0}
+.tot-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.tot-head span{font-size:13px;color:var(--muted)}.tot-head b{font-size:24px;font-variant-numeric:tabular-nums}
+.it-range{display:block;color:var(--muted);font-size:12px;margin:-2px 0 10px}.it-hint{font-size:12.5px;color:var(--muted);margin:8px 0 4px}
+#areas{display:flex;flex-direction:column}.area{border-top:1px solid var(--line);padding:2px 0}.area[hidden]{display:none}
+.area>summary{display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:600;font-size:14px;list-style:none;padding:9px 0}
+.area>summary::-webkit-details-marker{display:none}.area>summary::before{content:'›';display:inline-block;width:10px;color:var(--muted);transition:transform .15s}
+.area[open]>summary::before{transform:rotate(90deg)}.area>summary b{margin-left:auto;font-variant-numeric:tabular-nums}
+.a-opts{display:flex;flex-direction:column;gap:8px;margin:0 0 6px}.a-opts:empty{display:none}.a-opts .field{margin:0}.a-opts .roomuse{margin:0}
+.a-rows{list-style:none;margin:0 0 6px;padding:0;display:flex;flex-direction:column}
+.a-rows label{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;font-size:13px;padding:6px 6px;border-radius:8px;cursor:pointer}
+.a-rows label:hover{background:var(--sel-soft)}.a-rows input{margin-top:2px}
+.a-rows small{display:block;color:var(--muted);font-size:11.5px;line-height:1.35;margin-top:1px}.a-rows .pr{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
+.a-rows li.off .nm,.a-rows li.off .pr{color:var(--muted)}.a-rows li.off .pr{text-decoration:line-through;font-weight:400}.a-rows li.dep{opacity:.5}.a-rows li.dep label{cursor:default}
 .hint{position:absolute;top:10px;right:10px;font-size:11px;color:var(--muted);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:3px 8px;border-radius:6px;z-index:2}
 @media (max-width:520px){.hint{display:none}}
 
@@ -283,7 +306,7 @@ header a{color:var(--sel);font-weight:600}
     <aside class="panel" id="opcoes">
       <div class="tabs" role="tablist" aria-label="Painéis">
         <button role="tab" id="tab-proj" aria-controls="pn-proj" aria-selected="true">Projeto</button>
-        <button role="tab" id="tab-fundos" aria-controls="pn-fundos" aria-selected="false">Fundos e grade</button>
+        <button role="tab" id="tab-fundos" aria-controls="pn-fundos" aria-selected="false">Barranco e aterro</button>
         <button role="tab" id="tab-notas" aria-controls="pn-notas" aria-selected="false">Observações</button>
       </div>
 
@@ -300,19 +323,34 @@ header a{color:var(--sel);font-weight:600}
           </div>
         </div>
 
-        <div class="card">
-          <h2>Itens</h2>
-          <div class="checks">
-            <label class="chk"><input type="checkbox" id="c-cp" checked> Cobertura do carro junto à suíte</label>
-            <label class="chk"><input type="checkbox" id="c-lav" checked> Fechar a lavação, com porta para o quintal</label>
-            <label class="chk"><input type="checkbox" id="c-edic" checked> Escritório (edícula) atrás da lavação</label>
-            <div class="roomuse" id="roomuse"><span>Tamanho</span><div class="seg" role="group" aria-label="Tamanho do escritório">
-              <button type="button" data-amp="0" aria-pressed="true">Atual: 1 mesa em L</button><button type="button" data-amp="1" aria-pressed="false">Ampliado para trás: 2 mesas em L</button></div></div>
-            <label class="chk"><input type="checkbox" id="c-car2" checked> 2º carro ao lado, cobertura ampliada (futuro)</label>
-            <label class="chk"><input type="checkbox" id="c-banho" checked> Banheiro externo + casa de máquinas da piscina</label>
+        <div class="card" id="itens-card">
+          <div class="tot-head"><span>Total dos itens marcados</span><b id="it-total"></b></div>
+          <small class="it-range" id="it-range"></small>
+          <label class="chk prim"><input type="checkbox" id="c-aterro"> <span><b>Aterrar o terreno</b><small>Nivela a faixa do barranco até a divisa, com muro de arrimo. Muda a posição da grade e de outras coisas.</small></span></label>
+          <div class="warn" id="w-arrimo">Aterrar até a divisa exige muro de arrimo: a terra não pode escorrer para a Área Verde do Município.</div>
+          <p class="it-hint">Itens na ordem em que fariam sentido ser feitos. Desmarque um item para ver quanto ele pesa; o "acumulado" mostra o total até ali. Quando dá, o item também some da maquete.</p>
+          <div class="slot" id="slot-top"></div>
+          <ol class="it-list" id="itlist"></ol>
+          <div id="opt-holder" hidden>
+            <div id="opt-fence"><div class="field"><span class="lbl">Fechamento na divisa com a Área Verde</span>
+            <div class="seg" role="group" aria-label="Fechamento">
+              <button id="f-none" data-fence="none">Nenhum</button>
+              <button id="f-grade" data-fence="grade" aria-pressed="true">Grade 1,50 m</button>
+              <button id="f-muro" data-fence="muro">Muro 1,80 m</button>
+            </div>
+            <span class="lbl" style="margin-top:10px">Até onde vai</span>
+            <div class="seg" role="group" aria-label="Extensão do fechamento">
+              <button data-ext="mista" aria-pressed="true">Grade em tudo, anti-gato só no quintal dos gatos</button>
+              <button data-ext="toda" aria-pressed="false">Grade e anti-gato em tudo</button>
+              <button data-ext="lavacao" aria-pressed="false">Só o quintal dos gatos (mais barato)</button>
+            </div>
+          </div></div>
             <div class="roomuse" id="maquse"><span>Casa de máquinas</span><div class="seg" role="group" aria-label="Posição da casa de máquinas">
-              <button type="button" data-maq="banheiro" aria-pressed="true">Junto do banheiro</button><button type="button" data-maq="enterrada" aria-pressed="false">Enterrada na piscina</button></div></div>
+                <button type="button" data-maq="banheiro" aria-pressed="true">Junto do banheiro</button><button type="button" data-maq="enterrada" aria-pressed="false">Enterrada na piscina</button></div></div>
+            <div class="roomuse" id="roomuse"><span>Tamanho</span><div class="seg" role="group" aria-label="Tamanho do escritório">
+                <button type="button" data-amp="0" aria-pressed="true">Atual: 1 mesa em L</button><button type="button" data-amp="1" aria-pressed="false">Ampliado para trás: 2 mesas em L</button></div></div>
           </div>
+          <div class="warn" id="w-gar" hidden>A garagem ocupa o recuo frontal de 3 m (linha tracejada). Confirme com arquiteto e Prefeitura antes de qualquer gasto.</div>
           <details class="more">
             <summary>Itens das configurações alternativas</summary>
             <div class="checks">
@@ -323,13 +361,7 @@ header a{color:var(--sel);font-weight:600}
               <label class="chk"><input type="checkbox" id="c-sotao" checked> Passagem da escada para o sótão da casa</label>
             </div>
           </details>
-        </div>
-
-        <div class="card">
-          <h2>Custo estimado</h2>
-          <table id="t-ext"></table>
-          <div class="warn" id="w-gar" hidden>A garagem ocupa o recuo frontal de 3 m (linha tracejada). Confirme com arquiteto e Prefeitura antes de qualquer gasto.</div>
-          <details>
+          <details class="more">
             <summary>Preços usados (editáveis)</summary>
             <div class="prices" id="eprices"></div>
           </details>
@@ -343,14 +375,6 @@ header a{color:var(--sel);font-weight:600}
               <button id="t-nat" data-aterro="0">Como está</button>
               <button id="t-at" data-aterro="1">Aterrado</button>
             </div>
-          </div>
-          <div class="field"><span class="lbl">Fechamento na divisa</span>
-            <div class="seg" role="group" aria-label="Fechamento">
-              <button id="f-none" data-fence="none">Nenhum</button>
-              <button id="f-grade" data-fence="grade" aria-pressed="true">Grade 1,50 m</button>
-              <button id="f-muro" data-fence="muro">Muro 1,80 m</button>
-            </div>
-            <label class="chk"><input type="checkbox" id="c-cat" checked> Topo inclinado para dentro (anti-fuga de gato)</label>
           </div>
           <div class="field">
             <div class="top"><label for="r-h">Altura do barranco na divisa</label><b class="mono" id="o-h"></b></div>
@@ -375,11 +399,6 @@ header a{color:var(--sel);font-weight:600}
           </div>
         </div>
 
-        <div class="card">
-          <h2>Custo da divisa</h2>
-          <table id="t-cost"></table>
-          <div class="warn" id="w-arrimo">Aterrar até a divisa exige muro de arrimo: a terra não pode escorrer para a Área Verde do Município.</div>
-        </div>
 
         <div class="card">
           <h2>Comparar opções da divisa</h2>
@@ -496,7 +515,7 @@ header a{color:var(--sel);font-weight:600}
 <script>
 (function(){
 /* ---------- estado ---------- */
-const S={H:0.6,W:1.2,aterro:false,fence:'grade',fill:true,view:'3d',cat:true,open:false};
+const S={H:0.6,W:1.2,aterro:false,fence:'grade',fill:true,view:'3d',cat:true,open:false,ext:'mista'};
 const P={terra:85,comp:40,veg:140,grama:14,arrimo:800,dreno:70,grade:260,muro:420,gato:95,imp:10};
 const PL={terra:['Terra/saibro entregue','R$/m³'],comp:['Espalhar e compactar','R$/m³'],veg:['Terra vegetal (10 cm)','R$/m³'],
   grama:['Grama em placas instalada','R$/m²'],arrimo:['Muro de arrimo (com fundação)','R$/m²'],dreno:['Dreno do arrimo (brita+manta+tubo)','R$/m'],
@@ -523,6 +542,16 @@ function height(x,y){
 }
 const aA=Math.atan2(4.84-CY,0-CX),aB=Math.atan2(DIV_Y-CY,LOT_W-CX);
 const arcPt=(t,s)=>[CX+(R+s)*Math.cos(t),CY+(R+s)*Math.sin(t)];
+// "só o quintal da lavação": a grade começa no alinhamento do canto dos fundos da casa (x = HX+4,6) e uma cerca
+// transversal com portãozinho fecha da casa até a divisa; os gatos ficam só no quintal perto da lavação
+const XP=HX+4.6,YP=HY+7.05;
+function fenceGeo(aterro,ext){const sF=aterro?.12:S.W+.5,r=R+sF;let fA=aterro?aA:-Math.acos(18.05/r);const fB=aterro?aB:-Math.acos(37.36/r);
+  if(ext==='lavacao')fA=-Math.acos((XP-CX)/r);const ya=arcPt(fA,sF)[1];return{sF,fA,fB,arc:r*(fB-fA),cross:ext==='lavacao'?ya-YP:0,ya}}
+const fenceLen=(aterro,ext)=>{if(ext!=='lavacao')return L_CURVA;const g=fenceGeo(aterro,ext);return g.arc+g.cross};
+// trecho do muro do vizinho que fica dentro do quintal dos gatos (do fundo da lavação/escritório até onde a grade encosta)
+function vizSeg(aterro){const edOn=E.edic&&E.pool!=='fundos'&&E.pool!=='fundos2',g=fenceGeo(aterro,'toda'),y1=arcPt(g.fB,g.sF)[1],y0=edOn?(E.amp?15.2:14.0):HY+8.4;return{y0,y1,len:Math.max(0,y1-y0)}}
+function fenceLens(aterro){const lav=fenceGeo(aterro,'lavacao'),pen=S.ext!=='toda';
+  return{pen,grade:S.ext==='lavacao'?lav.arc+lav.cross:L_CURVA+(pen?lav.cross:0),gato:S.ext==='toda'?L_CURVA:lav.arc+lav.cross,viz:pen?vizSeg(aterro).len:0}}
 
 /* ---------- volume ---------- */
 function measure(){let A=0,V=0;const st=.05;
@@ -677,6 +706,25 @@ label('Casa 01',HX+4.6,5.2,HY+4);label('Casa 02',24.7,5,7.6,.85);label('Área Ve
  label('Fossa / filtro',10,.7,.4,.7);}
 
 /* ampliações (estudo) */
+/* itens marcáveis: cada custo pode ser desmarcado; o que tem desenho some também da maquete */
+const OFFKEY='casa01-itens-off';
+S.off=new Set((()=>{try{return JSON.parse(localStorage.getItem(OFFKEY)||'[]')}catch(e){return[]}})());
+function saveOff(){try{localStorage.setItem(OFFKEY,JSON.stringify([...S.off]));localStorage.setItem(DONEKEY,JSON.stringify([...S.done]))}catch(e){}}
+// "feito": o item já existe (continua na maquete), mas não entra no total a gastar nem no orçamento
+const DONEKEY='casa01-itens-feitos';
+S.done=new Set((()=>{try{return JSON.parse(localStorage.getItem(DONEKEY)||'[]')}catch(e){return[]}})());
+const ikey=l=>l.replace(/\s*\([^)]*\)\s*$/,'').trim();
+const PARENT={'Ampliação do escritório para trás':'Escritório nos fundos','Elétrica do escritório':'Escritório nos fundos','Internet no escritório':'Escritório nos fundos',
+  'Cantinho da ducha':'Banheiro externo','Esgoto do banheiro':'Banheiro externo','Água fria e luz do banheiro':'Banheiro externo','Caminho de pedras até a piscina':'Banheiro externo',
+  'Água e esgoto da pia':'Bancada com pia','Capa de proteção':'Piscina de fibra','Topo inclinado 45° + tela':'__cerca','Portãozinho na cerca':'__cerca'};
+function on(k){if(k==='__cerca')return !S.off.has('Gradil 1,50 m')&&!S.off.has('Muro 1,80 m');return !S.off.has(k)&&(!PARENT[k]||on(PARENT[k]))}
+function withEff(fn){const sv={cp:E.cp,lav:E.lav,edic:E.edic,amp:E.amp,banho:E.banho,car2:E.car2},sf={fence:S.fence,cat:S.cat};
+  E.cp=E.cp&&on('Cobertura do carro');E.lav=E.lav&&on('Fechar lavação');E.edic=E.edic&&on('Escritório nos fundos');E.amp=E.amp&&on('Ampliação do escritório para trás');
+  E.banho=E.banho&&on('Banheiro externo');E.car2=E.car2&&on('2ª vaga: piso');
+  Object.assign(E,{_cov2:on('2ª vaga: ampliar cobertura'),_gate2:on('Portão de 2 carros'),_muroPia:on('Muro atrás da pia'),_cobMesa:on('Cobertura da mesa'),_cobPia:on('Cobertura da pia'),
+    _pia:on('Bancada com pia'),_mesa:on('Mesa externa + 4 cadeiras'),_portaozinho:on('Portãozinho na cerca'),_viz:on('Anti-gato no muro do vizinho'),_pool:on('Piscina de fibra'),_bafo:on('Churrasqueira a bafo'),_hedge:on('Cerca viva'),_deck:on('Área do churrasco no canto da piscina')});
+  if(S.fence==='grade'&&!on('Gradil 1,50 m'))S.fence='none';if(S.fence==='muro'&&!on('Muro 1,80 m'))S.fence='none';S.cat=S.cat&&on('Topo inclinado 45° + tela');
+  try{return fn()}finally{Object.assign(E,sv);Object.assign(S,sf)}}
 const E={car2:true,edic:true,q:true,pool:'eco',lav:true,cp:true,chur:true,gar:false,esc:true,sotao:true,banho:true,maq:'banheiro',amp:false,x0:2.9,x1:8.5,y0:.3,y1:5.1};
 const EP={cmaqb:4000,tpiscb:2600,elpb:900,murop:2000,cobp:2000,pia:3200,piai:2000,cobm:3500,pedras:1400,ducha:1800,banho:10000,cmaq:3500,esg:1200,agua:500,elp:1500,tpisc:600,deck:7500,mesa:1500,ele:2500,rede:600,amp:12000,portao2:9500,pool:22000,capa:1500,g1:1800,var:3000,priv:4000,cp:8500,churq:3500,banc:3000,chcob:5500,lav:5500,gar:2400,portao:9000,esc:3500,escada:9000,sotao:7000,treino:2500,proj:10000};
 const EPL={cmaqb:['Casa de máquinas junto do banheiro (casinha)','R$'],tpiscb:['Tubos da piscina até o banheiro + bomba autoescorvante','R$'],elpb:['Elétrica da casa de máquinas junto do banheiro','R$'],murop:['Muro atrás da pia (com revestimento)','R$'],cobp:['Cobertura da pia (policarbonato)','R$'],pia:['Bancada com pia (alvenaria + granito + cuba)','R$'],piai:['Água e esgoto da pia (caixa de gordura)','R$'],cobm:['Cobertura da mesa (policarbonato)','R$'],pedras:['Caminho de pedras (com aterro)','R$'],ducha:['Cantinho da ducha sobre o barranco (piso + grade)','R$'],tpisc:['Tubos da piscina até a casa de máquinas','R$'],deck:['Deck de madeira do canto (sem aterro)','R$'],mesa:['Mesa externa + 4 cadeiras','R$'],agua:['Água fria até o banheiro e a ducha','R$'],elp:['Elétrica da casa de máquinas (circuito + DR)','R$'],ele:['Elétrica do escritório (circuito próprio)','R$'],rede:['Internet no escritório (cabo de rede)','R$'],amp:['Ampliação do escritório para trás (~3,3 m²)','R$'],portao2:['Portão de correr de 2 carros (~5,7 m) + motor','R$'],banho:['Banheiro externo (vaso, pia, ducha)','R$'],cmaq:['Casa de máquinas da piscina','R$'],esg:['Esgoto do banheiro até a fossa','R$'],pool:['Piscina de fibra 3,6 × 1,8 m instalada','R$'],capa:['Capa de proteção','R$'],g1:['Garagem 1 carro, térrea, telhado igual à casa','R$/m²'],var:['Varandinha coberta da churrasqueira','R$'],priv:['Cerca viva / muro de privacidade na frente','R$'],cp:['Cobertura do carro anexa à casa (~14 m²)','R$'],churq:['Churrasqueira pré-moldada + base + chaminé','R$'],banc:['Bancada 1,7 m (alvenaria + granito)','R$'],chcob:['Cobertura do churrasco (~8 m²)','R$'],lav:['Fechar lavação (paredes, porta, basculante)','R$'],gar:['Garagem com laje para 2º andar','R$/m²'],portao:['Portão automático 5 m','R$'],
@@ -695,7 +743,8 @@ function car(cx,cy,col){const mt=new THREE.MeshPhongMaterial({color:col,specular
   box(cx-.86,cx+.86,cy-2.0,cy-1.95,.3,.5,tire);box(cx-.86,cx+.86,cy+1.95,cy+2.0,.3,.5,tire);
   [[-.78,-1.25],[.78,-1.25],[-.78,1.3],[.78,1.3]].forEach(([dx,dy])=>{const w=new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.19,20),tire);w.rotation.z=Math.PI/2;
     w.position.copy(W3(cx+dx+(dx>0?.01:-.01),.3,cy+dy));w.castShadow=true;ext.add(w);const r=new THREE.Mesh(new THREE.CylinderGeometry(.17,.17,.2,14),rim);r.rotation.z=Math.PI/2;r.position.copy(w.position);ext.add(r)})}
-function buildExt(){
+function buildExt(){return withEff(_buildExt)}
+function _buildExt(){
   scene.remove(ext);ext.traverse(o=>{if(o.geometry)o.geometry.dispose()});ext=new THREE.Group();scene.add(ext);
   const mWater=new THREE.MeshLambertMaterial({color:0x3fb3d6}),mStone=new THREE.MeshLambertMaterial({color:0xe4ded2});
   const edOn=E.edic&&E.pool!=='fundos'&&E.pool!=='fundos2';
@@ -717,8 +766,8 @@ function buildExt(){
     if(!S.open)label(E.amp?'Escritório ampliado (~8,5 m²)':'Escritório (~5,5 m²)',(ex0+ex1)/2,4.0,(ey0+ey1)/2,.8,ext);}
   if(E.pool==='eco'){
     const sh=shC();
-    box(.6,4.6,.55,3.05,0,.12,mStone);box(.85,4.35,.75,2.85,.12,.15,matWhite);box(1.0,4.2,.9,2.7,.15,.155,mWater);
-    label('Piscina 3,2 × 1,8 m',2.6,1.4,1.8,.8,ext);
+    if(E._pool!==false){box(.6,4.6,.55,3.05,0,.12,mStone);box(.85,4.35,.75,2.85,.12,.15,matWhite);box(1.0,4.2,.9,2.7,.15,.155,mWater);
+    label('Piscina 3,2 × 1,8 m',2.6,1.4,1.8,.8,ext);}
     const mD=new THREE.MeshLambertMaterial({color:0x1f1f1f}),mG=new THREE.MeshLambertMaterial({color:0x3d3c3a}),mI=new THREE.MeshLambertMaterial({color:0xb9bcbf});
     let kx=1.95,ky=4.4;
     cornerTable();
@@ -726,17 +775,17 @@ function buildExt(){
       // 2º carro ao lado + ampliação da cobertura
       box(4.6,7.2,.05,6.4-sh,0,.03,new THREE.MeshLambertMaterial({color:0xa9a8a2}));
       car(5.92,3.2,0x30465e);
-      const xa=4.6,xb=7.2,ang=Math.atan((2.95-2.62)/(HX-7.2)),hb=2.62,hm=hb-(xb-xa)/2*Math.tan(ang);
+      if(E._cov2!==false){const xa=4.6,xb=7.2,ang=Math.atan((2.95-2.62)/(HX-7.2)),hb=2.62,hm=hb-(xb-xa)/2*Math.tan(ang);
       const rf=new THREE.Mesh(new THREE.BoxGeometry((xb-xa+.05)/Math.cos(ang),.05,3.6),new THREE.MeshLambertMaterial({color:0xd8d8d4}));
       rf.position.copy(W3((xa+xb)/2,hm+.05,4.8-sh));rf.rotation.z=ang;rf.castShadow=true;rf.userData.roof=true;ext.add(rf);
       box(xa-.15,xa,2.95-sh,6.65-sh,hb-(xb-xa)*Math.tan(ang)-.1,hb-(xb-xa)*Math.tan(ang)+.04,matWhite);
-      [[xa+.05,3.05-sh],[xa+.05,6.5-sh]].forEach(([x,y])=>box(x-.05,x+.05,y-.05,y+.05,0,2.3,matStep));
+      [[xa+.05,3.05-sh],[xa+.05,6.5-sh]].forEach(([x,y])=>box(x-.05,x+.05,y-.05,y+.05,0,2.3,matStep));}
       label('2º carro (futuro)',5.9,3.4,2.0,.75,ext);}
-    const k=new THREE.Mesh(new THREE.SphereGeometry(.3,24,16),mD);k.position.copy(W3(kx,.82,ky));k.castShadow=true;ext.add(k);
-    [[-.18,-.12],[.18,-.12],[0,.2]].forEach(([dx,dy])=>box(kx+dx-.015,kx+dx+.015,ky+dy-.015,ky+dy+.015,0,.65,mD));
-    const hedge=new THREE.MeshLambertMaterial({color:0x3f6b35});box(.05,.5,.5,3.0,0,1.6,hedge);
+    if(E._bafo!==false){const k=new THREE.Mesh(new THREE.SphereGeometry(.3,24,16),mD);k.position.copy(W3(kx,.82,ky));k.castShadow=true;ext.add(k);
+    [[-.18,-.12],[.18,-.12],[0,.2]].forEach(([dx,dy])=>box(kx+dx-.015,kx+dx+.015,ky+dy-.015,ky+dy+.015,0,.65,mD));}
+    const hedge=new THREE.MeshLambertMaterial({color:0x3f6b35});if(E._hedge!==false){box(.05,.5,.5,3.0,0,1.6,hedge);
     if(!E.car2)box(.1,6.75,.24,.54,0,1.6,hedge);
-    else box(.1,4.35,.24,.54,0,1.6,hedge);}// com 2 carros a cerca viva termina antes da 2ª vaga
+    else box(.1,4.35,.24,.54,0,1.6,hedge);}}// com 2 carros a cerca viva termina antes da 2ª vaga
   if(E.pool==='frente'){box(14.9,19.3,.25,2.75,0,.14,mStone);box(15.2,19.0,.5,2.5,.14,.17,matWhite);
     box(15.35,18.95,.65,2.35,.17,.175,mWater);
     label('Piscina 3,6 × 1,8 m',17.1,1.4,1.5,.8,ext);}
@@ -866,30 +915,31 @@ function straightGrade(pts,base){for(let i=0;i<pts.length-1;i++){const[a0,b0]=pt
     for(let k=0;k<=n;k++){const x=a0+(a1-a0)*k/n,y=b0+(b1-b0)*k/n,post=k===0||k===n;box(x-(post?.03:.008),x+(post?.03:.008),y-(post?.03:.008),y+(post?.03:.008),base,base+(post?1.62:1.5),matIron)}}}
 function cornerTable(){const{x0,x1,y0,y1}=DECK,deckMat=new THREE.MeshLambertMaterial({color:0x9b6b43}),mDk=new THREE.MeshLambertMaterial({color:0x2b2b2b}),
     mG=new THREE.MeshLambertMaterial({color:0x3d3c3a}),mI=new THREE.MeshLambertMaterial({color:0xb9bcbf}),h=.12;
-  if(!S.aterro){box(x0,x1,y0,y1,.08,.12,deckMat);for(let x=x0+.08;x<x1;x+=.12)box(x,x+.01,y0,y1,.12,.121,mDk);
+  if(E._deck===false){}else if(!S.aterro){box(x0,x1,y0,y1,.08,.12,deckMat);for(let x=x0+.08;x<x1;x+=.12)box(x,x+.01,y0,y1,.12,.121,mDk);
     [[x0+.1,y1-.1],[x0+1.5,y1-.1],[x0+3,y1-.1],[x1-.1,y1-.1],[x0+.1,y0+1]].forEach(([x,y])=>box(x-.05,x+.05,y-.05,y+.05,-1,.08,matStep));
     straightGrade([[x0,y1],[x1,y1]],.12);label('Deck sobre o barranco',1.6,2.6,y1-.2,.6,ext);}
   else box(x0,x1,y0,y1,0,.12,new THREE.MeshLambertMaterial({color:0xe4ded2}));
   // bancada com pia junto da cerca viva (torneira do lado da cerca)
-  box(x0,x0+.6,3.4,4.6,h,h+.86,matWhite);box(x0,x0+.65,3.35,4.65,h+.86,h+.9,mG);
+  if(E._pia!==false){box(x0,x0+.6,3.4,4.6,h,h+.86,matWhite);box(x0,x0+.65,3.35,4.65,h+.86,h+.9,mG);
   box(x0+.12,x0+.52,3.75,4.25,h+.85,h+.905,new THREE.MeshLambertMaterial({color:0x6d7377}));box(x0+.15,x0+.49,3.78,4.22,h+.9,h+.906,mI);
-  box(x0+.03,x0+.07,3.98,4.02,h+.9,h+1.2,mI);box(x0+.03,x0+.2,3.98,4.02,h+1.16,h+1.2,mI);
+  box(x0+.03,x0+.07,3.98,4.02,h+.9,h+1.2,mI);box(x0+.03,x0+.2,3.98,4.02,h+1.16,h+1.2,mI);label('Pia',x0+.3,2.0,4.0,.55,ext);}
   // muro atrás da pia (substitui a cerca viva nesse trecho): bloco rebocado, faixa de revestimento, prateleira, tomada e luz
   const wx0=.33,wx1=x0,mMur=new THREE.MeshLambertMaterial({color:0xddd7cc});
+  if(E._muroPia===false){if(E._hedge!==false)box(.05,.5,3.0,y1,0,1.6,new THREE.MeshLambertMaterial({color:0x3f6b35}))}else{
   box(wx0,wx1,3.0,y1+.05,S.aterro?-.3:-1,1.8,mMur);box(wx0-.02,wx1+.02,3.0,y1+.05,1.8,1.85,matCap);
   box(wx1,wx1+.015,3.35,4.65,h+.9,h+1.55,new THREE.MeshLambertMaterial({color:0x6f8a8c}));            // revestimento
   box(wx1,wx1+.22,3.5,4.5,h+1.62,h+1.65,matWood);                                                      // prateleira
   box(wx1,wx1+.02,4.45,4.55,h+1.1,h+1.2,matWhite);                                                     // tomada
   box(wx1,wx1+.12,3.9,4.1,h+1.72,h+1.78,new THREE.MeshBasicMaterial({color:0xfff2c4}));               // luz
-  label('Pia',x0+.3,2.0,4.0,.55,ext);if(!S.open)label('Muro atrás da pia',wx0,2.6,3.6,.55,ext);label('Bafo',1.95,1.75,4.4,.55,ext);
+  if(!S.open)label('Muro atrás da pia',wx0,2.6,3.6,.55,ext);}if(E._bafo!==false)label('Bafo',1.95,1.75,4.4,.55,ext);
   // casa de máquinas enterrada, colada na piscina: só a tampa aparece no piso
   if(E.maq==='enterrada'){box(1.45,2.35,3.15,3.85,h,h+.03,mDk);if(S.open)label('Máquinas (tampa)',1.9,1.2,3.5,.5,ext);}
   // mesa 1,2 × 0,7 m com 4 cadeiras, perto da vaga do 2º carro
-  const tx=3.5,ty=3.97;box(tx-.6,tx+.6,ty-.35,ty+.35,h+.72,h+.76,matWood);
+  const tx=3.5,ty=3.97;if(E._mesa!==false){box(tx-.6,tx+.6,ty-.35,ty+.35,h+.72,h+.76,matWood);
   [[tx-.55,ty-.3],[tx+.51,ty-.3],[tx-.55,ty+.26],[tx+.51,ty+.26]].forEach(([x,y])=>box(x,x+.04,y,y+.04,h,h+.72,mDk));
   [[tx-.3,ty-.62,0],[tx+.3,ty-.62,0],[tx-.3,ty+.62,1],[tx+.3,ty+.62,1]].forEach(([cx,cy,b])=>{box(cx-.21,cx+.21,cy-.21,cy+.21,h+.42,h+.46,matWood);
     box(cx-.21,cx+.21,b?cy+.17:cy-.21,b?cy+.21:cy-.17,h+.46,h+.9,matWood);box(cx-.02,cx+.02,cy-.02,cy+.02,h,h+.42,mDk)});
-  label('Mesa 4 lugares',tx,1.9,ty,.6,ext);
+  label('Mesa 4 lugares',tx,1.9,ty,.6,ext);}
   // coberturas de policarbonato caindo para o fundo, com calha: uma sobre a pia, outra sobre a mesa;
   // o bafo fica no vão aberto entre as duas, porque o calor e a fumaça estragam o policarbonato
   const cover=(cx0,cx1,txt)=>{const cy0=2.98,cy1=4.98,hf=2.5,hb=2.3,ang=Math.atan((hf-hb)/(cy1-cy0));
@@ -899,7 +949,7 @@ function cornerTable(){const{x0,x1,y0,y1}=DECK,deckMat=new THREE.MeshLambertMate
     pc.position.copy(W3((cx0+cx1)/2,(hf+hb)/2,(cy0+cy1)/2));pc.rotation.x=-ang;pc.userData.roof=true;ext.add(pc);
     const cal=box(cx0,cx1+.05,cy1-.02,cy1+.1,hb-.12,hb-.04,matStep);cal.userData.roof=true;
     if(!S.open)label(txt,(cx0+cx1)/2,3.0,(cy0+cy1)/2,.6,ext)};
-  cover(2.5,4.4,'Cobertura da mesa');cover(.45,1.45,'Cobertura da pia');
+  if(E._cobMesa!==false)cover(2.5,4.4,'Cobertura da mesa');if(E._cobPia!==false)cover(.45,1.45,'Cobertura da pia');
   if(S.open)label('Vão aberto do bafo (1 m)',1.97,2.9,3.4,.5,ext);}
 function sink(x0,x1,y0,y1,mI){box(x0,x1,y0,y1,.85,.905,new THREE.MeshLambertMaterial({color:0x6d7377}));box(x0+.03,x1-.03,y0+.03,y1-.03,.9,.906,mI);
   const fx=(x0+x1)/2;box(fx-.02,fx+.02,y1+.03,y1+.07,.9,1.2,mI);box(fx-.02,fx+.02,y1-.12,y1+.07,1.16,1.2,mI)}
@@ -1034,7 +1084,7 @@ function buildFurniture(){buildRoutes();
       label('Ampliado ≈ 2,45 × 3,65 m',17.98,3.3,13.2,.6,ext);}}
 }
 /* portão da frente: corre para a direita, atrás do murinho, no sentido da casa */
-function frontGate(){const two=E.pool==='eco'&&E.car2,gR=10.25,gL=two?4.55:6.95,W=gR-gL,mEnd=LOT_W-.08,gy0=.3,gy1=.36,gh=1.45,mt=matStep;
+function frontGate(){const two=E.pool==='eco'&&E.car2&&E._gate2!==false,gR=10.25,gL=two?4.55:6.95,W=gR-gL,mEnd=LOT_W-.08,gy0=.3,gy1=.36,gh=1.45,mt=matStep;
   const mur=new THREE.MeshLambertMaterial({color:0xd9d2c4});// muro de ~1 m dos dois lados do portão (à esquerda vai até a divisa)
   box(gR,mEnd,.02,.2,0,1.0,mur);box(gR-.05,mEnd,0,.22,1.0,1.05,matCap);
   box(.05,gL-.2,.02,.2,0,1.0,mur);box(.03,gL-.15,0,.22,1.0,1.05,matCap);
@@ -1077,7 +1127,7 @@ function calcExt(){const it=[];const A=(E.x1-E.x0)*(E.y1-E.y0);
       if(E.amp)it.push(['Ampliação do escritório para trás','+1,2 m de fundo (~3,3 m²) para a 2ª mesa em L; fundos na beira do barranco, fundação reforçada',EP.amp]);escIt();}
     it.push(['Piscina de fibra','~3,2 × 1,8 m na lateral esquerda, sem garagem',EP.pool*.95]);it.push(['Capa de proteção','crianças e gato',EP.capa]);
     it.push(['Churrasqueira a bafo','tipo americana, móvel',2500]);it.push(['Bancada com pia','1,2 m junto da cerca viva: alvenaria + granito, cuba inox e torneira',EP.pia]);
-    it.push(['Privacidade na frente','cerca viva',EP.priv]);
+    it.push(['Cerca viva','na frente e na lateral da piscina, por trás do muro baixo (privacidade)',EP.priv]);
     if(E.car2){it.push(['2ª vaga: piso (futuro)','~2,5 × 6 m de bloquete ou porcelanato externo',2000]);it.push(['2ª vaga: ampliar cobertura (futuro)','+1 módulo de ~2,6 × 3,6 m para a esquerda',7500]);it.push(['Portão de 2 carros (futuro)','troca o atual por um de correr de ~5,7 m (mesmo sentido, para a casa, atrás do murinho) + motor com abertura parcial',EP.portao2]);}
     banhoIt();mesaIt();
     it.push(['Projeto, ART e aprovação','escritório + piscina',EP.proj*.5]);
@@ -1121,19 +1171,19 @@ function arcLine(s,hFn,dashed){const pts=[];for(let i=0;i<=120;i++){const t=aA+(
   const g=new THREE.BufferGeometry().setFromPoints(pts);const col=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#c4262c';
   const m=dashed?new THREE.LineDashedMaterial({color:col,dashSize:.35,gapSize:.25}):new THREE.LineBasicMaterial({color:col});
   const l=new THREE.Line(g,m);if(dashed)l.computeLineDistances();dyn.add(l)}
-function buildDyn(){
+function buildDyn(){return withEff(_buildDyn)}
+function _buildDyn(){
   scene.remove(dyn);dyn.traverse(o=>{if(o.geometry)o.geometry.dispose()});dyn=new THREE.Group();scene.add(dyn);
   // arrimo (só com aterro) fica na divisa
   {const La=R*(aB-aA),Na=Math.ceil(La/.5),da=(aB-aA)/Na;
    if(S.aterro)for(let i=0;i<Na;i++)seg(aA+i*da,aA+(i+1)*da,.11,La/Na+.02,S.H+.42,.22,(-S.H-.3+.12)/2,matConc);}
   // grade/muro: com aterro, em cima do arrimo; sem aterro, no alto do barranco (início do plano + 50 cm)
-  const sF=S.aterro?.12:S.W+.5,base=S.aterro?.12:0;
-  const fA=S.aterro?aA:-Math.acos(18.05/(R+sF)),fB=S.aterro?aB:-Math.acos(37.36/(R+sF));
+  const G=fenceGeo(S.aterro,S.ext),sF=G.sF,base=S.aterro?.12:0,fA=G.fA,fB=G.fB;
   const Larc=(R+sF)*(fB-fA),N=Math.ceil(Larc/.5),dt=(fB-fA)/N,segLen=Larc/N+.02;
   const edOn=E.edic&&E.pool!=='fundos'&&E.pool!=='fundos2';
   const hid=t=>{const[x,y]=arcPt(t,sF);if(edOn&&x>16.5&&x<19.45&&y>11.35&&y<(E.amp?15.25:14.05))return true;
     if(banhoOn()){const b=BANHO();if(x>(S.aterro?b.x0:DUCHA_X_())-.1&&x<b.xe+.1&&y>(S.aterro?b.y0:5.5)-.1&&y<b.ye+.1)return true}
-    if(E.pool==='eco'&&!S.aterro&&x>DECK.x0-.1&&x<DECK.x1+.05&&y>DECK.y0-.1&&y<DECK.y1+.1)return true;return false};
+    if(E.pool==='eco'&&!S.aterro&&E._deck!==false&&x>DECK.x0-.1&&x<DECK.x1+.05&&y>DECK.y0-.1&&y<DECK.y1+.1)return true;return false};
   if(S.fence==='muro')for(let i=0;i<N;i++){if(hid(fA+(i+.5)*dt))continue;seg(fA+i*dt,fA+(i+1)*dt,sF,segLen,1.8,.15,base+.9,matMuro);seg(fA+i*dt,fA+(i+1)*dt,sF,segLen,.05,.2,base+1.82,matCap)}
   if(S.fence==='grade'){
     for(let i=0;i<N;i++){if(hid(fA+(i+.5)*dt))continue;seg(fA+i*dt,fA+(i+1)*dt,sF,segLen,.04,.03,base+.12,matIron);seg(fA+i*dt,fA+(i+1)*dt,sF,segLen,.04,.03,base+1.48,matIron)}
@@ -1141,21 +1191,46 @@ function buildDyn(){
     const nb=Math.floor(Larc/.1),im=new THREE.InstancedMesh(new THREE.BoxGeometry(.016,1.4,.016),matIron,nb),M=new THREE.Matrix4();
     for(let i=0;i<nb;i++){const t=fA+(fB-fA)*(i+.5)/nb,[x,y]=arcPt(t,sF);if(hid(t))M.makeScale(0,0,0);else M.makeTranslation(x,base+.8,-y);im.setMatrixAt(i,M)}
     im.castShadow=true;dyn.add(im)}
-  if(S.cat&&S.fence!=='none'){
-    const top=S.fence==='muro'?base+1.85:base+1.5,NA=10,np=Math.ceil(Larc/2);
+  if(S.cat&&S.fence!=='none'){const cA=S.ext==='mista'?fenceGeo(S.aterro,'lavacao').fA:fA,cL=(R+sF)*(fB-cA);
+    const top=S.fence==='muro'?base+1.85:base+1.5,NA=10,np=Math.ceil(cL/2);
     const LA=.6,c45=Math.SQRT1_2;
     const arm=t=>{const a=[];for(let k=0;k<=NA;k++){const q=k/NA*LA,[x,y]=arcPt(t,sF+q*c45);a.push(W3(x,top+q*c45,y))}return a};
-    for(let i=0;i<=np;i++){const t=fA+(fB-fA)*i/np;if(hid(t))continue;const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(arm(t)),12,.02,6,false),matIron);m.castShadow=true;dyn.add(m)}
-    const NT=Math.ceil(Larc/.5),v=[],ix=[];
-    for(let i=0;i<=NT;i++)arm(fA+(fB-fA)*i/NT).forEach(p=>v.push(p.x,p.y,p.z));
-    for(let i=0;i<NT;i++){if(hid(fA+(fB-fA)*(i+.5)/NT))continue;for(let k=0;k<NA;k++){const a=i*(NA+1)+k,b=a+1,c=a+NA+1,d=c+1;ix.push(a,b,c,b,d,c)}}
-    if(S.fence==='grade'){const o=v.length/3;for(let i=0;i<=NT;i++){const[x,y]=arcPt(fA+(fB-fA)*i/NT,sF+.02);v.push(x,base+.05,-y,x,top,-y)}
-      for(let i=0;i<NT;i++){if(hid(fA+(fB-fA)*(i+.5)/NT))continue;const a=o+i*2;ix.push(a,a+1,a+2,a+1,a+3,a+2)}}
+    for(let i=0;i<=np;i++){const t=cA+(fB-cA)*i/np;if(hid(t))continue;const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(arm(t)),12,.02,6,false),matIron);m.castShadow=true;dyn.add(m)}
+    const NT=Math.ceil(cL/.5),v=[],ix=[];
+    for(let i=0;i<=NT;i++)arm(cA+(fB-cA)*i/NT).forEach(p=>v.push(p.x,p.y,p.z));
+    for(let i=0;i<NT;i++){if(hid(cA+(fB-cA)*(i+.5)/NT))continue;for(let k=0;k<NA;k++){const a=i*(NA+1)+k,b=a+1,c=a+NA+1,d=c+1;ix.push(a,b,c,b,d,c)}}
+    if(S.fence==='grade'){const o=v.length/3;for(let i=0;i<=NT;i++){const[x,y]=arcPt(cA+(fB-cA)*i/NT,sF+.02);v.push(x,base+.05,-y,x,top,-y)}
+      for(let i=0;i<NT;i++){if(hid(cA+(fB-cA)*(i+.5)/NT))continue;const a=o+i*2;ix.push(a,a+1,a+2,a+1,a+3,a+2)}}
     const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(v,3));g.setIndex(ix);g.computeVertexNormals();
     dyn.add(new THREE.Mesh(g,matNet));
     let run=[];const flush=()=>{if(run.length>1)dyn.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(run),run.length*2,.012,5,false),matIron));run=[]};
-    for(let i=0;i<=120;i++){const t=fA+(fB-fA)*i/120;if(hid(t)){flush();continue}const[x,y]=arcPt(t,sF+LA*c45);run.push(W3(x,top+LA*c45,y))}flush();
+    for(let i=0;i<=120;i++){const t=cA+(fB-cA)*i/120;if(hid(t)){flush();continue}const[x,y]=arcPt(t,sF+LA*c45);run.push(W3(x,top+LA*c45,y))}flush();
   }
+  // cerca transversal com portãozinho (só no modo "quintal da lavação")
+  if(S.ext!=='toda'&&S.fence!=='none'){const x=XP,y0=YP+.02,yb=fenceGeo(S.aterro,'lavacao').ya,gw=E._portaozinho===false?0:.85,g0=y0+.15,g1=g0+gw,top=S.fence==='muro'?1.8:1.5,hb=base;
+    const bx=(a,b,c,d,h0,h1,m)=>{const q=new THREE.Mesh(new THREE.BoxGeometry(b-a,h1-h0,d-c),m);q.position.copy(W3((a+b)/2,(h0+h1)/2,(c+d)/2));q.castShadow=true;dyn.add(q);return q};
+    [y0,g0,g1,yb].forEach(y=>bx(x-.035,x+.035,y-.035,y+.035,0,top+.12,matIron));
+    if(S.fence==='muro')bx(x-.08,x+.08,g1+.04,yb,0,top,matMuro);
+    else{bx(x-.015,x+.015,g1,yb,hb+.1,hb+.14,matIron);bx(x-.015,x+.015,g1,yb,top-.04,top,matIron);for(let y=g1+.1;y<yb-.05;y+=.1)bx(x-.008,x+.008,y-.008,y+.008,hb+.12,top-.02,matIron);
+      bx(x-.015,x+.015,y0,g0,hb+.1,hb+.14,matIron);bx(x-.015,x+.015,y0,g0,top-.04,top,matIron);}
+    // portãozinho: quadro, grade fina, trinco
+    bx(x+.02,x+.05,g0+.03,g1-.03,.08,.12,matIron);bx(x+.02,x+.05,g0+.03,g1-.03,top-.06,top-.02,matIron);bx(x+.02,x+.05,g0+.03,g0+.07,.08,top-.02,matIron);bx(x+.02,x+.05,g1-.07,g1-.03,.08,top-.02,matIron);
+    for(let y=g0+.12;y<g1-.07;y+=.08)bx(x+.028,x+.042,y-.006,y+.006,.12,top-.06,matIron);bx(x+.05,x+.1,g1-.16,g1-.1,.95,1.0,matIron);
+    // tela vertical e topo inclinado para o lado do quintal da lavação
+    if(S.cat){const v=[],quad=(a,b,c,d)=>{const o=v.length/3;[a,b,c,d].forEach(p=>v.push(p.x,p.y,p.z));return[o,o+1,o+2,o,o+2,o+3]},ix=[];
+      const c45=Math.SQRT1_2,LA=.6;ix.push(...quad(W3(x+.03,top,y0),W3(x+.03+LA*c45,top+LA*c45,y0),W3(x+.03+LA*c45,top+LA*c45,yb),W3(x+.03,top,yb)));
+      if(S.fence==='grade')ix.push(...quad(W3(x+.02,hb+.05,g1),W3(x+.02,top,g1),W3(x+.02,top,yb),W3(x+.02,hb+.05,yb)));
+      const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(v,3));g.setIndex(ix);g.computeVertexNormals();dyn.add(new THREE.Mesh(g,matNet));
+      [y0,g0,g1,yb].forEach(y=>{const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([W3(x,top,y),W3(x+LA*c45,top+LA*c45,y)]),2,.02,6,false),matIron);dyn.add(m)})}
+    if(gw)label('Portãozinho',x,2.3,(g0+g1)/2,.55,dyn);label('Quintal dos gatos',x+2.3,1.6,(y0+yb)/2+.4,.6,dyn);
+    // muro do vizinho: braços 45° + tela presos só na face do nosso lado, inclinados para dentro do lote
+    if(S.cat&&E._viz!==false){const vz=vizSeg(S.aterro),wx=LOT_W-.08,hw=1.8,c45=Math.SQRT1_2,LA=.55;
+      if(vz.len>.1){const n=Math.max(2,Math.ceil(vz.len/1.0)),v=[];
+        for(let k=0;k<=n;k++){const y=vz.y0+(vz.y1-vz.y0)*k/n;bx(wx-.04,wx,y-.03,y+.03,hw-.35,hw,matIron);
+          dyn.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([W3(wx,hw-.05,y),W3(wx-LA*c45,hw-.05+LA*c45,y)]),2,.018,6,false),matIron))}
+        [[wx,hw-.05],[wx-LA*c45,hw-.05+LA*c45]].forEach(([a,h])=>v.push(...W3(a,h,vz.y0).toArray(),...W3(a,h,vz.y1).toArray()));
+        const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(v,3));g.setIndex([0,1,3,0,3,2]);g.computeVertexNormals();dyn.add(new THREE.Mesh(g,matNet));
+        label('Anti-gato no muro',wx-.6,2.9,(vz.y0+vz.y1)/2,.55,dyn);}}}
   arcLine(-.02,(x,y)=>S.aterro?.12:-S.H,false);
   arcLine(S.W,(x,y)=>0,true);
 }
@@ -1198,7 +1273,7 @@ function navStep(now){const dt=Math.min(.05,(now-lastT)/1000);lastT=now;if(!navO
   controls.update();renderer.render(scene,camera)})(performance.now());
 
 /* ---------- custos ---------- */
-function calc(aterro,fence,m){const it=[];const L=L_CURVA;
+function calc(aterro,fence,m){const it=[];const L=L_CURVA,FL=fenceLens(aterro),Lf=FL.grade,Lc=FL.gato,qt=S.ext==='lavacao'?' (só quintal dos gatos)':FL.pen?' (divisa inteira + cerca do quintal)':'';
   if(aterro){const veg=Math.min(m.V,m.A*.1),sai=Math.max(0,m.V-veg);
     it.push(['Terra/saibro',fmt(sai*1.25,1)+' m³ solto',sai*1.25*P.terra]);
     it.push(['Espalhar e compactar',fmt(m.V,1)+' m³',m.V*P.comp]);
@@ -1206,9 +1281,11 @@ function calc(aterro,fence,m){const it=[];const L=L_CURVA;
     it.push(['Grama em placas',fmt(m.A,0)+' m²',m.A*P.grama]);
     it.push(['Muro de arrimo',fmt(L,1)+' m × '+fmt(S.H+.4,2)+' m',L*(S.H+.4)*P.arrimo]);
     it.push(['Dreno do arrimo',fmt(L,1)+' m',L*P.dreno]);}
-  if(fence==='grade')it.push(['Gradil 1,50 m',fmt(L,1)+' m',L*P.grade]);
-  if(fence==='muro')it.push(['Muro 1,80 m',fmt(L*1.8,1)+' m²',L*1.8*P.muro]);
-  if(S.cat&&fence!=='none')it.push(['Topo inclinado 45° + tela',fmt(L,1)+' m',L*P.gato]);
+  if(fence==='grade')it.push(['Gradil 1,50 m'+qt,fmt(Lf,1)+' m',Lf*P.grade]);
+  if(fence==='muro')it.push(['Muro 1,80 m'+qt,fmt(Lf*1.8,1)+' m²',Lf*1.8*P.muro]);
+  if(S.cat&&fence!=='none')it.push(['Topo inclinado 45° + tela'+(S.ext==='mista'?' (só no quintal dos gatos)':''),fmt(Lc,1)+' m',Lc*P.gato]);
+  if(FL.pen&&fence!=='none'){it.push(['Portãozinho na cerca','~0,85 m, com mola e trinco, na saída do quintal dos gatos',900]);
+    if(S.cat&&FL.viz>.1)it.push(['Anti-gato no muro do vizinho',fmt(FL.viz,1)+' m de braços 45° + tela, presos só do seu lado (combinar com o vizinho)',FL.viz*(P.gato+30)]);}
   const sub=it.reduce((s,r)=>s+r[2],0);if(sub>0)it.push(['Imprevistos',P.imp+'%',sub*P.imp/100]);
   return{it,total:sub*(1+P.imp/100)}}
 const NAMES={none:'sem fechamento',grade:'grade',muro:'muro'};
@@ -1222,29 +1299,56 @@ const epr=$('eprices');Object.keys(EP).forEach(k=>{const l=document.createElemen
   const i=document.createElement('input');i.type='number';i.id='e-'+k;i.min=0;i.step=50;i.value=EP[k];i.addEventListener('input',()=>{EP[k]=Math.max(0,+i.value||0);renderUI()});epr.append(l,i)});
 function renderUI(){
   const ce=calcExt();
-  $('t-ext').innerHTML=ce.it.length?'<tr><th>Item</th><th class="n">Valor</th></tr>'+ce.it.map(r=>`<tr><td>${r[0]}<small>${r[1]}</small></td><td class="n">${brl(r[2])}</td></tr>`).join('')
-    +`<tr class="total"><td>Total estimado<small>faixa realista ${brl(ce.total*.8)} a ${brl(ce.total*1.3)}</small></td><td class="n">${brl(ce.total)}</td></tr>`:'<tr><td>Nenhuma ampliação marcada.</td></tr>';
-  $('c-esc').disabled=!E.gar;$('c-cp').disabled=E.gar;$('w-gar').hidden=!(E.gar||E.pool==='lateral');
+  renderItems();$('c-aterro').checked=S.aterro;
+  $('c-esc').disabled=!E.gar;$('w-gar').hidden=!(E.gar||E.pool==='lateral');
   document.querySelectorAll('[data-pool]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.pool===E.pool));
-  $('c-q').disabled=E.pool!=='lateral';$('c-banho').disabled=!(E.pool==='eco'||E.pool==='lateral');$('maquse').setAttribute('aria-disabled',!banhoOn());document.querySelectorAll('[data-maq]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.maq===E.maq));
-  $('roomuse').setAttribute('aria-disabled',!(E.edic&&E.pool!=='fundos'&&E.pool!=='fundos2'));document.querySelectorAll('[data-amp]').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.amp==='1')===E.amp));$('c-edic').disabled=E.pool==='fundos'||E.pool==='fundos2';$('c-car2').disabled=E.pool!=='eco';$('c-sotao').disabled=!(E.gar&&E.esc);
+  $('c-q').disabled=E.pool!=='lateral';$('maquse').setAttribute('aria-disabled',!banhoOn());document.querySelectorAll('[data-maq]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.maq===E.maq));
+  $('roomuse').setAttribute('aria-disabled',!(E.edic&&E.pool!=='fundos'&&E.pool!=='fundos2'));document.querySelectorAll('[data-amp]').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.amp==='1')===E.amp));$('c-sotao').disabled=!(E.gar&&E.esc);
   const m=measure();
   $('o-h').textContent=fmt(S.H,2)+' m';$('o-w').textContent=fmt(S.W,1)+' m';
   $('s-a').textContent=fmt(m.A,0)+' m²';$('s-v').textContent=fmt(m.V,1)+' m³';$('s-vs').textContent=fmt(m.V*1.25,1)+' m³';
   $('s-cam').textContent=fmt(m.V*1.25/10,1);
   const c=calc(S.aterro,S.fence,m);
-  $('t-cost').innerHTML=c.it.length?'<tr><th>Item</th><th class="n">Valor</th></tr>'+c.it.map(r=>`<tr><td>${r[0]}<small>${r[1]}</small></td><td class="n">${brl(r[2])}</td></tr>`).join('')
+  if($('t-cost'))$('t-cost').innerHTML=c.it.length?'<tr><th>Item</th><th class="n">Valor</th></tr>'+c.it.map(r=>`<tr><td>${r[0]}<small>${r[1]}</small></td><td class="n">${brl(r[2])}</td></tr>`).join('')
     +`<tr class="total"><td>Total estimado</td><td class="n">${brl(c.total)}</td></tr>`:'<tr><td>Nada a fazer nesta opção.</td></tr>';
   $('w-arrimo').hidden=!S.aterro;$('lg-fill').hidden=!(S.aterro&&S.fill);
   $('t-cmp').innerHTML='<tr><th>Opção</th><th class="n">Total</th></tr>'+SCEN.map(([a,f])=>{const on=a===S.aterro&&f===S.fence;
     return `<tr class="${on?'on':''}" data-a="${a?1:0}" data-f="${f}" tabindex="0"><td>${a?'Aterro + arrimo':'Sem aterro'}, ${NAMES[f]}${S.cat&&f!=='none'?' anti-fuga':''}</td><td class="n">${brl(calc(a,f,m).total)}</td></tr>`}).join('');
   document.querySelectorAll('[data-aterro]').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.aterro==='1')===S.aterro));
   document.querySelectorAll('[data-fence]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.fence===S.fence));
-  $('c-cat').disabled=S.fence==='none';
+  document.querySelectorAll('[data-ext]').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.ext===S.ext);b.disabled=S.fence==='none'});
 }
 function refresh(){updateTerrain();placeTrees();buildExt();buildDyn();renderUI()}
+/* lista única de itens por área, com marcar/desmarcar e o preço de cada um */
+const hx=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// ordem dos itens = ordem do plano (o que fazer primeiro vem antes; o mais caro e o futuro, depois)
+const ORDER=['Terra/saibro','Espalhar e compactar','Terra vegetal','Grama em placas','Muro de arrimo','Dreno do arrimo',
+  'Gradil 1,50 m','Muro 1,80 m','Topo inclinado 45° + tela','Portãozinho na cerca','Anti-gato no muro do vizinho',
+  'Fechar lavação','Cobertura do carro',
+  'Escritório nos fundos','Elétrica do escritório','Internet no escritório','Ampliação do escritório para trás',
+  'Piscina de fibra','Capa de proteção','Cerca viva','Casa de máquinas da piscina','Tubos da piscina','Elétrica da casa de máquinas',
+  'Área do churrasco no canto da piscina','Churrasqueira a bafo','Bancada com pia','Água e esgoto da pia','Muro atrás da pia','Mesa externa + 4 cadeiras','Cobertura da mesa','Cobertura da pia',
+  'Banheiro externo','Cantinho da ducha','Esgoto do banheiro','Água fria e luz do banheiro','Caminho de pedras até a piscina',
+  'Privacidade na frente','2ª vaga: piso','2ª vaga: ampliar cobertura','Portão de 2 carros','Projeto, ART e aprovação'];
+// opções que aparecem logo abaixo do item a que pertencem
+const OPTS=[['opt-fence',['Gradil 1,50 m','Muro 1,80 m']],['maquse',['Casa de máquinas da piscina']],['roomuse',['Escritório nos fundos']]];
+function allItems(){const m=measure();
+  return[...calcExt().it,...calc(S.aterro,S.fence,m).it.filter(r=>!/^Imprevistos/.test(r[0]))].map(([l,d,v])=>{const k=ikey(l),par=PARENT[k];
+    return{l,k,d,v,sel:!S.off.has(k),dep:!!par&&!on(par),done:S.done.has(k)}})}
+function renderItems(){const holder=$('opt-holder');OPTS.forEach(([id])=>{const el=$(id);if(el)holder.appendChild(el)});
+  const ord=k=>{const n=ORDER.indexOf(k);return n<0?900:n},its=allItems().map((x,n)=>({...x,n})).sort((a,b)=>ord(a.k)-ord(b.k)||a.n-b.n);
+  let acc=0,feito=0;
+  $('itlist').innerHTML=its.map((i,n)=>{const done=i.done&&i.sel&&!i.dep,inc=i.sel&&!i.dep&&!done;if(inc)acc+=i.v;if(done)feito+=i.v;
+    return `<li class="${i.sel?'':'off'}${i.dep?' dep':''}${done?' done':''}"><label><span class="num">${done?'✓':n+1}</span><input type="checkbox" data-k="${hx(i.k)}"${i.sel?' checked':''}${i.dep||done?' disabled':''}><span class="nm">${hx(i.l)}<small>${hx(i.d)}</small></span><span class="pr">${brl(i.v)}<small>${done?'já feito':inc?'acumulado '+brl(acc):'fora do total'}</small>${i.sel&&!i.dep?`<button type="button" class="done-btn" data-done="${hx(i.k)}" aria-pressed="${done}" title="${done?'Desmarcar como feito':'Marcar como já feito: continua na maquete, mas sai do total'}">${done?'✓ Feito':'Marcar feito'}</button>`:''}</span></label><div class="slot" data-slot="${hx(i.k)}"></div></li>`}).join('');
+  OPTS.forEach(([id,keys])=>{const el=$(id);if(!el)return;let slot=null;keys.some(k=>slot=[...$('itlist').querySelectorAll('.slot')].find(x=>x.dataset.slot===k));
+    if(slot)slot.appendChild(el);else if(id==='opt-fence')$('slot-top').appendChild(el)});
+  $('it-total').textContent=brl(acc);$('it-range').textContent='faixa realista '+brl(acc*.8)+' a '+brl(acc*1.3)+(feito?' · já feito: '+brl(feito):'')}
+$('itlist').addEventListener('click',e=>{const b=e.target.closest('[data-done]');if(!b)return;const k=b.dataset.done;if(S.done.has(k))S.done.delete(k);else S.done.add(k);saveOff();renderUI();renderPlan()});
+$('itlist').addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.k;if(!k)return;if(e.target.checked)S.off.delete(k);else S.off.add(k);saveOff();buildExt();buildDyn();renderUI()});
+$('c-aterro').addEventListener('change',e=>{S.aterro=e.target.checked;refresh()});
 document.querySelectorAll('[data-aterro]').forEach(b=>b.addEventListener('click',()=>{S.aterro=b.dataset.aterro==='1';refresh()}));
 document.querySelectorAll('[data-fence]').forEach(b=>b.addEventListener('click',()=>{S.fence=b.dataset.fence;refresh()}));
+document.querySelectorAll('[data-ext]').forEach(b=>b.addEventListener('click',()=>{S.ext=b.dataset.ext;refresh();renderPlan()}));
 document.querySelectorAll('.views button[data-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
 $('v-open').addEventListener('click',()=>{S.open=!S.open;$('v-open').setAttribute('aria-pressed',S.open);$('lg-open').hidden=!S.open;document.querySelectorAll('.lg-inst').forEach(e=>e.hidden=!S.open);buildExt();setView(S.open?'dentro':'3d')});
 document.querySelectorAll('[data-maq]').forEach(b=>b.addEventListener('click',()=>{E.maq=b.dataset.maq;buildExt();buildDyn();renderUI();renderPlan()}));
@@ -1252,9 +1356,8 @@ document.querySelectorAll('[data-amp]').forEach(b=>b.addEventListener('click',()
 $('r-h').addEventListener('input',e=>{S.H=+e.target.value;refresh()});
 $('r-w').addEventListener('input',e=>{S.W=+e.target.value;refresh()});
 $('c-fill').addEventListener('change',e=>{S.fill=e.target.checked;refresh()});
-$('c-cat').addEventListener('change',e=>{S.cat=e.target.checked;refresh()});
 document.querySelectorAll('[data-pool]').forEach(b=>b.addEventListener('click',()=>{E.pool=b.dataset.pool;buildExt();buildDyn();renderUI()}));
-[['c-banho','banho'],['c-car2','car2'],['c-edic','edic'],['c-q','q'],['c-cp','cp'],['c-chur','chur'],['c-lav','lav'],['c-gar','gar'],['c-esc','esc'],['c-sotao','sotao']].forEach(([id,k])=>$(id).addEventListener('change',e=>{E[k]=e.target.checked;buildExt();buildDyn();renderUI()}));
+[['c-q','q'],['c-chur','chur'],['c-gar','gar'],['c-esc','esc'],['c-sotao','sotao']].forEach(([id,k])=>$(id).addEventListener('change',e=>{E[k]=e.target.checked;buildExt();buildDyn();renderUI()}));
 buildExt();
 const pick=tr=>{if(!tr||!tr.dataset.f)return;S.aterro=tr.dataset.a==='1';S.fence=tr.dataset.f;refresh()};
 $('t-cmp').addEventListener('click',e=>pick(e.target.closest('tr')));
@@ -1269,15 +1372,18 @@ const moneyF=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
 const money=v=>moneyF.format(isFinite(v)?v:0);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const today=()=>new Date().toISOString().slice(0,10);
-function modelItems(){const R=[],L=L_CURVA;const add=(et,tp,d,u,q,p)=>R.push({et,tp,d,u,q:Math.round(q*100)/100,p:Math.round(p*100)/100});
-  if(S.fence==='grade')add('1','Material + serviço','Gradil 1,50 m na divisa dos fundos, instalado','m',L,P.grade);
-  if(S.fence==='muro')add('1','Material + serviço','Muro de bloco 1,80 m rebocado na divisa dos fundos','m²',L*1.8,P.muro);
-  if(S.cat&&S.fence!=='none')add('1','Material + serviço','Topo inclinado 45° anti-fuga de gato + tela','m',L,P.gato);
+function modelItems(){const R=[],L=L_CURVA,FL=fenceLens(S.aterro),Lf=FL.grade,Lc=FL.gato,qt=S.ext==='lavacao'?' (só quintal dos gatos, com cerca até a casa)':FL.pen?' (divisa inteira + cerca do quintal dos gatos)':'';const add=(et,tp,d,u,q,p)=>R.push({et,tp,d,u,q:Math.round(q*100)/100,p:Math.round(p*100)/100});
+  if(S.fence==='grade'&&on('Gradil 1,50 m')&&!S.done.has('Gradil 1,50 m'))add('1','Material + serviço','Gradil 1,50 m na divisa dos fundos, instalado'+qt,'m',Lf,P.grade);
+  if(S.fence==='muro'&&on('Muro 1,80 m')&&!S.done.has('Muro 1,80 m'))add('1','Material + serviço','Muro de bloco 1,80 m rebocado na divisa dos fundos'+qt,'m²',Lf*1.8,P.muro);
+  if(S.cat&&S.fence!=='none'&&on('Topo inclinado 45° + tela')&&!S.done.has('Topo inclinado 45° + tela'))add('1','Material + serviço','Topo inclinado 45° anti-fuga de gato + tela'+(S.ext==='mista'?' (só no quintal dos gatos)':''),'m',Lc,P.gato);
+  if(FL.pen&&S.fence!=='none'){if(on('Portãozinho na cerca')&&!S.done.has('Portãozinho na cerca'))add('1','Material + serviço','Portãozinho na cerca do quintal dos gatos','un',1,900);
+    if(S.cat&&FL.viz>.1&&on('Anti-gato no muro do vizinho')&&!S.done.has('Anti-gato no muro do vizinho'))add('1','Material + serviço','Anti-gato no muro do vizinho (braços 45° + tela, do nosso lado)','m',FL.viz,P.gato+30);
+    if(S.ext==='lavacao'){const rest=L-fenceGeo(S.aterro,'lavacao').arc;add('Futuro','Material + serviço','Completar a grade no resto da divisa','m',rest,P.grade);}}
   if(S.aterro){const m=measure(),veg=Math.min(m.V,m.A*.1),sai=Math.max(0,m.V-veg);
     add('Opcional','Material','Aterro: terra/saibro entregue','m³',sai*1.25,P.terra);add('Opcional','Serviço','Aterro: espalhar e compactar','m³',m.V,P.comp);
     add('Opcional','Material','Terra vegetal (10 cm)','m³',veg*1.25,P.veg);add('Opcional','Material + serviço','Grama em placas','m²',m.A,P.grama);
     add('Opcional','Material + serviço','Muro de arrimo com fundação','m²',L*(S.H+.4),P.arrimo);add('Opcional','Material + serviço','Dreno do arrimo (brita, manta, tubo)','m',L,P.dreno);}
-  calcExt().it.forEach(([l,det,v])=>{const et=/futuro/i.test(l)?'Futuro':/Escrit|Quarto|Garagem|Escada/.test(l)?'2':/Piscina|Capa|Churras|Bancada|Privac|Varand|churrasco|Banheiro|máquinas|Esgoto|Água fria|Tubos|mesa|Mesa/.test(l)?'3':'1';
+  calcExt().it.filter(([l])=>{const k=ikey(l);return on(k)&&!S.done.has(k)}).forEach(([l,det,v])=>{const et=/futuro/i.test(l)?'Futuro':/Escrit|Quarto|Garagem|Escada/.test(l)?'2':/Piscina|Capa|Churras|Bancada|Privac|Varand|churrasco|Banheiro|máquinas|Esgoto|Água fria|Tubos|mesa|Mesa/.test(l)?'3':'1';
     const tp=/Projeto/.test(l)?'Projeto / taxa':'Material + serviço';add(et,tp,l+(det?' – '+det:''),'vb',1,v)});
   return R}
 let O;
@@ -1346,9 +1452,12 @@ function planRows(at){const R=[],L=L_CURVA;const add=(et,tp,d,u,q,p)=>R.push({et
     add(ET1,'Material','Aterro: terra/saibro entregue','m³',sai*1.25,P.terra);add(ET1,'Serviço','Aterro: espalhar e compactar','m³',m.V,P.comp);
     add(ET1,'Material','Terra vegetal (10 cm)','m³',veg*1.25,P.veg);add(ET1,'Material + serviço','Grama em placas','m²',m.A,P.grama);
     add(ET1,'Material + serviço','Muro de arrimo com fundação','m²',L*(S.H+.4),P.arrimo);add(ET1,'Material + serviço','Dreno do arrimo (brita, manta, tubo)','m',L,P.dreno);}
-  add(ET1,'Material + serviço',at?'Gradil 1,50 m sobre o muro de arrimo':'Gradil 1,50 m no alto do barranco, em painéis removíveis','m',L,P.grade);
-  add(ET1,'Material + serviço','Topo inclinado 45° anti-fuga de gato + tela','m',L,P.gato);
-  add(ET1,'Material + serviço','Portãozinho na grade para manutenção','un',1,900);
+  const lav=S.ext==='lavacao',FL=fenceLens(at);
+  add(ET1,'Material + serviço',(at?'Gradil 1,50 m sobre o muro de arrimo':'Gradil 1,50 m no alto do barranco, em painéis removíveis')+(lav?', só no quintal dos gatos (com cerca até a casa)':FL.pen?', na divisa inteira + cerca do quintal dos gatos':''),'m',FL.grade,P.grade);
+  add(ET1,'Material + serviço','Topo inclinado 45° anti-fuga de gato + tela'+(S.ext==='mista'?' (só no quintal dos gatos)':''),'m',FL.gato,P.gato);
+  add(ET1,'Material + serviço',FL.pen?'Portãozinho na cerca do quintal dos gatos':'Portãozinho na grade para manutenção','un',1,900);
+  if(FL.pen&&FL.viz>.1)add(ET1,'Material + serviço','Anti-gato no muro do vizinho (braços 45° + tela, do nosso lado)','m',FL.viz,P.gato+30);
+  if(lav)add(ET3,'Material + serviço','Completar a grade no resto da divisa','m',L-fenceGeo(at,'lavacao').arc,P.grade);
   add(ET1,'Material + serviço','Fechar a lavação: porta na lateral, parede do fundo inteira e conduíte de luz','vb',1,EP.lav);
   add(ET1,'Material + serviço','Cobertura do carro, preparada para o 2º módulo','vb',1,EP.cp);
   add(ET1,'Material','Mudas da cerca viva (opcional: plantar já para crescer)','vb',1,1500);
@@ -1399,8 +1508,9 @@ function renderPlan(){const rows=planRows(PA);let tot=0;
     :'Sem aterro: a grade fica no alto do barranco, em painéis que podem ser remontados se um dia o aterro for feito. Se o orçamento do aterro vier bom, troque para "Com aterro já no início".';
   document.querySelectorAll('[data-pa]').forEach(b=>b.setAttribute('aria-pressed',(+b.dataset.pa)===PA))}
 function applyStage(n){S.aterro=!!PA;S.fence='grade';S.cat=true;
-  Object.assign(E,{cp:true,lav:true,gar:false,chur:false,latDoor:true,edic:n>=2,pool:n>=3?'eco':'none',car2:n>=3,banho:n>=3});
-  [['c-banho','banho'],['c-cp','cp'],['c-lav','lav'],['c-gar','gar'],['c-chur','chur'],['c-edic','edic'],['c-car2','car2']].forEach(([id,k])=>$(id).checked=!!E[k]);
+  Object.assign(E,{cp:true,lav:true,gar:false,chur:false,latDoor:true,edic:true,pool:n>=3?'eco':'none',car2:true,banho:true});
+  if(n>=2)S.off.delete('Escritório nos fundos');else S.off.add('Escritório nos fundos');saveOff();
+  [['c-gar','gar'],['c-chur','chur']].forEach(([id,k])=>$(id).checked=!!E[k]);
   buildExt();refresh();setView(n>=2&&n<3?'escritorio':'3d');$('maquete').scrollIntoView({behavior:reduce?'auto':'smooth'})}
 document.querySelectorAll('[data-pa]').forEach(b=>b.addEventListener('click',()=>{PA=+b.dataset.pa;renderPlan()}));
 $('pl-steps').addEventListener('click',e=>{const b=e.target.closest('[data-stage]');if(b)applyStage(+b.dataset.stage)});
