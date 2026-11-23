@@ -904,8 +904,10 @@ function _buildExt(){
 /* banheiro externo + casa de máquinas, atrás da piscina da lateral */
 const banhoOn=()=>E.banho&&(E.pool==='eco'||E.pool==='lateral');
 // afastado 1 m da casa: fica a passagem para os fundos (lavação e escritório)
-// com aterro: no recuo dos fundos da casa (não tapa a janela do banheiro de dentro); sem aterro: atrás da garagem
-const BANHO=()=>{const mq=E.maq==='banheiro';return S.aterro?{x0:10.2,x1:11.9,y0:7.5,y1:9.0,nicho:true,xe:11.9,ye:mq?9.7:9.0}:{x0:6.96,x1:8.36,y0:6.35,y1:7.95,nicho:false,xe:mq?9.16:8.36,ye:7.95}};
+// atrás do banheiro da suíte, encostado no banheiro social: não tapa nenhuma janela e fica junto do encanamento dos banheiros
+const BANHO=()=>{const y1=HY+(S.aterro?7.45:7.2);return{x0:HX+2.95,x1:HX+4.6,y0:HY+5.9,y1,nicho:true,xe:HX+4.6,ye:y1}};
+// casa de máquinas "junto do banheiro": com aterro no cantinho ao lado da suíte (longe da janela); sem aterro atrás da garagem
+const MAQB=()=>S.aterro?{c0:HX+.05,c1:HX+.85,c2:HY+4.47,c3:HY+5.17,f:true}:{c0:6.96,c1:7.76,c2:6.35,c3:7.15,f:false};
 const DUCHA_X_=()=>BANHO().x0-1.1;
 const shC=()=>(S.aterro&&!banhoOn())?0:1.4;
 /* canto atrás da piscina: mesa para 4 ao lado do bafo. Sem aterro é barranco: deck de madeira sobre pilaretes, com a grade em volta */
@@ -973,24 +975,24 @@ function buildBanho(){if(!banhoOn())return;
     if(!S.aterro){const yg=CY-Math.sqrt((R+S.W+.5)**2-(px-CX)**2);box(px,x0,yg,yb,-.9,.06,pad);straightGrade([[px,yg],[px,yb],[x0,yb]],.06);}
     else box(px,x0,y0,yb,0,.06,pad);
     const xe=BANHO().xe;box(xe,HX,y0-.2,7.7,0,.05,new THREE.MeshLambertMaterial({color:0xc9c5bc}));if(S.open)label('Passagem '+fmt(HX-xe,1)+' m',(xe+HX)/2,1.2,7.1,.55,ext);}
-  else{// no recuo da casa: porta e ducha do lado de quem chega pelo caminho, janelinha no fundo
+  else{// atrás do banheiro da suíte: porta camarão na parede da esquerda (lado do caminho), janelinha alta no fundo
     box(x1-t,x1,y0,y1,.15,hw,matWall);box(x0,x1,y0,y0+t,.15,hw,matWall);box(x0,x1,y1-t,y1,.15,hw,matWall);
-    const d0=y0+.2,d1=d0+.7,dm=(d0+d1)/2;
+    const d1=y1-t-.06,d0=d1-.7,dm=(d0+d1)/2;
     box(x0,x0+t,y0,d0,.15,hw,matWall);box(x0,x0+t,d1,y1,.15,hw,matWall);box(x0,x0+t,d0,d1,2.25,hw,matWall);
     box(x0+.04,x0+.08,d0,dm-.01,.15,2.25,matWood);box(x0+.04,x0+.08,dm+.01,d1,.15,2.25,matWood);
-    box(x0+.45,x0+1.05,y1,y1+.02,1.75,2.15,matGlass);
-    box(ix1-.2,ix1,iy0+.45,iy0+.85,.15,.95,matWhite);box(ix1-.72,ix1-.2,iy0+.47,iy0+.83,.15,.55,matWhite);box(ix0+.05,ix0+.45,iy1-.4,iy1,.8,.9,matWhite);
+    box(x0+.5,x0+1.0,y1,y1+.02,1.75,2.15,matGlass);
+    box(ix1-.2,ix1,iy0+.25,iy0+.65,.15,.95,matWhite);box(ix1-.72,ix1-.2,iy0+.27,iy0+.63,.15,.55,matWhite);box(ix0+.3,ix0+.7,iy0,iy0+.4,.8,.9,matWhite);
     if(S.open)swing(ix0,d0,.36,0,.17);
-    dy=y1-.35;box(x0-1.0,x0,y0+.05,y1,0,.06,pad);}
+    dy=y0+.25;box(x0-.8,x0,y0+.02,y0+.55,0,.06,pad);}
   // ducha na parede da esquerda, com ralo
   box(x0-.06,x0,dy-.03,dy+.03,.06,2.15,matStep);box(x0-.42,x0,dy-.03,dy+.03,2.1,2.15,matStep);box(x0-.5,x0-.32,dy-.09,dy+.09,2.04,2.1,matStep);
   box(x0-.6,x0-.3,dy-.15,dy+.15,.06,.075,matStep);
   if(nicho)stonePath();
-  if(E.maq==='banheiro'){// casa de máquinas acima do chão: com aterro atrás do banheiro, sem aterro ao lado
-    const mt=.1,hc=2.2,c0=nicho?x1-.8:x1,c1=nicho?x1:x1+.8,c2=nicho?y1:y0,c3=nicho?y1+.7:y1,dy0=nicho?c3:c2,sg=nicho?1:-1;
-    box(c0,c1,c2,c3,nicho?0:-.9,.15,matBase);box(c0,c0+mt,c2,c3,.15,hc,matWall);box(c1-mt,c1,c2,c3,.15,hc,matWall);
-    if(nicho)box(c0,c1,c2,c2+mt,.15,hc,matWall);else box(c0,c1,c3-mt,c3,.15,hc,matWall);
-    const fy0=nicho?c3-mt:c2,fy1=nicho?c3:c2+mt;box(c0,c0+.1,fy0,fy1,.15,hc,matWall);box(c1-.1,c1,fy0,fy1,.15,hc,matWall);box(c0+.1,c1-.1,fy0,fy1,2.0,hc,matWall);
+  if(E.maq==='banheiro'){// casa de máquinas acima do chão
+    const mt=.1,hc=2.2,{c0,c1,c2,c3,f}=MAQB(),dy0=f?c3:c2,sg=f?1:-1;
+    box(c0,c1,c2,c3,f?0:-.9,.15,matBase);box(c0,c0+mt,c2,c3,.15,hc,matWall);box(c1-mt,c1,c2,c3,.15,hc,matWall);
+    if(f)box(c0,c1,c2,c2+mt,.15,hc,matWall);else box(c0,c1,c3-mt,c3,.15,hc,matWall);
+    const fy0=f?c3-mt:c2,fy1=f?c3:c2+mt;box(c0,c0+.1,fy0,fy1,.15,hc,matWall);box(c1-.1,c1,fy0,fy1,.15,hc,matWall);box(c0+.1,c1-.1,fy0,fy1,2.0,hc,matWall);
     const dv=dy0+sg*.015;box(c0+.1,c1-.1,Math.min(dv,dv+sg*.03),Math.max(dv,dv+sg*.03),.25,2.0,matWood);
     for(let hh=.4;hh<1.9;hh+=.12)box(c0+.13,c1-.13,Math.min(dv+sg*.03,dv+sg*.05),Math.max(dv+sg*.03,dv+sg*.05),hh,hh+.03,matStep);
     const sl=box(c0-.08,c1+.08,c2-.08,c3+.08,hc,hc+.1,matWhite);sl.userData.roof=true;
@@ -1000,12 +1002,13 @@ function buildBanho(){if(!banhoOn())return;
   if(S.open){label('Ducha',x0-.45,2.6,dy,.55,ext);label('Banheiro ≈ '+fmt(ix1-ix0,1)+' × '+fmt(iy1-iy0,1)+' m',(x0+x1)/2,3.0,(y0+y1)/2,.7,ext);}
   else label('Banheiro externo',(x0+x1)/2,3.3,(y0+y1)/2,.75,ext);}
 /* caminho de pedras (pisantes) da piscina até o banheiro atrás da casa */
-const PATH=[[4.3,5.0],[5.0,5.6],[6.0,6.3],[7.6,6.7],[8.9,7.2],[9.5,7.8]];
+const PATH_A=[[4.3,5.0],[5.0,5.6],[6.0,6.3],[7.6,6.7],[8.9,7.2],[9.7,7.95],[10.4,8.55],[11.3,8.95],[12.2,9.4],[12.75,9.6]];
+const PATH_N=[[4.3,5.0],[5.0,5.6],[6.0,6.3],[7.6,6.7],[8.9,7.2],[9.7,7.7],[10.25,7.95],[11.1,8.3],[12.2,9.25],[12.75,9.6]];
 function stonePath(){const m=new THREE.MeshLambertMaterial({color:0xb9b4aa});let carry=0;
-  for(let i=0;i<PATH.length-1;i++){const[a0,b0]=PATH[i],[a1,b1]=PATH[i+1],len=Math.hypot(a1-a0,b1-b0),ang=Math.atan2(b1-b0,a1-a0);
+  const PATH=S.aterro?PATH_A:PATH_N;for(let i=0;i<PATH.length-1;i++){const[a0,b0]=PATH[i],[a1,b1]=PATH[i+1],len=Math.hypot(a1-a0,b1-b0),ang=Math.atan2(b1-b0,a1-a0);
     for(let d=carry;d<len;d+=.65){const x=a0+(a1-a0)*d/len,y=b0+(b1-b0)*d/len,st=new THREE.Mesh(new THREE.BoxGeometry(.42,.05,.55),m);
       st.position.copy(W3(x,.03,y));st.rotation.y=ang;st.receiveShadow=true;ext.add(st);carry=d+.65-len}}
-  label('Caminho de pedras',6.8,1.3,6.5,.6,ext)}
+  label('Caminho de pedras',7.6,1.3,6.6,.6,ext)}
 
 /* móveis em escala (modo sem telhado) */
 const mFw=new THREE.MeshLambertMaterial({color:0xc9a27a}),mFab=new THREE.MeshLambertMaterial({color:0x7f97ab}),mSheet=new THREE.MeshLambertMaterial({color:0xf4f1ea}),mDk=new THREE.MeshLambertMaterial({color:0x3a3f3c});
@@ -1036,15 +1039,14 @@ function buildRoutes(){
     route([[.85,3.7],[.85,3.25],[4.75,3.25],[4.75,1.3],[8.1,1.3]],RC.esg);box(4.55,4.95,3.05,3.45,0,.22,matBase);
     if(E.maq==='enterrada')route([[1.9,2.75],[1.9,3.2]],RC.pisc);
     else if(banhoOn()){const b=BANHO();// sucção e retorno da piscina até a casinha, enterrados junto do caminho
-      route(b.nicho?[[4.35,2.6],[4.75,2.6],[4.75,5.3],[6.0,6.15],[7.6,6.55],[8.9,7.05],[9.6,9.35],[11.5,9.35]]:[[4.35,2.6],[4.75,2.6],[4.75,5.3],[7.5,5.95],[8.76,5.95],[8.76,6.35]],RC.pisc);
-      if(b.nicho)route([[12.2,8.85],[11.6,9.3]],RC.ele);
+      route(S.aterro?[[4.35,2.6],[4.75,2.6],[4.75,5.3],[6.0,6.15],[7.6,6.55],[8.9,7.05],[9.8,7.75],[10.61,7.75],[10.61,8.17]]:[[4.35,2.6],[4.75,2.6],[4.75,5.3],[7.36,5.95],[7.36,6.35]],RC.pisc);
+      if(S.aterro)route([[10.66,7.3],[10.66,7.6]],RC.ele);
       label('Tubos da piscina',6.1,1.0,4.3,.55,ext);}
     label('Caixa de gordura',4.75,1.0,2.6,.5,ext);label('Água + luz da casa',6.6,1.3,5.6,.55,ext);}
   if(banhoOn()){const{x0,x1,y0,nicho}=BANHO();
-    if(nicho){// encostado na parede da casa: água e luz atravessam a parede
-      route([[x0+.8,7.15],[x0+.8,7.75]],RC.agua);route([[x0+1.0,7.15],[x0+1.0,7.75]],RC.ele);
-      route([[x0+.3,y0+.15],[9.85,7.3],[9.85,2.0],[9.4,1.5]],RC.esg);box(9.65,10.05,7.1,7.5,0,.2,matBase);
-      label('Água + luz pela casa',x0+.9,3.6,7.4,.6,ext);label('Esgoto → fossa',9.85,1.0,4.2,.5,ext);}
+    if(nicho){// encostado nos banheiros da casa: água, luz e esgoto atravessam a parede, sem vala
+      route([[x0+.55,y0-.3],[x0+.55,y0+.15]],RC.agua);route([[x0+.75,y0-.3],[x0+.75,y0+.15]],RC.ele);route([[x1-.35,y0+.4],[x1+.3,y0+.4]],RC.esg);
+      label('Água, luz e esgoto pelos banheiros da casa',(x0+x1)/2,3.6,y0-.2,.55,ext);}
     else{route([[HX+.3,6.85],[x1-.3,6.85]],RC.agua);route([[HX+.3,7.05],[x1-.3,7.05]],RC.ele);
       route([[x0+.45,y0],[x0+.45,2.0],[8.15,1.5]],RC.esg);box(x0+.25,x0+.65,y0-.45,y0-.05,0,.2,matBase);
       label('Água + luz pela casa',HX-.5,3.4,6.95,.6,ext);label('Esgoto → fossa',7.6,1.0,3.6,.5,ext);}}
@@ -1153,15 +1155,15 @@ function frontGate(){const two=E.pool==='eco'&&E.car2&&E._gate2!==false,gR=10.25
     label(free>=0?'Cabe: sobram '+fmt(free,1)+' m':'Faltam '+fmt(-free,1)+' m',gR+W+.3+Math.max(free,0)/2,1.1,.3,.6,ext);}
   else label(two?'Portão '+fmt(W,1)+' m com motor':'Portão atual (sem motor)',(gL+gR)/2,2.3,.3,.7,ext);}
 function calcExt(){const it=[];const A=(E.x1-E.x0)*(E.y1-E.y0);
-  const banhoIt=()=>{if(!banhoOn())return;const bn=BANHO().nicho;
-    it.push(['Banheiro externo',(bn?'~1,45 × 1,25 m úteis no recuo dos fundos da casa, sem tapar a janela do banheiro de dentro':'~1,2 × 1,4 m úteis atrás da garagem, com passagem de '+fmt(HX-BANHO().xe,1)+' m para os fundos')+': vaso, pia, porta camarão; ducha do lado de fora',EP.banho]);
-    if(bn)it.push(['Caminho de pedras até a piscina','~8 m de pisantes atrás das vagas',EP.pedras]);
-    it.push(['Cantinho da ducha',bn?'piso drenante ~1,0 × 1,5 m na porta do banheiro':'piso drenante ~1,1 × 1,0 m sobre o barranco, com a grade em volta',bn?600:EP.ducha]);
+  const banhoIt=()=>{if(!banhoOn())return;const at=S.aterro;
+    it.push(['Banheiro externo','~1,4 × '+(at?'1,3':'1,1')+' m úteis atrás do banheiro da suíte, encostado no banheiro social; não tapa janela: vaso, pia, porta camarão; ducha do lado de fora',EP.banho]);
+    it.push(['Caminho de pedras até a piscina','~12 m de pisantes atrás das vagas e pelo lado da casa'+(at?'':' (passagem estreita, ~0,7 m, no canto dos fundos)'),EP.pedras]);
+    it.push(['Cantinho da ducha','piso drenante ~0,8 × 0,55 m ao lado da porta do banheiro',600]);
     if(E.maq==='enterrada'){it.push(['Casa de máquinas da piscina','enterrada colada na piscina, com tampa reforçada no piso'+(E.pool==='eco'&&!S.aterro?' (fica embaixo do deck)':'')+', dreno e ventilação; bomba abaixo do nível da água',EP.cmaq]);
       it.push(['Tubos da piscina','~2 m: a casa de máquinas fica colada na piscina',EP.tpisc]);}
-    else{it.push(['Casa de máquinas da piscina','casinha ~0,8 m acima do chão '+(bn?'atrás do banheiro':'ao lado do banheiro')+', porta veneziana; fica seca e longe da comida',EP.cmaqb]);
-      it.push(['Tubos da piscina','~'+(bn?12:9)+' m enterrados junto do caminho + bomba autoescorvante (fica acima do nível da água)',EP.tpiscb]);}
-    it.push(['Esgoto do banheiro',bn?'~8 m pela lateral da casa até a fossa + caixa de inspeção':'~5 m de tubo 100 mm até a fossa + caixa de inspeção',bn?EP.esg*1.3:EP.esg]);
+    else{it.push(['Casa de máquinas da piscina','casinha ~0,8 m acima do chão, '+(at?'no cantinho ao lado da suíte, longe da janela':'atrás da garagem, sobre o barranco')+', porta veneziana; fica seca e longe da comida',EP.cmaqb]);
+      it.push(['Tubos da piscina','~'+(at?12:8)+' m enterrados + bomba autoescorvante (fica acima do nível da água)',EP.tpiscb]);}
+    it.push(['Esgoto do banheiro','liga na rede dos banheiros da casa, que fica do outro lado da parede (confirmar na obra)',EP.esg]);
     it.push(['Água fria e luz do banheiro','saem da parede da casa, com registro',EP.agua]);
     it.push(['Elétrica da casa de máquinas',E.maq==='enterrada'?'circuito próprio do quadro com DR, ~11 m enterrado junto com a água da pia':'circuito próprio do quadro com DR, saindo da parede da casa',E.maq==='enterrada'?EP.elp:EP.elpb]);};
   const mesaIt=()=>{if(E.pool!=='eco')return;it.push(['Área do churrasco no canto da piscina',S.aterro?'piso ~4 × 1,85 m sobre o aterro':'deck de madeira ~4 × 1,85 m sobre o barranco, com a grade em volta',S.aterro?2200:EP.deck]);
@@ -1235,7 +1237,7 @@ function _buildDyn(){
   const Larc=(R+sF)*(fB-fA),N=Math.ceil(Larc/.5),dt=(fB-fA)/N,segLen=Larc/N+.02;
   const edOn=E.edic&&E.pool!=='fundos'&&E.pool!=='fundos2';
   const hid=t=>{const[x,y]=arcPt(t,sF);if(edOn&&x>16.5&&x<19.45&&y>11.35&&y<(E.amp?15.25:14.05))return true;
-    if(banhoOn()){const b=BANHO();if(x>(S.aterro?b.x0:DUCHA_X_())-.1&&x<b.xe+.1&&y>(S.aterro?b.y0:5.5)-.1&&y<b.ye+.1)return true}
+    if(banhoOn()&&E.maq==='banheiro'&&!S.aterro){const m=MAQB();if(x>m.c0-.1&&x<m.c1+.1&&y>m.c2-.1&&y<m.c3+.1)return true}
     if(E.pool==='eco'&&!S.aterro&&E._deck!==false&&x>DECK.x0-.1&&x<DECK.x1+.05&&y>DECK.y0-.1&&y<DECK.y1+.1)return true;return false};
   if(S.fence==='muro')for(let i=0;i<N;i++){if(hid(fA+(i+.5)*dt))continue;seg(fA+i*dt,fA+(i+1)*dt,sF,segLen,1.8,.15,base+.9,matMuro);seg(fA+i*dt,fA+(i+1)*dt,sF,segLen,.05,.2,base+1.82,matCap)}
   if(S.fence==='grade'){
@@ -1260,7 +1262,7 @@ function _buildDyn(){
     for(let i=0;i<=120;i++){const t=cA+(fB-cA)*i/120;if(hid(t)){flush();continue}const[x,y]=arcPt(t,sF+LA*c45);run.push(W3(x,top+LA*c45,y))}flush();
   }
   // cerca transversal com portãozinho (só no modo "quintal da lavação")
-  if(S.ext!=='toda'&&S.fence!=='none'){const x=XP,y0=YP+.02,yb=fenceGeo(S.aterro,'lavacao').ya,gw=E._portaozinho===false?0:.85,g0=y0+.15,g1=g0+gw,top=S.fence==='muro'?1.8:1.5,hb=base;
+  if(S.ext!=='toda'&&S.fence!=='none'){const x=XP,y0=(banhoOn()?Math.max(YP,BANHO().y1):YP)+.02,yb=fenceGeo(S.aterro,'lavacao').ya,gw=E._portaozinho===false?0:.85,g0=y0+.15,g1=g0+gw,top=S.fence==='muro'?1.8:1.5,hb=base;
     const bx=(a,b,c,d,h0,h1,m)=>{const q=new THREE.Mesh(new THREE.BoxGeometry(b-a,h1-h0,d-c),m);q.position.copy(W3((a+b)/2,(h0+h1)/2,(c+d)/2));q.castShadow=true;dyn.add(q);return q};
     [y0,g0,g1,yb].forEach(y=>bx(x-.035,x+.035,y-.035,y+.035,0,top+.12,matIron));
     if(S.fence==='muro')bx(x-.08,x+.08,g1+.04,yb,0,top,matMuro);
@@ -1523,14 +1525,14 @@ function planRows(at){const R=[],L=L_CURVA;const add=(et,tp,d,u,q,p)=>R.push({et
   add(ET3,'Material + serviço','Piscina de fibra ~3,2 × 1,8 m instalada','vb',1,EP.pool*.95);
   add(ET3,'Material','Capa de proteção da piscina','un',1,EP.capa);
   if(E.maq==='enterrada')add(ET3,'Material + serviço','Casa de máquinas enterrada colada na piscina, com tampa'+(at?'':' (embaixo do deck)'),'vb',1,EP.cmaq);
-  else add(ET3,'Material + serviço','Casa de máquinas acima do chão, '+(at?'atrás':'ao lado')+' do banheiro','vb',1,EP.cmaqb);
-  add(ET3,'Material + serviço',at?'Banheiro externo no recuo dos fundos da casa (vaso, pia)':'Banheiro externo atrás da garagem, com passagem para os fundos (vaso, pia)','vb',1,EP.banho);
-  if(at)add(ET3,'Material + serviço','Caminho de pedras da piscina até o banheiro','vb',1,EP.pedras);
-  add(ET3,'Material + serviço',at?'Ducha na porta do banheiro, piso drenante':'Ducha na lateral do banheiro, piso drenante sobre o barranco + grade','vb',1,at?600:EP.ducha);
-  add(ET3,'Material + serviço',E.maq==='enterrada'?'Tubos da piscina até a casa de máquinas (~2 m)':'Tubos da piscina até o banheiro (~'+(at?12:9)+' m) + bomba autoescorvante','vb',1,E.maq==='enterrada'?EP.tpisc:EP.tpiscb);
+  else add(ET3,'Material + serviço','Casa de máquinas acima do chão, '+(at?'no cantinho ao lado da suíte':'atrás da garagem'),'vb',1,EP.cmaqb);
+  add(ET3,'Material + serviço','Banheiro externo atrás do banheiro da suíte, encostado no banheiro social (vaso, pia)','vb',1,EP.banho);
+  add(ET3,'Material + serviço','Caminho de pedras da piscina até o banheiro','vb',1,EP.pedras);
+  add(ET3,'Material + serviço','Ducha ao lado da porta do banheiro, piso drenante','vb',1,600);
+  add(ET3,'Material + serviço',E.maq==='enterrada'?'Tubos da piscina até a casa de máquinas (~2 m)':'Tubos da piscina até a casa de máquinas (~'+(at?12:8)+' m) + bomba autoescorvante','vb',1,E.maq==='enterrada'?EP.tpisc:EP.tpiscb);
   add(ET3,'Material + serviço',at?'Piso da área do churrasco no canto da piscina':'Deck de madeira do churrasco no canto da piscina (sobre o barranco)','vb',1,at?2200:EP.deck);
   add(ET3,'Material','Mesa externa + 4 cadeiras','vb',1,EP.mesa);
-  add(ET3,'Material + serviço',at?'Esgoto do banheiro externo pela lateral da casa até a fossa':'Esgoto do banheiro externo até a fossa','vb',1,at?EP.esg*1.3:EP.esg);
+  add(ET3,'Material + serviço','Esgoto do banheiro externo ligado na rede dos banheiros da casa','vb',1,EP.esg);
   add(ET3,'Material + serviço','Água fria e luz do banheiro externo','vb',1,EP.agua);
   add(ET3,'Material + serviço','Elétrica da casa de máquinas (circuito próprio + DR)','vb',1,E.maq==='enterrada'?EP.elp:EP.elpb);
   add(ET3,'Material','Churrasqueira a bafo','un',1,2500);
