@@ -533,6 +533,17 @@ function measure(){let A=0,V=0;const st=.05;
 const stage=document.getElementById('stage');
 const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+/* texturas desenhadas no próprio navegador: dão aspecto de material sem mudar a geometria */
+function canvasTex(n,draw){const c=document.createElement('canvas');c.width=c.height=n;draw(c.getContext('2d'),n);const t=new THREE.CanvasTexture(c);
+  t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());return t}
+let _sd=7;const rnd2=()=>{_sd=(_sd*16807)%2147483647;return(_sd-1)/2147483646};
+const TEX={
+  chao:canvasTex(256,(g,n)=>{g.fillStyle='#fff';g.fillRect(0,0,n,n);for(let i=0;i<9000;i++){const v=200+rnd2()*55|0;g.fillStyle=`rgb(${v},${v},${v})`;g.fillRect(rnd2()*n,rnd2()*n,1+rnd2()*2,1+rnd2()*3)}}),
+  telha:canvasTex(256,(g,n)=>{g.fillStyle='#fff';g.fillRect(0,0,n,n);const rows=4,cols=8,rh=n/rows,cw=n/cols;
+    for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const x=c*cw+(r%2?cw/2:0),y=r*rh,gr=g.createLinearGradient(x,0,x+cw,0);
+      gr.addColorStop(0,'#b8b8b8');gr.addColorStop(.45,'#ffffff');gr.addColorStop(1,'#a2a2a2');g.fillStyle=gr;g.fillRect(x,y,cw,rh);g.fillRect(x-n,y,cw,rh);
+      g.fillStyle='rgba(0,0,0,.28)';g.fillRect(x,y+rh-5,cw,5)}}),
+  reboco:canvasTex(128,(g,n)=>{g.fillStyle='#fff';g.fillRect(0,0,n,n);for(let i=0;i<2500;i++){const v=232+rnd2()*23|0;g.fillStyle=`rgb(${v},${v},${v})`;g.fillRect(rnd2()*n,rnd2()*n,2,2)}})};
 stage.appendChild(renderer.domElement);
 const scene=new THREE.Scene();
 const camera=new THREE.PerspectiveCamera(42,1,.1,400);
@@ -540,12 +551,15 @@ const controls=new THREE.OrbitControls(camera,renderer.domElement);
 controls.enableDamping=true;controls.maxPolarAngle=Math.PI*.495;controls.minDistance=3;controls.maxDistance=90;
 const W3=(x,h,y)=>new THREE.Vector3(x,h,-y);
 
-scene.add(new THREE.HemisphereLight(0xf2f6ff,0x5a5040,.75));
-const sun=new THREE.DirectionalLight(0xfff3df,.85);sun.position.set(30,38,8);sun.target.position.set(10,0,-10);
+scene.add(new THREE.HemisphereLight(0xeaf2ff,0x4d4636,.62));
+const sun=new THREE.DirectionalLight(0xfff0d6,1.02);sun.position.set(30,38,8);sun.target.position.set(10,0,-10);
 sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-28,right:28,top:28,bottom:-28,near:1,far:120});
 scene.add(sun,sun.target);
 
-function applySky(){const c=getComputedStyle(document.documentElement).getPropertyValue('--sky').trim()||'#dde7ec';scene.background=new THREE.Color(c);scene.fog=new THREE.Fog(c,55,140)}
+function applySky(){// céu sempre de dia (independe do tema claro/escuro da página)
+  const hz='#e4ecf0',top='#86b2dc';
+  scene.background=canvasTex(64,(g,n)=>{const gr=g.createLinearGradient(0,0,0,n);gr.addColorStop(0,top);gr.addColorStop(.7,hz);gr.addColorStop(1,hz);g.fillStyle=gr;g.fillRect(0,0,n,n)});
+  scene.fog=new THREE.Fog(hz,55,140)}
 applySky();
 try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applySky)}catch(e){}
 new MutationObserver(applySky).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
@@ -555,7 +569,8 @@ const X0=-10,X1=32,Y0=-7,Y1=28,ST=.15,nx=Math.round((X1-X0)/ST)+1,ny=Math.round(
 const tPos=new Float32Array(nx*ny*3),tCol=new Float32Array(nx*ny*3),idx=[];
 for(let j=0;j<ny-1;j++)for(let i=0;i<nx-1;i++){const a=j*nx+i,b=a+1,c=a+nx,d=c+1;idx.push(a,b,c,b,d,c)}
 const tGeo=new THREE.BufferGeometry();tGeo.setAttribute('position',new THREE.BufferAttribute(tPos,3));tGeo.setAttribute('color',new THREE.BufferAttribute(tCol,3));tGeo.setIndex(idx);
-const terrain=new THREE.Mesh(tGeo,new THREE.MeshLambertMaterial({vertexColors:true}));terrain.receiveShadow=true;scene.add(terrain);
+{const uv=new Float32Array(nx*ny*2);for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){uv[(j*nx+i)*2]=(X0+i*ST)/1.5;uv[(j*nx+i)*2+1]=(Y0+j*ST)/1.5}tGeo.setAttribute('uv',new THREE.BufferAttribute(uv,2))}
+const terrain=new THREE.Mesh(tGeo,new THREE.MeshLambertMaterial({vertexColors:true,map:TEX.chao}));terrain.receiveShadow=true;scene.add(terrain);
 
 /* mata da Área Verde (ilustrativa, como na imagem de satélite) */
 const TREES=[];{let sd=11;const rnd=()=>{sd=(sd*16807)%2147483647;return(sd-1)/2147483646};
@@ -597,10 +612,10 @@ function updateTerrain(){
 }
 
 /* casa 01 */
-const matWall=new THREE.MeshLambertMaterial({color:0xddd0b8}),matBase=new THREE.MeshLambertMaterial({color:0xa9a59c}),
+const matWall=new THREE.MeshLambertMaterial({color:0xe2d5bd,map:TEX.reboco}),matBase=new THREE.MeshLambertMaterial({color:0xa9a59c}),
   matOrange=new THREE.MeshLambertMaterial({color:0xc9693b}),matGranite=new THREE.MeshLambertMaterial({color:0x8e8b86}),matWhite=new THREE.MeshLambertMaterial({color:0xf2f0ea}),
-  matRoof=new THREE.MeshLambertMaterial({color:0x9e4b2e,side:THREE.DoubleSide}),matRoof2=new THREE.MeshLambertMaterial({color:0x9b9a95,side:THREE.DoubleSide}),
-  matGlass=new THREE.MeshLambertMaterial({color:0x2c3a44}),matN=new THREE.MeshLambertMaterial({color:0xcfcac2});
+  matRoof=new THREE.MeshLambertMaterial({color:0xb4583a,side:THREE.DoubleSide,map:TEX.telha}),matRoof2=new THREE.MeshLambertMaterial({color:0x9b9a95,side:THREE.DoubleSide}),
+  matGlass=new THREE.MeshPhongMaterial({color:0x2a3946,specular:0x9fb4c4,shininess:90}),matN=new THREE.MeshLambertMaterial({color:0xcfcac2});
 function extrudePoly(poly,h0,h,mat){const sh=new THREE.Shape();poly.forEach((p,i)=>i?sh.lineTo(p[0],p[1]):sh.moveTo(p[0],p[1]));
   const g=new THREE.ExtrudeGeometry(sh,{depth:h,bevelEnabled:false});g.rotateX(-Math.PI/2);g.translate(0,h0,0);
   const m=new THREE.Mesh(g,mat);m.castShadow=m.receiveShadow=true;return m}
@@ -614,7 +629,8 @@ function gable(x0,y0,x1,y1,alongX,base,mat,ov=.45,sl=.35){
     v=[[x0,base,y0],[xm,base+r,y0],[xm,base+r,y1],[x0,base,y0],[xm,base+r,y1],[x0,base,y1],
        [x1,base,y0],[x1,base,y1],[xm,base+r,y1],[x1,base,y0],[xm,base+r,y1],[xm,base+r,y0],
        [x0,base,y0],[x1,base,y0],[xm,base+r,y0],[x0,base,y1],[xm,base+r,y1],[x1,base,y1]];}
-  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(v.flatMap(p=>[p[0],p[1],-p[2]]),3));g.computeVertexNormals();
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(v.flatMap(p=>[p[0],p[1],-p[2]]),3));
+  g.setAttribute('uv',new THREE.Float32BufferAttribute(v.flatMap(p=>alongX?[p[0]/1.6,p[2]/1.6]:[p[2]/1.6,p[0]/1.6]),2));g.computeVertexNormals();
   const m=new THREE.Mesh(g,mat);m.castShadow=true;m.userData.roof=true;return m}
 const HOUSE_W=[[0,.6],[3.15,.6],[3.15,0],[6.45,0],[6.45,.45],[9.2,.45],[9.2,7.05],[4.6,7.05],[4.6,5.9],[1.8,5.9],[1.8,4.45],[0,4.45]].map(p=>[p[0]+HX,p[1]+HY]);
 scene.add(extrudePoly(HOUSE,0,.15,matBase),extrudePoly(HOUSE_W,.15,3.15,matWall));
@@ -623,7 +639,12 @@ scene.add(...houseRoofs);
 // sem telhado: a casa existente aparece fechada (a planta interna dela não está na maquete)
 const houseCap=extrudePoly(HOUSE_W,3.15,.02,new THREE.MeshLambertMaterial({color:0xb9b2a5}));houseCap.visible=false;scene.add(houseCap);
 // vidro da sala (P03) e janelas dos fundos
-function pane(x,y,w,h,z0,rotY){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),matGlass);m.position.copy(W3(x,z0+h/2,y));m.rotation.y=rotY;scene.add(m)}
+const matAlu=new THREE.MeshLambertMaterial({color:0x1c1e1f});
+function pane(x,y,w,h,z0,rotY){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),matGlass);m.position.copy(W3(x,z0+h/2,y));m.rotation.y=rotY;scene.add(m);
+  // caixilho: moldura + divisão no meio (porta de correr / janela de 2 folhas)
+  const fr=(a,b,c,d,e,f)=>{const q=new THREE.Mesh(new THREE.BoxGeometry(a,b,c),matAlu);q.position.copy(W3(d,e,f));q.rotation.y=rotY;scene.add(q)},k=.05,t=.05;
+  fr(w+k,k,t,x,z0,y);fr(w+k,k,t,x,z0+h,y);fr(w/2>.6?k*.8:k*.7,h,t,x,z0+h/2,y);
+  const ox=Math.cos(rotY)*w/2,oy=-Math.sin(rotY)*w/2;fr(k,h,t,x-ox,z0+h/2,y+oy);fr(k,h,t,x+ox,z0+h/2,y-oy)}
 /* fachada como na foto: bloco do dormitório em réguas laranja, suíte bege com janela de canto, faixa branca e rodapé de granito */
 function fbox(x0,x1,y0,y1,h0,h1,mat){const m=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,h1-h0,y1-y0),mat);m.position.copy(W3((x0+x1)/2,(h0+h1)/2,(y0+y1)/2));m.castShadow=m.receiveShadow=true;scene.add(m)}
 fbox(HX+3.15,HX+6.45,HY-.03,HY,.45,3.15,matOrange);
@@ -663,7 +684,17 @@ const EPL={cmaqb:['Casa de máquinas junto do banheiro (casinha)','R$'],tpiscb:[
 let ext=new THREE.Group();scene.add(ext);
 const matWood=new THREE.MeshLambertMaterial({color:0x7a5232}),matStep=new THREE.MeshLambertMaterial({color:0x3a3f3c});
 function box(x0,x1,y0,y1,h0,h1,mat){const m=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,h1-h0,y1-y0),mat);m.position.copy(W3((x0+x1)/2,(h0+h1)/2,(y0+y1)/2));m.castShadow=m.receiveShadow=true;ext.add(m);return m}
-function car(cx,cy,col){const mt=new THREE.MeshLambertMaterial({color:col});box(cx-.9,cx+.9,cy-2.15,cy+2.15,.18,.85,mt);box(cx-.8,cx+.8,cy-1.0,cy+1.25,.85,1.4,matGlass)}
+function car(cx,cy,col){const mt=new THREE.MeshPhongMaterial({color:col,specular:0x777777,shininess:70}),tire=new THREE.MeshLambertMaterial({color:0x161616}),
+    rim=new THREE.MeshLambertMaterial({color:0xa7aaad}),lt=new THREE.MeshBasicMaterial({color:0xf4f1e6}),rd=new THREE.MeshBasicMaterial({color:0x9b1c1c});
+  // hatch ~3,9 × 1,7 m: frente virada para a rua
+  box(cx-.84,cx+.84,cy-1.95,cy+1.95,.32,.8,mt);box(cx-.82,cx+.82,cy-1.95,cy-1.25,.8,.86,mt);
+  box(cx-.76,cx+.76,cy-1.1,cy+1.7,.8,1.36,matGlass);box(cx-.74,cx+.74,cy-.8,cy+1.62,1.36,1.42,mt);
+  box(cx-.79,cx-.75,cy-.2,cy+.4,.8,1.36,mt);box(cx+.75,cx+.79,cy-.2,cy+.4,.8,1.36,mt);
+  box(cx-.72,cx-.4,cy-1.97,cy-1.95,.62,.72,lt);box(cx+.4,cx+.72,cy-1.97,cy-1.95,.62,.72,lt);
+  box(cx-.76,cx-.48,cy+1.95,cy+1.97,.68,.8,rd);box(cx+.48,cx+.76,cy+1.95,cy+1.97,.68,.8,rd);
+  box(cx-.86,cx+.86,cy-2.0,cy-1.95,.3,.5,tire);box(cx-.86,cx+.86,cy+1.95,cy+2.0,.3,.5,tire);
+  [[-.78,-1.25],[.78,-1.25],[-.78,1.3],[.78,1.3]].forEach(([dx,dy])=>{const w=new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.19,20),tire);w.rotation.z=Math.PI/2;
+    w.position.copy(W3(cx+dx+(dx>0?.01:-.01),.3,cy+dy));w.castShadow=true;ext.add(w);const r=new THREE.Mesh(new THREE.CylinderGeometry(.17,.17,.2,14),rim);r.rotation.z=Math.PI/2;r.position.copy(w.position);ext.add(r)})}
 function buildExt(){
   scene.remove(ext);ext.traverse(o=>{if(o.geometry)o.geometry.dispose()});ext=new THREE.Group();scene.add(ext);
   const mWater=new THREE.MeshLambertMaterial({color:0x3fb3d6}),mStone=new THREE.MeshLambertMaterial({color:0xe4ded2});
@@ -787,14 +818,14 @@ function buildExt(){
     pc.position.copy(W3(xw-.5,hw+.03-.5*Math.tan(ang),(ya+yb)/2));pc.rotation.z=ang;pc.userData.roof=true;ext.add(pc);
     box(xw-.12,xw,ya-.1,yb+.1,hw-.15,hw,matStep);box(xa-.15,xa,ya-.1,yb+.1,ho-.1,ho+.04,matWhite);
     [[xa+.05,ya],[xa+.05,(ya+yb)/2],[xa+.05,yb],[xw-.1,ya]].forEach(([x,y])=>box(x-.05,x+.05,y-.05,y+.05,0,(x<9?ho:hw)-.02,matStep));
-    car((xa+xw)/2,5.1-sh,0x8a1f24);
+    car((xa+xw)/2,5.1-sh,0xbfc3c7);
     label('Cobertura do carro',(xa+xw)/2,3.9,(ya+yb)/2,.8,ext);}
   if(E.gar&&!lat){const{x0,x1,y0,y1}=E,t=.15,hT=2.9,hS=3.08;
     box(x0,x1,y0,y1,0,.05,matBase);
     box(x0,x0+t,y0,y1,0,hT,matWall);box(x1-t,x1,y0,y1,0,hT,matWall);box(x0,x1,y1-t,y1,0,hT,matWall);box(x0,x1,y0,y0+t,2.45,hT,matWall);
     {const sl=box(x0-.1,x1+.1,y0-.1,y1+.1,hT,hS,matWhite);if(!E.esc)sl.userData.roof=true}
     box(x0-.03,x0,y0,y1,0,.35,matGranite);box(x1,x1+.03,y0,y1,0,.35,matGranite);
-    car(x0+1.45,2.75,0x8a1f24);car(x1-1.45,2.75,0x5d6670);
+    car(x0+1.45,2.75,0xbfc3c7);car(x1-1.45,2.75,0x5d6670);
     box(x0+t,x0+t+.2,3.0,4.6,.4,2.3,matStep);
     label(E.esc?'Garagem + escritório':'Garagem 2 carros',(x0+x1)/2,E.esc?7.6:4.2,(y0+y1)/2,1,ext);
     if(E.esc){const h0=hS,h1=hS+2.8;
